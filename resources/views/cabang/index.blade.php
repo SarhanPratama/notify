@@ -67,19 +67,68 @@
                                 </div>
 
                                 <div>
-                                    <form action="{{ route('cabang.destroy', $item->id)}}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="fa fa-trash fs-6" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cabangDestroyModal{{ $item->id }}">
+                                        <i class="fa fa-trash fs-6" aria-hidden="true"></i>
+                                    </button>
                                 </div>
 
                             </td>
                         </tr>
-                        @endforeach
 
+
+                        <div class="modal fade" id="permissionUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionUpdateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update role</h1>
+                                        <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                    </div>
+                                    <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" id="modal_id" name="id">
+                                        <div class="modal-body text-sm">
+                                            <div class="mb-3">
+                                                <label for="cabang">Permission</label>
+                                                <input type="text" name="name" class="form-control form-control-sm" value="{{ $item->name }}" placeholder="Masukkan permission" required>
+                                                @error('name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5 font-weight-bold" id="cabangDestroyModalLabel">Konfirmasi Hapus</h1>
+                                        <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->nama }}</strong>?</p>
+                                    </div>
+                                    <form action="{{ route('cabang.destroy', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Hapus</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                         @endforeach
                     </tbody>
                 </table>
                 </div>
