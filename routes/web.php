@@ -23,9 +23,7 @@ Route::get('/', function () {
 
 Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin');
-
-
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:karyawan');
 
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');

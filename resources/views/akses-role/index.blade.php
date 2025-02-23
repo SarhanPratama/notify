@@ -64,10 +64,10 @@
                 </tr>
 
                 <!-- Modal Edit Permission -->
-                <div class="modal fade" id="editRoleModal{{ $role->id }}" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="editRoleModal{{ $role->id }}" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true" >
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
+                            <div class="modal-header bg-primary text-white " >
                                 <h5 class="modal-title">Edit Permissions for Role: {{ $role->name }}</h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
@@ -78,18 +78,18 @@
                                         <label class="fw-bold">Pilih Permission:</label>
                                         <div class="row">
                                             @foreach ($permissions as $permission)
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="card border-primary">
-                                                        <div class="card-body d-flex align-items-center">
-                                                            <div class="form-check form-switch me-3">
+                                                <div class="col-md-3">
+
+                                                        <div class="card-body d-flex align-items-center text-sm text-nowrap">
+                                                            <div class="form-check form-switch ">
                                                                 <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->name }}"
                                                                     id="permissionSwitch{{ $permission->id }}"
                                                                     {{ $role->permissions->contains('name', $permission->name) ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="permissionSwitch{{ $permission->id }}">{{ $permission->name }}</label>
                                                             </div>
-                                                            <i class="bi bi-check-circle-fill text-primary" style="font-size: 1.5rem;"></i>
+                                                            {{-- <i class="bi bi-check-circle-fill text-primary" style="font-size: 1.5rem;"></i> --}}
                                                         </div>
-                                                    </div>
+
                                                 </div>
                                             @endforeach
                                         </div>

@@ -12,6 +12,7 @@ class AksesRoleController extends Controller
         $role = Role::with('permissions')->get();
         $permissions = Permission::all();
 
+        // dd($permissions);
         $title = 'Tabel Akses Role';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
@@ -21,14 +22,15 @@ class AksesRoleController extends Controller
         return view('akses-role.index', compact('role', 'permissions', 'title', 'breadcrumbs'));
     }
 
-    public function edit($id) {
+    // public function edit($id) {
 
-        $role = Role::findOrFail($id);
+    //     $role = Role::findOrFail($id);
 
 
-        $permissions = Permission::all();
-        return view('akses-role.create', compact('permissions', 'role'));
-    }
+    //     $permissions = Permission::orderBy('name', 'ASC');
+    //     // dd($permissions);
+    //     return view('akses-role.create', compact('permissions', 'role'));
+    // }
 
     public function update(Request $request, Role $role) {
 
