@@ -9,20 +9,22 @@ class PermissionController extends Controller
 {
     public function index(Request $request) {
 
-        $title = 'Tabel Role';
+        $title = 'Tabel Permission';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel Permission', 'url' => null],
         ];
-
+        $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $permission = Permission::when($search, function($query, $search) {
-            $query->where('name', 'LIKE', "%{$search}");
-        })->paginate(10);
+        $permission = Permission::when($search, function ($query, $search) {
+            return $query->where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%");
+            });
+        })->paginate($perPage);
 
 
-        return view('permission.index', compact('title', 'breadcrumbs', 'permission'));
+        return view('permission.index', compact('title', 'breadcrumbs', 'permission', 'perPage'));
     }
 
     public function store(Request $request) {

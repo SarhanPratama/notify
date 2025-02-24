@@ -12,11 +12,14 @@ class CabangController extends Controller
 
 
         $search = $request->input('search');
+        $perPage = $request->input('per_page');
 
         $cabang = Cabang::when($search, function ($query, $search) {
-            return $query->where('nama', 'LIKE', "%{$search}%")
-                         ->orWhere('alamat', 'LIKE', "%{$search}%");
-        })->paginate(10);
+            return $query->where(function ($query) use ($search) {
+                $query->where('nama', 'LIKE', "%{$search}%")
+                      ->orWhere('alamat', 'LIKE', "%{$search}%");
+            });
+        })->paginate($perPage);
 
         // dd($cabang);{}
 
@@ -26,7 +29,7 @@ class CabangController extends Controller
             ['label' => 'Tabel Cabang', 'url' => null],
         ];
 
-        return view('cabang.index', compact('cabang', 'search', 'breadcrumbs', 'title'));
+        return view('cabang.index', compact('cabang', 'search', 'breadcrumbs', 'title', 'perPage'));
     }
 
 
@@ -53,10 +56,16 @@ class CabangController extends Controller
     }
 
     public function edit($id) {
+        $title = 'Form update karyawan';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Tabel', 'url' => route('cabang.index')],
+            ['label' => 'Form update karyawan', 'url' => null],
+        ];
 
         $cabang = Cabang::where('id', $id)->first();
 
-        return view('cabang.update', compact('cabang'));
+        return view('cabang.update', compact('cabang', 'breadcrumbs', 'title'));
     }
 
     public function update(Request $request, $id) {

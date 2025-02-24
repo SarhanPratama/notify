@@ -9,15 +9,24 @@
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->
       <div class="card">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
             {{-- <h6 class="font-weight-bold text-primary text-sm">Tabel Cabang</h6> --}}
-
+            <form action="{{ route('users.index') }}" method="GET" class="d-flex align-items-center">
+                {{-- <label for="per_page" class="me-2 text-sm">Tampilkan:</label> --}}
+                <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
+                    <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
+                </select>
+            </form>
             <div class="dropup-center dropup">
+
                 <a class="" type="" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-search fa-fw"></i>
+                    <i class="fas fa-search fa-fw text-light"></i>
                 </a>
+
                 <ul class="dropdown-menu mb-4 px-2" style="width: 300px;">
-                    <form action="{{ route('cabang.index')}}" method="get">
+                    <form action="{{ route('users.index')}}" method="get">
                         <div class="input-group">
                             <input type="text" name="search" class="form-control form-control-sm" value="{{ request('search') }}" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
                             <button class="btn btn-outline-primary btn-sm" type="submit" id="button-addon2"><i class="fas fa-search fa-fw"></i></button>
@@ -26,7 +35,7 @@
                 </ul>
             </div>
 
-            <a href="{{ route('users.create')}}" class="btn btn-outline-primary btn-sm btn-lg">
+            <a href="{{ route('users.create')}}" class="btn btn-outline-light btn-sm btn-lg">
                 Tambah
             </a>
         </div>
@@ -39,7 +48,7 @@
                 <th>email</th>
                 <th>Usia</th>
                 {{-- <th>Alamat</th> --}}
-                <th>Action</th>
+                <th class="text-center">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -55,7 +64,7 @@
                         {{ Str::limit($item->alamat, 30, '...') }}
                     </td> --}}
 
-                    <td class="d-flex text-nowrap gap-2">
+                    <td class="d-flex justify-content-center  text-nowrap gap-2">
                         <div>
                             <a href="{{ route('users.edit', $item->id) }}"  class="btn btn-sm btn-outline-warning">
                                 <i class="fa fa-pencil fs-6 aria-hidden="true"></i>
@@ -114,7 +123,7 @@
         </div>
 
             <div class="card-footer d-flex justify-content-center">
-                {{-- {{ $cabang->appends(['search' => request('search')])->links('pagination::bootstrap-4') }} --}}
+                {{ $users->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
             </div>
 
     </div>

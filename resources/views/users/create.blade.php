@@ -28,9 +28,9 @@
     <div class="col-lg-12">
       <!-- Form Tambah Karyawan -->
       <div class="card shadow-lg">
-        <div class="card-header text-white d-flex flex-row align-items-center justify-content-between">
+        <div class="card-header text-white d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
             {{-- <h6 class="m-0 font-weight-bold">Form Tambah Karyawan</h6> --}}
-            <a href="{{ route('users.index')}}" class="btn btn-sm btn-outline-primary">
+            <a href="{{ route('users.index')}}" class="btn btn-sm btn-outline-light">
                 <i class="fa fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>

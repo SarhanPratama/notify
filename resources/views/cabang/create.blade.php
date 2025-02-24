@@ -1,8 +1,8 @@
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5 font-weight-bold" id="exampleModalLabel">Form input cabang</h1>
+        <div class="modal-header" style="background-color: #6777ef">
+          <h1 class="modal-title fs-6 text-light font-weight-bold" id="exampleModalLabel">Form input cabang</h1>
           <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
           {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
         </div>

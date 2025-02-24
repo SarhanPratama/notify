@@ -1,14 +1,7 @@
 @extends('layouts.master')
 @section('content')
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Form Basics</h1>
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="./">Home</a></li>
-      <li class="breadcrumb-item">Forms</li>
-      <li class="breadcrumb-item active" aria-current="page">Form Basics</li>
-    </ol>
-  </div>
+@include('layouts.breadcrumbs')
 
 
 <div class="container">
@@ -16,11 +9,10 @@
     <div class="col-lg-12">
       <!-- Form Basic -->
       <div class="card mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <a href="{{ route('cabang.index')}}"  class="btn btn-sm  btn-outline-primary">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+            <a href="{{ route('cabang.index')}}"  class="btn btn-sm btn-outline-light">
                 <i class="fa fa-arrow-left" aria-hidden="true"></i>
             </a>
-          {{-- <h6 class="m-0 font-weight-bold text-primary">Form update cabang </h6> --}}
         </div>
         <div class="card-body">
           <form action="{{ route('cabang.update', $cabang->id)}}" method="POST" enctype="multipart/form-data">

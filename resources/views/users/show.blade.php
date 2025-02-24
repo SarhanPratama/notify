@@ -1,9 +1,12 @@
 @extends('layouts.master')
 @section('content')
-<div class="container py-4">
+
+@include('layouts.breadcrumbs')
+
+<div class="container">
     <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Detail Karyawan</h4>
+        <div class="card-header text-white text-center" style="background-color: #6777ef">
+            <h4 class="mb-0 font-weight-bold">Detail Karyawan</h4>
         </div>
         <div class="card-body">
             <!-- Foto Karyawan -->
@@ -14,9 +17,9 @@
                          class="rounded-circle img-thumbnail shadow-sm"
                          style="width: 150px; height: 150px; object-fit: cover;">
                 </div>
-                <div>
+                <div class="text-center">
                     <h4 class="mt-3 mb-1">{{ $user->name }}</h4>
-                    <span class="badge bg-primary">{{ $user->roles->first()->name }}</span>
+                    <span class="badge bg-success">{{ $user->roles->first()->name }}</span>
                 </div>
             </div>
 
@@ -42,7 +45,7 @@
                                     <th>
                                         <i class="fas fa-building me-2"></i>Cabang
                                     </th>
-                                    <td>{{ $user->karyawan->cabang->nama }}</td>
+                                    <td>{{ $user->karyawan->cabang->nama ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>

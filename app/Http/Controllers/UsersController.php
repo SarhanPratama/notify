@@ -10,9 +10,7 @@ use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
-    public function index() {
-
-       $users = User::with('Karyawan')->paginate(12);
+    public function index(Request $request) {
 
         $title = 'Tabel Karyawan';
 
@@ -21,7 +19,17 @@ class UsersController extends Controller
             ['label' => 'Tabel Karyawan', 'url' => null],
         ];
 
-        return view('users.index', compact('breadcrumbs', 'title', 'users'));
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $users = User::with('karyawan')->when($search, function ($query, $search) {
+            return $query->where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                      ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        })->paginate($perPage);
+
+        return view('users.index', compact('breadcrumbs', 'title', 'users', 'perPage'));
     }
 
     public function create() {
@@ -42,9 +50,17 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        $user = User::with('karyawan', 'karyawan.cabang', 'roles')->findOrFail($id);
 
-        return view('users.show', compact('user'));
+        $title = 'Form Karyawan';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Tabel', 'url' => route('users.index')],
+            ['label' => 'Detail Karyawan', 'url' => null],
+        ];
+
+        $user = User::with('Karyawan', 'roles')->findOrFail($id);
+
+        return view('users.show', compact('user', 'breadcrumbs', 'title'));
     }
 
 
@@ -56,7 +72,6 @@ class UsersController extends Controller
             ['label' => 'Tabel', 'url' => route('users.index')],
             ['label' => 'Form Karyawan', 'url' => null],
         ];
-
 
         $user = User::with('Karyawan')->findOrFail($id);
         // DD($users);
