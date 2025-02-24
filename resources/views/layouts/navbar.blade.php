@@ -1,3 +1,8 @@
+@php
+    $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
+    $unreadCount = DB::table('notifications')->where('is_read', false)->count();
+@endphp
+
 <nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
     <button id="sidebarToggleTop" class="btn rounded-circle mr-3">
       <i class="fa fa-bars text-light"></i>
@@ -25,51 +30,38 @@
       </li> --}}
       <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-bell fa-fw"></i>
-          <span class="badge badge-danger badge-counter mb-2">3+</span>
+           aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-bell fa-fw"></i>
+            @if($unreadCount > 0)
+                <span class="badge badge-danger badge-counter mb-2">{{ $unreadCount }}</span>
+            @endif
         </a>
         <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-          aria-labelledby="alertsDropdown">
-          <h6 class="dropdown-header">
-            Alerts Center
-          </h6>
-          {{-- <a class="dropdown-item d-flex align-items-center" href="#">
-            <div class="mr-3">
-              <div class="icon-circle bg-primary">
-                <i class="fas fa-file-alt text-white"></i>
-              </div>
-            </div>
-            <div>
-              <div class="small text-gray-500">December 12, 2019</div>
-              <span class="font-weight-bold">A new monthly report is ready to download!</span>
-            </div>
-          </a>
-          <a class="dropdown-item d-flex align-items-center" href="#">
-            <div class="mr-3">
-              <div class="icon-circle bg-success">
-                <i class="fas fa-donate text-white"></i>
-              </div>
-            </div>
-            <div>
-              <div class="small text-gray-500">December 7, 2019</div>
-              $290.29 has been deposited into your account!
-            </div>
-          </a>
-          <a class="dropdown-item d-flex align-items-center" href="#">
-            <div class="mr-3">
-              <div class="icon-circle bg-warning">
-                <i class="fas fa-exclamation-triangle text-white"></i>
-              </div>
-            </div>
-            <div>
-              <div class="small text-gray-500">December 2, 2019</div>
-              Spending Alert: We've noticed unusually high spending for your account.
-            </div>
-          </a> --}}
-          <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+             aria-labelledby="alertsDropdown">
+            <h6 class="dropdown-header">
+                Alerts Center
+            </h6>
+            @foreach($notifications as $notif)
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-primary">
+                            <i class="fas fa-user-plus text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">{{ $notif->created_at }}</div>
+
+                        <span class="font-weight-bold">{{ $notif->message }}</span>
+                    </div>
+                </a>
+            @endforeach
+            <a class="dropdown-item text-center small text-gray-500" href="{{ route('notifications.markAsRead') }}">
+                Tandai Semua Dibaca
+            </a>
+
+            {{-- <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> --}}
         </div>
-      </li>
+    </li>
       <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">

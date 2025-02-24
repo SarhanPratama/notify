@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
@@ -23,9 +24,9 @@ Route::get('/', function () {
 
 Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:karyawan');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
 
-    Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');
     Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
@@ -47,12 +48,23 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/produk', [ProductsController::class, 'index'])->name('produk.index');
 
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-    Route::post('/users', [UsersController::class, 'store'])->name('users.store');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');
+    Route::post('/users', [UsersController::class, 'store'])->name('users.store');
+    Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+    Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
     Route::POST('/cabang', [CabangController::class, 'store'])->name('cabang.store');
     Route::get('/cabang/{id}/edit', [CabangController::class, 'edit'])->name('cabang.edit');
     Route::put('/cabang/{id}', [CabangController::class, 'update'])->name('cabang.update');
     Route::delete('/cabang/{id}', [CabangController::class, 'destroy'])->name('cabang.destroy');
+
+
+Route::get('/notifications/mark-as-read', function () {
+    DB::table('notifications')->update(['is_read' => true]);
+    return redirect()->back();
+})->name('notifications.markAsRead');
+
 });

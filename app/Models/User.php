@@ -48,4 +48,18 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function Karyawan()
+    {
+        return $this->hasOne(Karyawan::class, 'id_users')->withDefault([
+            'usia' => '-',
+            'tgl_lahir' => '-',
+            'telepon' => '-',
+            'alamat' => '-'
+        ]);
+    }
+
+    // public function Role() {
+    //     return $this->()
+    // }
 }

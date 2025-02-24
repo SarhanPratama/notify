@@ -30,53 +30,84 @@
                 Tambah
             </a>
         </div>
-        <div class="table-responsive">
-        <table class="table table-striped text-sm">
+    <div class="table-responsive">
+        <table class="table table-striped text-sm text-nowrap">
             <thead class="thead-light">
             <tr>
                 <th>No</th>
-                <th>Cabang</th>
-                <th>Telepon</th>
-                <th>Alamat</th>
+                <th>nama</th>
+                <th>email</th>
+                <th>Usia</th>
+                {{-- <th>Alamat</th> --}}
                 <th>Action</th>
             </tr>
             </thead>
             <tbody>
-                {{-- @foreach ($cabang as $item)
+                @foreach ($users as $item)
 
                 <tr>
-                    <td>{{ ($cabang->currentPage() - 1) * $cabang->perPage() + $loop->iteration }}</td>
-                    <td>
+                    <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
+                    <td>{{ $item->name}}</td>
+                    <td>{{ $item->email}}</td>
+                    <td>{{ $item->Karyawan->usia ?? '-' }}</td>
 
-
-
-                        {{ $item->nama}}</td>
-                    <td>{{ $item->telepon}}</td>
-
-                    <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
+                    {{-- <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                         {{ Str::limit($item->alamat, 30, '...') }}
-                    </td>
+                    </td> --}}
 
-                    <td class="d-flex text-nowrap">
+                    <td class="d-flex text-nowrap gap-2">
                         <div>
-                            <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning me-1">
-                                <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
+                            <a href="{{ route('users.edit', $item->id) }}"  class="btn btn-sm btn-outline-warning">
+                                <i class="fa fa-pencil fs-6 aria-hidden="true"></i>
                             </a>
                         </div>
 
                         <div>
-                            <form action="{{ route('cabang.destroy', $item->id)}}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger">
-                                    <i class="fa fa-trash fs-6" aria-hidden="true"></i>
-                                </button>
-                            </form>
+                            <a href="{{ route('users.show', $item->id) }}"  class="btn btn-sm btn-outline-warning">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                data-bs-target="#usersDestroyModal{{ $item->id }}">
+                                <i class="fa fa-trash fs-6" aria-hidden="true"></i>
+                            </button>
+
                         </div>
 
                     </td>
                 </tr>
-                @endforeach --}}
+
+                <div class="modal fade" id="usersDestroyModal{{ $item->id }}" tabindex="-1"
+                    aria-labelledby="usersDestroyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5 font-weight-bold"
+                                    id="usersDestroyModalLabel">Konfirmasi Hapus</h1>
+                                <i class="bi bi-x-lg btn btn-outline-danger btn-sm"
+                                    data-bs-dismiss="modal" aria-label="Close"></i>
+                            </div>
+                            <div class="modal-body">
+                                <p>Apakah anda yakin ingin menghapus users <strong> {{ $item->name }}
+                                    </strong>?</p>
+                            </div>
+                            <form action="{{ route('users.destroy', $item->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit"
+                                        class="btn btn-outline-danger btn-sm">Hapus</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
 
             </tbody>
         </table>
