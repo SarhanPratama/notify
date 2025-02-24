@@ -68,3 +68,4 @@ Route::get('/notifications/mark-as-read', function () {
 })->name('notifications.markAsRead');
 
 });
+

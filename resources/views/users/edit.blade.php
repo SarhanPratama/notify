@@ -38,7 +38,7 @@
             <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT') <!-- Menambahkan metode PUT untuk pembaruan -->
-                <div class="row g-3 text-sm">
+                <div class="row g-3 text-sm ">
 
                     <div class="col-lg-4 col-md-6">
                         <label for="nama" class="form-label fw-bold">Nama Lengkap</label>
@@ -50,7 +50,7 @@
                         <input type="number" class="form-control form-control-sm" name="usia" value="{{ $user->Karyawan->usia}}" placeholder="Masukkan usia" required>
                     </div>
 
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-6 ">
                         <label for="telepon" class="form-label fw-bold">Telepon</label>
                         <input type="text" class="form-control form-control-sm" name="telepon" value="{{ $user->Karyawan->telepon }}" placeholder="Masukkan telepon" required>
                     </div>
@@ -58,8 +58,8 @@
                     <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                         <label for="jabatan" class="form-label fw-bold">Jabatan</label>
                         <select class="form-select form-select-sm" name="id_roles" required>
-                            @foreach ($roles as $item)
-                            <option value="{{ $item->id }}" {{ $user->Karyawan->id_roles == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                            @foreach ($roles as $id => $name)
+                            <option value="{{ $id }}" {{ $user->Karyawan->id_roles == $id ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach
                         </select>
                     </div>
@@ -68,14 +68,16 @@
                         <label for="cabang" class="form-label fw-bold">Cabang</label>
                         <select class="form-select form-select-sm" name="id_cabang" required>
                             <option selected disabled>Pilih Cabang</option>
-                            @foreach ($cabang as $cabangItem)
-                                <option value="{{ $cabangItem->id }}" {{ $user->Karyawan->id_cabang == $cabangItem->id ? 'selected' : '' }}>{{ $cabangItem->nama }}</option>
-                            @endforeach
+                            @foreach ($cabang as $id => $nama)
+                            <option value="{{ $id }}" {{ $user->Karyawan->id_cabang == $id ? 'selected' : '' }}>
+                                {{ $nama }}
+                            </option>
+                        @endforeach
                         </select>
                     </div>
 
                     <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
-                        <label for="alamat" class="form-label">Alamat</label>
+                        <label for="alamat" class="form-label fw-bold">Alamat</label>
                         <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1">{{ $user->Karyawan->alamat }}</textarea>
                     </div>
                 </div>
@@ -91,7 +93,7 @@
                 <div class="col-12 text-center mt-2 text-sm">
                     <label class="form-label fw-bold">Preview Foto</label>
                     <div class="preview-container d-flex justify-content-center">
-                        <img id="fotoPreview" src="{{ $user->Karyawan->foto ? asset('path/to/your/images/' . $user->Karyawan->foto) : '' }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto">
+                        <img id="fotoPreview" src="{{ $user->Karyawan->foto ? asset('uploads/karyawan/' . $user->Karyawan->foto) : '' }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto">
                     </div>
                 </div>
 

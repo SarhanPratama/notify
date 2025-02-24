@@ -8,9 +8,9 @@
         <div class="card-header text-white text-center" style="background-color: #6777ef">
             <h4 class="mb-0 font-weight-bold">Detail Karyawan</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body ">
             <!-- Foto Karyawan -->
-            <div class="d-flex flex-column align-items-center  mb-4">
+            <div class="d-flex flex-column align-items-center mb-4 ">
                 <div>
 
                     <img src="{{ asset('uploads/karyawan/' . $user->karyawan->foto) }}"
@@ -30,25 +30,25 @@
                         <table class="table table-hover text-sm">
                             <tbody>
                                 <tr>
-                                    <th>
+                                    <th class="text-nowrap">
                                         <i class="fas fa-birthday-cake me-2"></i>Usia
                                     </th>
                                     <td>{{ $user->karyawan->usia }} Tahun</td>
                                 </tr>
                                 <tr>
-                                    <th>
+                                    <th class="text-nowrap">
                                         <i class="fas fa-phone me-2"></i>Telepon
                                     </th>
                                     <td>{{ $user->karyawan->telepon }}</td>
                                 </tr>
                                 <tr>
-                                    <th>
+                                    <th class="text-nowrap">
                                         <i class="fas fa-building me-2"></i>Cabang
                                     </th>
                                     <td>{{ $user->karyawan->cabang->nama ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>
+                                    <th class="text-nowrap">
                                         <i class="fas fa-map-marker-alt me-2"></i>Alamat
                                     </th>
                                     <td>{{ $user->karyawan->alamat }}</td>

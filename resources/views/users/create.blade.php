@@ -58,10 +58,10 @@
                     <label for="jabatan" class="form-label fw-bold">Jabatan</label>
                     <select class="form-select form-select-sm" id="jabatan" name="jabatan" required>
                         <option selected disabled>Pilih Jabatan</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Keuangan">Keuangan</option>
-                        <option value="Gudang">Gudang</option>
-                        <option value="Karyawan">Karyawan</option>
+                        @foreach ($roles as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
+
                     </select>
                 </div>
 
@@ -69,8 +69,8 @@
                     <label for="cabang" class="form-label fw-bold">Cabang</label>
                     <select class="form-select form-select-sm" id="cabang" name="cabang" required>
                         <option selected disabled>Pilih Cabang</option>
-                        @foreach ($cabang as $cabang)
-                            <option value="{{ $cabang->id }}">{{ $cabang->nama }}</option>
+                        @foreach ($cabang as $id => $nama)
+                        <option value="{{ $id }}">{{ $nama }}</option>
                         @endforeach
                     </select>
                 </div>

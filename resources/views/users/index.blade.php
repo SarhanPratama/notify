@@ -25,11 +25,11 @@
                     <i class="fas fa-search fa-fw text-light"></i>
                 </a>
 
-                <ul class="dropdown-menu mb-4 px-2" style="width: 300px;">
+                <ul class="dropdown-menu mb-4 px-2" style="width: 300px; background-color: #6777ef">
                     <form action="{{ route('users.index')}}" method="get">
                         <div class="input-group">
                             <input type="text" name="search" class="form-control form-control-sm" value="{{ request('search') }}" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
-                            <button class="btn btn-outline-primary btn-sm" type="submit" id="button-addon2"><i class="fas fa-search fa-fw"></i></button>
+                            <button class="btn btn-outline-light btn-sm" type="submit" id="button-addon2"><i class="fas fa-search fa-fw"></i></button>
                         </div>
                     </form>
                 </ul>
@@ -44,9 +44,10 @@
             <thead class="thead-light">
             <tr>
                 <th>No</th>
-                <th>nama</th>
-                <th>email</th>
-                <th>Usia</th>
+                <th>Nama</th>
+                <th>Jabatan</th>
+                <th>cabang</th>
+                <th>Telepon</th>
                 {{-- <th>Alamat</th> --}}
                 <th class="text-center">Action</th>
             </tr>
@@ -57,9 +58,9 @@
                 <tr>
                     <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
                     <td>{{ $item->name}}</td>
-                    <td>{{ $item->email}}</td>
-                    <td>{{ $item->Karyawan->usia ?? '-' }}</td>
-
+                    <td>{{ $item->Karyawan->role->name ?? '-'}}</td>
+                    <td>{{ $item->Karyawan->cabang->nama ?? '-' }}</td>
+                    <td>{{ $item->Karyawan->telepon}}</td>
                     {{-- <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                         {{ Str::limit($item->alamat, 30, '...') }}
                     </td> --}}

@@ -29,6 +29,8 @@ class UsersController extends Controller
             });
         })->paginate($perPage);
 
+
+
         return view('users.index', compact('breadcrumbs', 'title', 'users', 'perPage'));
     }
 
@@ -41,11 +43,11 @@ class UsersController extends Controller
             ['label' => 'Form Karyawan', 'url' => null],
         ];
 
-        $cabang = Cabang::all();
-
+        $cabang = Cabang::pluck('nama', 'id');
+        $roles = Role::pluck('name', 'id');
 
         // dd($cabang);
-        return view('users.create', compact('cabang', 'breadcrumbs', 'title'));
+        return view('users.create', compact('cabang', 'breadcrumbs', 'title', 'roles'));
     }
 
     public function show($id)
@@ -75,9 +77,9 @@ class UsersController extends Controller
 
         $user = User::with('Karyawan')->findOrFail($id);
         // DD($users);
-        $cabang = Cabang::all();
+        $cabang = Cabang::pluck('nama', 'id');
 
-        $roles = Role::all();
+        $roles = Role::pluck('name', 'id');
 
         return view('users.edit', compact('title', 'breadcrumbs', 'user', 'cabang', 'roles'));
     }
