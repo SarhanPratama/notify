@@ -14,17 +14,19 @@ class PermissionController extends Controller
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel Permission', 'url' => null],
         ];
-        $perPage = $request->input('per_page', 10);
-        $search = $request->input('search');
+        // $perPage = $request->input('per_page', 10);
+        // $search = $request->input('search');
 
-        $permission = Permission::when($search, function ($query, $search) {
-            return $query->where(function ($query) use ($search) {
-                $query->where('name', 'LIKE', "%{$search}%");
-            });
-        })->paginate($perPage);
+        // $permission = Permission::when($search, function ($query, $search) {
+        //     return $query->where(function ($query) use ($search) {
+        //         $query->where('name', 'LIKE', "%{$search}%");
+        //     });
+        // })->paginate($perPage);
 
+        $permission = Permission::all();
+        // dd($permission);
 
-        return view('permission.index', compact('title', 'breadcrumbs', 'permission', 'perPage'));
+        return view('permission.index', compact('title', 'breadcrumbs', 'permission'));
     }
 
     public function store(Request $request) {

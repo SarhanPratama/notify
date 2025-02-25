@@ -8,7 +8,6 @@ use Spatie\Permission\Models\Role;
 class RoleController extends Controller
 {
     public function index(Request $request) {
-        $search = $request->input('search');
 
         $title = 'Tabel Role';
         $breadcrumbs = [
@@ -16,10 +15,17 @@ class RoleController extends Controller
             ['label' => 'Tabel Role', 'url' => null],
         ];
 
+        // $perPage = $request->input('per_page');
 
-        $role = Role::when($search, function ($query, $search) {
-            return $query->where('name', 'LIKE', "%{$search}");
-        })->paginate(10);
+        // $search = $request->input('search');
+
+
+
+        // $role = Role::when($search, function ($query, $search) {
+        //     return $query->where('name', 'LIKE', "%{$search}");
+        // })->paginate($perPage);
+
+        $role = Role::pluck('name', 'id');
 
         return view('role.index', compact('breadcrumbs', 'title', 'role'));
     }

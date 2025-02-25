@@ -1,10 +1,10 @@
 <div class="modal fade" id="permissionModal" tabindex="-1" aria-labelledby="permissionModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5 font-weight-bold" id="permissionModalLabel">Form Input Role</h1>
-          <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
-          {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
+        <div class="modal-header" style="background-color: #6777ef">
+          <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionModalLabel">Form Input permission</h1>
+          <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+          {{-- <button type="button" class="btn-close btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></button> --}}
         </div>
         <form action="{{ route('permission.store') }}" method="POST" enctype="multipart/form-data">
             @csrf

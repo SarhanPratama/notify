@@ -13,25 +13,24 @@ class UsersController extends Controller
     public function index(Request $request) {
 
         $title = 'Tabel Karyawan';
-
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel Karyawan', 'url' => null],
         ];
 
-        $search = $request->input('search');
-        $perPage = $request->input('per_page', 10);
+        // $search = $request->input('search');
+        // $perPage = $request->input('per_page', 10);
 
-        $users = User::with('karyawan')->when($search, function ($query, $search) {
-            return $query->where(function ($query) use ($search) {
-                $query->where('name', 'LIKE', "%{$search}%")
-                      ->orWhere('email', 'LIKE', "%{$search}%");
-            });
-        })->paginate($perPage);
+        // $users = User::with('karyawan')->when($search, function ($query, $search) {
+        //     return $query->where(function ($query) use ($search) {
+        //         $query->where('name', 'LIKE', "%{$search}%")
+        //               ->orWhere('email', 'LIKE', "%{$search}%");
+        //     });
+        // })->paginate($perPage);
 
+        $users = User::all();
 
-
-        return view('users.index', compact('breadcrumbs', 'title', 'users', 'perPage'));
+        return view('users.index', compact('breadcrumbs', 'title', 'users'));
     }
 
     public function create() {

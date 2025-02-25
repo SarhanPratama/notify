@@ -6,18 +6,35 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
+use function Laravel\Prompts\search;
+
 class AksesRoleController extends Controller
 {
-    public function index() {
-        $role = Role::with('permissions')->get();
-        $permissions = Permission::all();
+    public function index(Request $request) {
 
-        // dd($permissions);
         $title = 'Tabel Akses Role';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel Akses Role', 'url' => null],
         ];
+
+        $search = $request->input('search');
+
+        $perPage = $request->input('per_page', 10);
+
+        $role = Role::with('permissions')->when($search, function ($query, $search) {
+            return $query->where('name', 'LIKE', "%{$search}%")
+                ->orWhereHas('permissions', function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%{$search}%");
+                });
+        })->paginate($perPage);
+
+
+        // $role = Role::with('permissions')->get();
+
+        $permissions = Permission::pluck('name', 'id');
+
+        // dd($permissions);
 
         return view('akses-role.index', compact('role', 'permissions', 'title', 'breadcrumbs'));
     }

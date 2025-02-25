@@ -9,9 +9,9 @@
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->
       <div class="card">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            {{-- <h6 class="font-weight-bold text-primary text-sm">Tabel Cabang</h6> --}}
-            <form action="{{ route('permission.index') }}" method="GET" class="d-flex align-items-center">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+            <h6 class="font-weight-bold text-light text-sm">Permission</h6>
+            {{-- <form action="{{ route('permission.index') }}" method="GET" class="d-flex align-items-center">
                 <select name="per_page" id="per_page" class="form-select form-select-sm " onchange="this.form.submit()">
                     <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                     <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
@@ -21,36 +21,35 @@
             </form>
             <div class="dropup-center dropup">
                 <a class="" type="" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-search fa-fw"></i>
+                    <i class="fas fa-search fa-fw text-light"></i>
                 </a>
-                <ul class="dropdown-menu mb-4 px-2" style="width: 300px;">
+                <ul class="dropdown-menu mb-4 px-2" style="width: 300px; background-color: #6777ef">
                     <form action="{{ route('permission.index')}}" method="get">
                         <div class="input-group">
                             <input type="text" name="search" class="form-control form-control-sm" value="{{ request('search') }}" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
-                            <button class="btn btn-outline-primary btn-sm" type="submit" id="button-addon2"><i class="fas fa-search fa-fw"></i></button>
+                            <button class="btn btn-outline-light btn-sm" type="submit" id="button-addon2"><i class="fas fa-search fa-fw"></i></button>
                         </div>
                     </form>
                 </ul>
-            </div>
+            </div> --}}
 
-            <button type="button" class="btn btn-outline-primary btn-sm btn-lg" data-bs-toggle="modal" data-bs-target="#permissionModal">
+            <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-bs-toggle="modal" data-bs-target="#permissionModal">
                 Tambah
             </button>
         </div>
         <div class="table-responsive">
-        <table class="table table-striped text-sm text-nowrap">
+        <table class="table table-striped  table-hover table-flush text-sm text-nowrap" id="dataTableHover">
             <thead class="thead-light">
             <tr>
-                <th>No</th>
+                <th class="text-start">No</th>
                 <th>Name</th>
-                {{-- <th>Guard Name</th> --}}
                 <th class="text-center">Action</th>
             </tr>
             </thead>
             <tbody>
                 @foreach ($permission as $item)
                 <tr>
-                    <td>{{ ($permission->currentPage() - 1) * $permission->perPage() + $loop->iteration }}</td>
+                    <td class="text-start">{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}</td>
                     <td class="d-flex text-nowrap justify-content-center gap-2">
                         <div>
@@ -73,9 +72,9 @@
                 <div class="modal fade" id="permissionUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionUpdateModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update role</h1>
-                                <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                            <div class="modal-header" style="background-color: #6777ef">
+                                <h1 class="modal-title fs-6 font-weight-bold" id="permissionUpdateModalLabel">Form update permission</h1>
+                                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
@@ -102,9 +101,9 @@
                 <div class="modal fade" id="permissionDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionDestroyModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5 font-weight-bold" id="permissionDestroyModalLabel">Konfirmasi Hapus</h1>
-                                <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                            <div class="modal-header" style="background-color: #6777ef">
+                                <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionDestroyModalLabel">Konfirmasi Hapus</h1>
+                                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <div class="modal-body">
                                 <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->name }}</strong>?</p>
@@ -113,8 +112,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Hapus</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
                                 </div>
                             </form>
                         </div>
@@ -127,7 +126,7 @@
 
 
         <div class="card-footer d-flex justify-content-center">
-            {{ $permission->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
+            {{-- {{ $permission->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }} --}}
         </div>
     </div>
     </div>

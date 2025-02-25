@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-header" style="background-color: #6777ef">
           <h1 class="modal-title fs-6 text-light font-weight-bold" id="exampleModalLabel">Form input cabang</h1>
-          <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+          <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
           {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
         </div>
         <form action="{{ route('cabang.store') }}" method="POST" enctype="multipart/form-data">

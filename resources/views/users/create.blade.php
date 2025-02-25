@@ -76,7 +76,7 @@
                 </div>
 
                 <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
-                        <label for="exampleFormControlTextarea1" class="form-label">Alamat</label>
+                        <label for="exampleFormControlTextarea1" class="form-label fw-bold">Alamat</label>
                         <textarea class="form-control form-control-sm" name="alamat" id="exampleFormControlTextarea1" rows="1"></textarea>
                 </div>
             </div>

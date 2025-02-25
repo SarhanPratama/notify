@@ -10,16 +10,17 @@
       <!-- Simple Tables -->
       <div class="card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
-            {{-- <h6 class="font-weight-bold text-primary text-sm">Tabel Cabang</h6> --}}
-            <form action="{{ route('users.index') }}" method="GET" class="d-flex align-items-center">
-                {{-- <label for="per_page" class="me-2 text-sm">Tampilkan:</label> --}}
+            <h6 class="font-weight-bold text-light text-sm">Karyawan</h6>
+            {{-- <form action="{{ route('users.index') }}" method="GET" class="d-flex align-items-center">
+
                 <select name="per_page" id="per_page" class="form-select form-select-sm" onchange="this.form.submit()">
                     <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                     <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
                     <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
                 </select>
-            </form>
-            <div class="dropup-center dropup">
+            </form> --}}
+
+            {{-- <div class="dropup-center dropup">
 
                 <a class="" type="" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-search fa-fw text-light"></i>
@@ -33,17 +34,18 @@
                         </div>
                     </form>
                 </ul>
-            </div>
+            </div> --}}
 
             <a href="{{ route('users.create')}}" class="btn btn-outline-light btn-sm btn-lg">
                 Tambah
             </a>
         </div>
+
     <div class="table-responsive">
-        <table class="table table-striped text-sm text-nowrap">
+        <table class="table table-striped text-sm text-nowrap" id="dataTableHover">
             <thead class="thead-light">
             <tr>
-                <th>No</th>
+                <th class="text-start">No</th>
                 <th>Nama</th>
                 <th>Jabatan</th>
                 <th>cabang</th>
@@ -56,7 +58,7 @@
                 @foreach ($users as $item)
 
                 <tr>
-                    <td>{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
+                    <td class="text-start">{{ $loop->iteration }}</td>
                     <td>{{ $item->name}}</td>
                     <td>{{ $item->Karyawan->role->name ?? '-'}}</td>
                     <td>{{ $item->Karyawan->cabang->nama ?? '-' }}</td>
@@ -73,7 +75,7 @@
                         </div>
 
                         <div>
-                            <a href="{{ route('users.show', $item->id) }}"  class="btn btn-sm btn-outline-warning">
+                            <a href="{{ route('users.show', $item->id) }}"  class="btn btn-sm btn-outline-success">
                                 <i class="fa fa-eye" aria-hidden="true"></i>
                             </a>
                         </div>
@@ -124,7 +126,7 @@
         </div>
 
             <div class="card-footer d-flex justify-content-center">
-                {{ $users->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
+                {{-- {{ $users->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }} --}}
             </div>
 
     </div>

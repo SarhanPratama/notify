@@ -14,12 +14,14 @@ class CabangController extends Controller
         $search = $request->input('search');
         $perPage = $request->input('per_page');
 
-        $cabang = Cabang::when($search, function ($query, $search) {
-            return $query->where(function ($query) use ($search) {
-                $query->where('nama', 'LIKE', "%{$search}%")
-                      ->orWhere('alamat', 'LIKE', "%{$search}%");
-            });
-        })->paginate($perPage);
+        // $cabang = Cabang::when($search, function ($query, $search) {
+        //     return $query->where(function ($query) use ($search) {
+        //         $query->where('nama', 'LIKE', "%{$search}%")
+        //               ->orWhere('alamat', 'LIKE', "%{$search}%");
+        //     });
+        // })->paginate($perPage);
+
+        $cabang = Cabang::all();
 
         // dd($cabang);{}
 
