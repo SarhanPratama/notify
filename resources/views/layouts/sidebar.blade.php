@@ -108,7 +108,7 @@
           </div>
         </div>
       </li>
-    <li class="nav-item">
+    {{-- <li class="nav-item">
       <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage" aria-expanded="true"
         aria-controls="collapsePage">
         <i class="fas fa-fw fa-columns"></i>
@@ -123,13 +123,13 @@
           <a class="collapse-item" href="blank.html">Blank Page</a>
         </div>
       </div>
-    </li>
-    <li class="nav-item">
+    </li> --}}
+    {{-- <li class="nav-item">
       <a class="nav-link" href="charts.html">
         <i class="fas fa-fw fa-chart-area"></i>
         <span>Charts</span>
       </a>
-    </li>
+    </li> --}}
     <hr class="sidebar-divider">
 
   </ul>

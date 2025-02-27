@@ -95,30 +95,27 @@ class UsersController extends Controller
         'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    // Ambil data user dan relasi karyawan
-    $user = User::findOrFail($id);
-    $karyawan = $user->karyawan; // Pastikan relasi karyawan ada
 
-    // Update data user
+    $user = User::findOrFail($id);
+    $karyawan = $user->karyawan;
+
+
     $user->update([
         'name' => $request->name,
+        'updated_at' => now(),
     ]);
 
     $role = Role::findById($request->id_roles, 'web');
     $user->syncRoles([$role->name]);
-    // Cek jika ada unggahan foto baru
     if ($request->hasFile('foto')) {
-        // Hapus foto lama jika ada
+
         if ($karyawan->foto && file_exists(public_path('images/karyawan/' . $karyawan->foto))) {
             unlink(public_path('images/karyawan/' . $karyawan->foto));
         }
-
-        // Simpan foto baru
         $foto = $request->file('foto');
         $namaFoto = time() . '.' . $foto->extension();
         $foto->move(public_path('uploads/karyawan'), $namaFoto);
 
-        // Simpan nama file di database
         $karyawan->foto = $namaFoto;
     }
 

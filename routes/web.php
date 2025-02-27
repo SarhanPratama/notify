@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\DashboardController;
@@ -16,6 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('profil', function() {
+
+
+    return view('profile.index', compact('title', 'breadcrumbs'));
+});
+
 // Route::get('/admin', function () {
 //     // notify()->success('Welcome to Laravel Notify ⚡️');
 //     // smilify('success', 'You are successfully reconnected');
@@ -24,9 +31,13 @@ Route::get('/', function () {
 
 Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:administrator|karyawan');
+
+    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:administrator');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');
     Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');

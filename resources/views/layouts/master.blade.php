@@ -13,23 +13,12 @@
    <style>
  .notify {
     z-index: 9999 !important;
-    /* top: -5px;
-    left: 24%;
-    transform: translateX(-50%);
-    width: auto;
-    animation: slideIn 0.3s ease-out; */
 }
 
-/* @keyframes slideIn {
-    from {
-        top: -100px;
-        opacity: 0;
-    }
-    to {
-        top: 20px;
-        opacity: 1;
-    }
-} */
+.color {
+    background-color: #6777ef;
+}
+
    </style>
 </head>
 

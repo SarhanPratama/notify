@@ -13,7 +13,7 @@
             <div class="d-flex flex-column align-items-center mb-4 ">
                 <div>
 
-                    <img src="{{ asset('uploads/karyawan/' . $user->karyawan->foto) }}"
+                    <img src="{{ asset('uploads/karyawan/' . ($user->karyawan->foto ?? 'profile.jpg'))  }}"
                          class="rounded-circle img-thumbnail shadow-sm"
                          style="width: 150px; height: 150px; object-fit: cover;">
                 </div>
@@ -33,13 +33,13 @@
                                     <th class="text-nowrap">
                                         <i class="fas fa-birthday-cake me-2"></i>Usia
                                     </th>
-                                    <td>{{ $user->karyawan->usia }} Tahun</td>
+                                    <td>{{ $user->karyawan->usia ?? '-' }} Tahun</td>
                                 </tr>
                                 <tr>
                                     <th class="text-nowrap">
                                         <i class="fas fa-phone me-2"></i>Telepon
                                     </th>
-                                    <td>{{ $user->karyawan->telepon }}</td>
+                                    <td>{{ $user->karyawan->telepon ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-nowrap">
@@ -51,7 +51,7 @@
                                     <th class="text-nowrap">
                                         <i class="fas fa-map-marker-alt me-2"></i>Alamat
                                     </th>
-                                    <td>{{ $user->karyawan->alamat }}</td>
+                                    <td>{{ $user->karyawan->alamat ?? '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>

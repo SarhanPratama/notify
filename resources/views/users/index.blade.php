@@ -62,7 +62,7 @@
                     <td>{{ $item->name}}</td>
                     <td>{{ $item->Karyawan->role->name ?? '-'}}</td>
                     <td>{{ $item->Karyawan->cabang->nama ?? '-' }}</td>
-                    <td>{{ $item->Karyawan->telepon}}</td>
+                    <td>{{ $item->Karyawan->telepon ?? '-'}}</td>
                     {{-- <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                         {{ Str::limit($item->alamat, 30, '...') }}
                     </td> --}}
@@ -95,10 +95,10 @@
                     aria-labelledby="usersDestroyModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5 font-weight-bold"
+                            <div class="modal-header color">
+                                <h1 class="modal-title fs-5 text-light font-weight-bold"
                                     id="usersDestroyModalLabel">Konfirmasi Hapus</h1>
-                                <i class="bi bi-x-lg btn btn-outline-danger btn-sm"
+                                <i class="bi bi-x-lg btn btn-outline-light btn-sm"
                                     data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <div class="modal-body">
