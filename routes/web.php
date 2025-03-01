@@ -14,7 +14,7 @@ use App\Http\Controllers\PermissionController;
 Route::get('/', function () {
     // notify()->success('Welcome to Laravel Notify ⚡️');
     // smilify('success', 'You are successfully reconnected');
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('profil', function() {
@@ -35,9 +35,9 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
 
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:administrator|karyawan');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
 
-    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:administrator');
+    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');
     Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
@@ -57,6 +57,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
 
     Route::get('/produk', [ProductsController::class, 'index'])->name('produk.index');
+    Route::get('/produk/create', [ProductsController::class, 'create'])->name('produk.create');
+    Route::post('/produk', [ProductsController::class, 'store'])->name('produk.store');
 
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');

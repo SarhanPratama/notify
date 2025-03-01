@@ -11,7 +11,7 @@
                 <div class="card-body text-center p-4">
                     <div class="d-flex flex-column align-items-center mb-4 gap-2">
                         <div>
-                            <img src="{{ asset('uploads/karyawan/' . $user->Karyawan->foto) }}"
+                            <img src="{{ asset('uploads/karyawan/' . ($user->Karyawan->foto ?? 'foto.jpg')) }}"
                                  class="rounded-circle img-thumbnail"
                                  style="width: 150px; height: 150px; object-fit: cover;" alt="Foto Profil">
                         </div>
@@ -91,14 +91,14 @@
                                         <label for="usia" class="form-label">Usia</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text color"><i class="fa fa-calendar-o text-light fs-6" aria-hidden="true"></i></span>
-                                            <input type="number" class="form-control" id="usia" name="usia" value="{{ $user->Karyawan->usia ?? '-' }}" min="18" max="100">
+                                            <input type="number" class="form-control" id="usia" name="usia" value="{{ $user->Karyawan->usia ?? '' }}" min="18" max="100">
                                         </div>
                                     </div>
                                     <div class="col-md-3 col-sm-6 mb-3">
                                         <label for="phone" class="form-label">Nomor Telepon</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text color input-group-sm"><i class="fa fa-phone text-light fs-6" aria-hidden="true"></i></span>
-                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->Karyawan->telepon }}">
+                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->Karyawan->telepon ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
 
                                 <div class="mb-4">
                                     <label for="bio" class="form-label">Alamat</label>
-                                    <textarea class="form-control text-sm" id="bio" name="alamat" rows="3">{{ $user->Karyawan->alamat }}</textarea>
+                                    <textarea class="form-control text-sm" id="bio" name="alamat" rows="3">{{ $user->Karyawan->alamat ?? '' }}</textarea>
                                 </div>
                                 </div>
                                     <div class="d-flex justify-content-end">

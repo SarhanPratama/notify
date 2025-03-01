@@ -83,54 +83,70 @@ class UsersController extends Controller
         return view('users.edit', compact('title', 'breadcrumbs', 'user', 'cabang', 'roles'));
     }
     public function update(Request $request, $id)
-{
-    // Validasi input
-    $request->validate([
-        'name'      => 'required|string|max:255',
-        'usia'      => 'required|integer|min:18',
-        'telepon'   => 'required|string|max:15',
-        'id_roles'  => 'required|exists:roles,id',
-        'id_cabang' => 'required|exists:cabang,id',
-        'alamat'    => 'nullable|string',
-        'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+    {
+        // Validasi input
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'usia'      => 'required|integer|min:18',
+            'telepon'   => 'required|string|max:15',
+            'id_roles'  => 'required|exists:roles,id',
+            'id_cabang' => 'required|exists:cabang,id',
+            'alamat'    => 'nullable|string',
+            'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
+        // Cari user berdasarkan ID
+        $user = User::findOrFail($id);
 
-    $user = User::findOrFail($id);
-    $karyawan = $user->karyawan;
+        // Cek apakah karyawan ada
+        $karyawan = $user->karyawan;
 
+        // Update data user
+        $user->update([
+            'name' => $request->name,
+            'updated_at' => now(),
+        ]);
 
-    $user->update([
-        'name' => $request->name,
-        'updated_at' => now(),
-    ]);
+        // Update role
+        $role = Role::findById($request->id_roles, 'web');
+        $user->syncRoles([$role->name]);
 
-    $role = Role::findById($request->id_roles, 'web');
-    $user->syncRoles([$role->name]);
-    if ($request->hasFile('foto')) {
+        // Siapkan data karyawan
+        $karyawanData = [
+            'usia'      => $request->usia,
+            'telepon'   => $request->telepon,
+            'id_roles'  => $request->id_roles,
+            'id_cabang' => $request->id_cabang,
+            'alamat'    => $request->alamat,
+        ];
 
-        if ($karyawan->foto && file_exists(public_path('images/karyawan/' . $karyawan->foto))) {
-            unlink(public_path('images/karyawan/' . $karyawan->foto));
+        // Proses upload foto jika ada
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($karyawan && $karyawan->foto && file_exists(public_path('uploads/karyawan/' . $karyawan->foto))) {
+                unlink(public_path('uploads/karyawan/' . $karyawan->foto));
+            }
+
+            $foto = $request->file('foto');
+            $namaFoto = time() . '.' . $foto->extension();
+            $foto->move(public_path('uploads/karyawan'), $namaFoto);
+
+            $karyawanData['foto'] = $namaFoto;
         }
-        $foto = $request->file('foto');
-        $namaFoto = time() . '.' . $foto->extension();
-        $foto->move(public_path('uploads/karyawan'), $namaFoto);
 
-        $karyawan->foto = $namaFoto;
+        // Update atau buat data karyawan
+        if ($karyawan) {
+            // Update data karyawan yang sudah ada
+            $karyawan->update($karyawanData);
+        } else {
+            // Buat data karyawan baru dan kaitkan dengan user
+            $karyawanData['id_users'] = $user->id; // Tambahkan id_users ke data
+            Karyawan::create($karyawanData);
+        }
+
+        notify()->success('Data Karyawan berhasil diperbarui!');
+
+        return redirect()->route('users.index');
     }
-
-    // Update data karyawan
-    $karyawan->update([
-        'usia'      => $request->usia,
-        'telepon'   => $request->telepon,
-        'id_roles'  => $request->id_roles,
-        'id_cabang' => $request->id_cabang,
-        'alamat'    => $request->alamat,
-    ]);
-
-    notify()->success('Data Karyawan berhasil diperbarui!');
-
-    return redirect()->route('users.index');
-}
 
 }

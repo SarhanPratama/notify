@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Merek;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\KategoriSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,15 +17,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // $this->call([
+        //     SatuanSeeder::class,
+        // ]);
+
         $this->call([
-            RolePermissionSeeder::class,
-            UserSeeder::class,
+            MerekSeeder::class,
         ]);
+
+        // $this->call([
+        //     KategoriSeeder::class,
+        // ]);
+
+        // $this->call([
+        //     RolePermissionSeeder::class,
+        //     UserSeeder::class,
+        // ]);
 
         // User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
 
         // ]);
+        Merek::factory(10)->create();
     }
 }

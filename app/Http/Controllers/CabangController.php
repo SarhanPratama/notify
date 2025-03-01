@@ -44,8 +44,13 @@ class CabangController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
         $imageFile = $request->file('foto');
-        $imageName = time().'.'.$imageFile->extension();
-        $path = $imageFile->storeAs('public/images', $imageName);
+
+        if ($imageFile) {
+            $imageName = time().'.'.$imageFile->extension();
+            $path = $imageFile->storeAs('public/images/cabang', $imageName);
+        } else {
+            $imageName = 'default.jpg';
+        }
 
         Cabang::create([
             'nama' => $request->nama,
@@ -81,17 +86,17 @@ class CabangController extends Controller
 
         $cabang = Cabang::findOrFail($id);
 
-        // Cek apakah ada gambar baru yang diupload
+
         if ($request->hasFile('foto')) {
-            // Hapus gambar lama jika ada
+        
             if ($cabang->foto) {
-                Storage::delete('public/images/' . $cabang->foto);
+                Storage::delete('public/images/cabang' . $cabang->foto);
             }
 
             // Simpan gambar baru
             $imageFile = $request->file('foto');
             $imageName = time().'.'.$imageFile->extension();
-            $imageFile->storeAs('public/images', $imageName);
+            $imageFile->storeAs('public/images/cabang', $imageName);
         } else {
             // Jika tidak ada gambar baru, gunakan gambar lama
             $imageName = $cabang->foto;

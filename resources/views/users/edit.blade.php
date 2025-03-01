@@ -47,19 +47,19 @@
 
                     <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                         <label for="usia" class="form-label fw-bold">Usia</label>
-                        <input type="number" class="form-control form-control-sm" name="usia" value="{{ $user->Karyawan->usia}}" placeholder="Masukkan usia" required>
+                        <input type="number" class="form-control form-control-sm" name="usia" value="{{ $user->Karyawan->usia ?? ''}}" placeholder="Masukkan usia" required>
                     </div>
 
                     <div class="col-lg-4 col-md-6 col-sm-6 col-6 ">
                         <label for="telepon" class="form-label fw-bold">Telepon</label>
-                        <input type="text" class="form-control form-control-sm" name="telepon" value="{{ $user->Karyawan->telepon }}" placeholder="Masukkan telepon" required>
+                        <input type="text" class="form-control form-control-sm" name="telepon" value="{{ $user->Karyawan->telepon ?? '' }}" placeholder="Masukkan telepon" required>
                     </div>
 
                     <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                         <label for="jabatan" class="form-label fw-bold">Jabatan</label>
                         <select class="form-select form-select-sm" name="id_roles" required>
                             @foreach ($roles as $id => $name)
-                            <option value="{{ $id }}" {{ $user->Karyawan->id_roles == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            <option value="{{ $id }}" {{ $user->Karyawan->id_roles ?? '' == $id ? 'selected' : '' }}>{{ $name }}</option>
                         @endforeach
                         </select>
                     </div>
@@ -69,7 +69,7 @@
                         <select class="form-select form-select-sm" name="id_cabang" required>
                             <option selected disabled>Pilih Cabang</option>
                             @foreach ($cabang as $id => $nama)
-                            <option value="{{ $id }}" {{ $user->Karyawan->id_cabang == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ $user->Karyawan?->id_cabang == $id ? 'selected' : '' }}>
                                 {{ $nama }}
                             </option>
                         @endforeach
@@ -78,7 +78,7 @@
 
                     <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
                         <label for="alamat" class="form-label fw-bold">Alamat</label>
-                        <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1">{{ $user->Karyawan->alamat }}</textarea>
+                        <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1">{{ $user->Karyawan->alamat ?? '' }}</textarea>
                     </div>
                 </div>
 
@@ -93,7 +93,9 @@
                 <div class="col-12 text-center mt-2 text-sm">
                     <label class="form-label fw-bold">Preview Foto</label>
                     <div class="preview-container d-flex justify-content-center">
-                        <img id="fotoPreview" src="{{ $user->Karyawan->foto ? asset('uploads/karyawan/' . $user->Karyawan->foto) : '' }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto">
+                        {{-- <img id="fotoPreview" src="{{ $user->Karyawan->foto ? asset('uploads/karyawan/' . ($user->Karyawan->foto ?? 'foto.jpg')) : '' }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto"> --}}
+                        <img id="fotoPreview" src="{{ optional($user->karyawan)->foto ? asset('uploads/karyawan/' . ($user->karyawan->foto ?? 'foto.jpg')) : asset('uploads/karyawan/foto.jpg') }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto">
+
                     </div>
                 </div>
 
