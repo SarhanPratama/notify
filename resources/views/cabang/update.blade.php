@@ -9,7 +9,7 @@
     <div class="col-lg-12">
       <!-- Form Basic -->
       <div class="card mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-warning">
             <a href="{{ route('cabang.index')}}"  class="btn btn-sm btn-outline-light">
                 <i class="fa fa-arrow-left" aria-hidden="true"></i>
             </a>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-outline-primary float-end btn-sm">Save</button>
+            <button type="submit" class="btn btn-outline-warning float-end btn-sm">Update</button>
           </form>
         </div>
       </div>

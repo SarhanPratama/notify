@@ -9,7 +9,7 @@
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->
       <div class="card">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
             <h6 class="font-weight-bold text-light text-sm">Akses Role</h6>
             {{-- <form action="{{ route('cabang.index') }}" method="GET" class="d-flex align-items-center">
                 <select name="per_page" id="per_page" class="form-select form-select-sm " onchange="this.form.submit()">
@@ -48,11 +48,11 @@
                 @foreach ($role as $key => $role)
                 <tr>
                     <td class="text-start">{{ $key + 1 }}</td>
-                    <td>{{ $role->name }}</td>
+                    <td>{{ ucwords($role->name) }}</td>
                     <td>
                         @if($role->permissions->count() > 0)
                             @foreach ($role->permissions as $perm)
-                                <span class="badge bg-success">{{ $perm->name }}</span>
+                                <span class="badge bg-success">{{ ucwords($perm->name) }}</span>
                             @endforeach
                         @else
                             <span class="badge bg-secondary">No Permissions</span>
@@ -70,8 +70,8 @@
                 <div class="modal fade" id="editRoleModal{{ $role->id }}" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true" >
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header text-white" style="background-color: #6777ef" >
-                                <h6 class="modal-title font-weight-bold">Tambah permissions untuk role: <strong class="text-decoration-underline">{{ $role->name }}</strong></h6>
+                            <div class="modal-header bg-warning">
+                                <h6 class="modal-title fs-6 font-weight-bold text-light">Tambah permissions untuk role: <strong class="text-decoration-underline">{{ $role->name }}</strong></h6>
                                 <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <form action="{{ route('akses-role.update', $role->id) }}" method="POST">
@@ -100,7 +100,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">Update</button>
                                 </div>
                             </form>
                         </div>

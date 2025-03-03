@@ -50,7 +50,7 @@
                 @foreach ($permission as $item)
                 <tr>
                     <td class="text-start">{{ $loop->iteration }}</td>
-                    <td>{{ $item->name }}</td>
+                    <td>{{ ucwords($item->name) }}</td>
                     <td class="d-flex text-nowrap justify-content-center gap-2">
                         <div>
                             <button class="btn btn-sm btn-outline-warning"
@@ -72,8 +72,8 @@
                 <div class="modal fade" id="permissionUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionUpdateModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header" style="background-color: #6777ef">
-                                <h1 class="modal-title fs-6 font-weight-bold" id="permissionUpdateModalLabel">Form update permission</h1>
+                            <div class="modal-header bg-warning">
+                                <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionUpdateModalLabel">Form Update Permission</h1>
                                 <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                                    <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
                                 </div>
                             </form>
                         </div>
@@ -101,7 +101,7 @@
                 <div class="modal fade" id="permissionDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionDestroyModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header" style="background-color: #6777ef">
+                            <div class="modal-header bg-danger">
                                 <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionDestroyModalLabel">Konfirmasi Hapus</h1>
                                 <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                             </div>
@@ -112,8 +112,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                 </div>
                             </form>
                         </div>

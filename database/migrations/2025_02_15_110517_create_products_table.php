@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('status');
             $table->text('deskripsi');
             $table->foreignId('id_merek')->constrained('merek')->onDelete('cascade');
+            $table->foreignId('id_kategori')->constrained('kategori')->onDelete('cascade');
             $table->string('foto');
             $table->timestamps();
         });

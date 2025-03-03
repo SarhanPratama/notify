@@ -31,17 +31,16 @@
                     </thead>
                     <tbody>
                         @foreach ($cabang as $item)
-                        <tr>
+                        <tr class="text-start">
                             <td class="text-start">{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $item->nama}}</td>
-                            <td>{{ $item->telepon}}</td>
-                            <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
+                            <td> {{ ucwords($item->nama) }}</td>
+                            <td>{{ $item->telepon }}</td>
+                            <td class=""  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                                 {{ Str::limit($item->alamat, 30, '...') }}
                             </td>
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
-                                    <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning me-1">
+                                    <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning">
                                         <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -60,7 +59,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update role</h1>
+                                        <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update Cabang</h1>
                                         <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                                     </div>
                                     <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
@@ -88,7 +87,7 @@
                         <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header" style="background-color: #6777ef">
+                                    <div class="modal-header bg-danger">
                                         <h1 class="modal-title fs-5 font-weight-bold text-light" id="cabangDestroyModalLabel">Konfirmasi Hapus</h1>
                                         <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                                     </div>
@@ -99,8 +98,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-outline-primary btn-sm">Delete</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                         </div>
                                     </form>
                                 </div>

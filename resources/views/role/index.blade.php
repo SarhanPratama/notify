@@ -9,7 +9,7 @@
             <div class="col-lg-12 mb-4">
                 <!-- Simple Tables -->
                 <div class="card">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
                         <h6 class="font-weight-bold text-light text-sm">Role</h6>
 
                         {{-- <form action="{{ route('role.index') }}" method="GET" class="d-flex align-items-center">
@@ -58,7 +58,7 @@
                                 @foreach ($role as $id => $name)
                                     <tr>
                                         <td class="text-start">{{ $loop->iteration }}</td>
-                                        <td>{{ $name }}</td>
+                                        <td>{{ ucwords($name) }}</td>
                                         {{-- <td>{{ $guard_name}}</td> --}}
 
                                         <td class="d-flex text-nowrap justify-content-center  gap-2">
@@ -75,18 +75,16 @@
                                                     data-bs-target="#roleDestroyModal{{ $id }}">
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                                 </button>
-
                                             </div>
-
                                         </td>
                                     </tr>
                                     <div class="modal fade" id="roleUpdateModal{{ $id }}" tabindex="-1"
                                         aria-labelledby="roleUpdateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header" style="background-color: #6777ef">
-                                                    <h1 class="modal-title fs-5 text-light font-weight-bold" id="roleUpdateModalLabel">
-                                                        Form Update role</h1>
+                                                <div class="modal-header bg-warning">
+                                                    <h1 class="modal-title fs-6 text-light font-weight-bold" id="roleUpdateModalLabel">
+                                                        Form Update Role</h1>
                                                     <i class="bi bi-x-lg btn btn-outline-light btn-sm"
                                                         data-bs-dismiss="modal" aria-label="Close"></i>
 
@@ -112,7 +110,7 @@
                                                         <button type="button" class="btn btn-outline-danger btn-sm"
                                                             data-bs-dismiss="modal">Close</button>
                                                         <button type="submit"
-                                                            class="btn btn-outline-primary btn-sm">Update</button>
+                                                            class="btn btn-outline-warning btn-sm">Update</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -123,8 +121,8 @@
                                         aria-labelledby="roleDestroyModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header" style="background-color: #6777ef">
-                                                    <h1 class="modal-title fs-5 text-light font-weight-bold"
+                                                <div class="modal-header bg-danger">
+                                                    <h1 class="modal-title fs-6 text-light font-weight-bold"
                                                         id="roleDestroyModalLabel">Konfirmasi Hapus</h1>
                                                     <i class="bi bi-x-lg btn btn-outline-light btn-sm"
                                                         data-bs-dismiss="modal" aria-label="Close"></i>
@@ -138,10 +136,10 @@
                                                     @method('DELETE')
 
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        <button type="button" class="btn btn-outline-primary btn-sm"
                                                             data-bs-dismiss="modal">Close</button>
                                                         <button type="submit"
-                                                            class="btn btn-outline-primary btn-sm">Delete</button>
+                                                            class="btn btn-outline-danger btn-sm">Delete</button>
                                                     </div>
                                                 </form>
                                             </div>

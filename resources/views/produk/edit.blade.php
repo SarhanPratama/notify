@@ -25,32 +25,33 @@
     <div class="col-lg-12">
       <!-- Form Tambah Produk -->
       <div class="card shadow-lg">
-        <div class="card-header text-white d-flex flex-row align-items-center justify-content-between color">
+        <div class="card-header text-white d-flex flex-row align-items-center justify-content-between bg-warning">
             <a href="{{ route('produk.index')}}" class="btn btn-sm btn-outline-light">
                 <i class="fa fa-arrow-left" aria-hidden="true"></i>
             </a>
         </div>
 
         <div class="card-body">
-          <form action="{{ route('produk.store') }}" method="POST" enctype="multipart/form-data">
+          <form action="{{ route('produk.update', $produk->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             <div class="row g-3 text-sm">
                 <!-- Kode Produk -->
                 <div class="col-lg-4 col-md-6">
                     <label for="kode" class="form-label fw-bold">Kode Produk</label>
-                    <input type="text" class="form-control form-control-sm" id="kode" name="kode" placeholder="Masukkan kode produk" required>
+                    <input type="text" class="form-control form-control-sm" id="kode" name="kode" value="{{ $produk->kode }}" placeholder="Masukkan kode produk" required>
                 </div>
 
                 <!-- Nama Produk -->
                 <div class="col-lg-4 col-md-6">
                     <label for="nama" class="form-label fw-bold">Nama Produk</label>
-                    <input type="text" class="form-control form-control-sm" id="nama" name="nama" placeholder="Masukkan nama produk" required>
+                    <input type="text" class="form-control form-control-sm" id="nama" name="nama" value="{{ $produk->nama  }}" placeholder="Masukkan nama produk" required>
                 </div>
 
                 <!-- Stok -->
                 <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                     <label for="stok" class="form-label fw-bold">Stok</label>
-                    <input type="number" class="form-control form-control-sm" id="stok" name="stok" placeholder="Masukkan jumlah stok" required>
+                    <input type="number" class="form-control form-control-sm" id="stok" name="stok" value="{{ $produk->stok }}" placeholder="Masukkan jumlah stok" required>
                 </div>
 
                 <!-- Harga Modal -->
@@ -58,7 +59,7 @@
                     <label for="harga_modal" class="form-label fw-bold">Harga Modal</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Rp</span>
-                        <input type="number" class="form-control form-control-sm" id="harga_modal" name="harga_modal" placeholder="Masukkan harga modal" required>
+                        <input type="number" class="form-control form-control-sm" id="harga_modal" name="harga_modal" value="{{ $produk->harga_modal }}"   placeholder="Masukkan harga modal" required>
                     </div>
                 </div>
 
@@ -67,7 +68,7 @@
                     <label for="harga_jual" class="form-label fw-bold">Harga Jual</label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Rp</span>
-                        <input type="number" class="form-control form-control-sm" id="harga_jual" name="harga_jual" placeholder="Masukkan harga jual" required>
+                        <input type="number" class="form-control form-control-sm" id="harga_jual" name="harga_jual" value="{{ $produk->harga_jual }}" placeholder="Masukkan harga jual" required>
                     </div>
                 </div>
 
@@ -85,9 +86,9 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                     <label for="id_kategori" class="form-label fw-bold">Kategori</label>
                     <select class="form-select form-select-sm" id="id_kategori" name="id_kategori" required>
-                        <option selected disabled>Pilih Kategori</option>
-                        @foreach ($kategori as $id => $name)
-                        <option value="{{ $id }}">{{ $name }}</option>
+                        <option disabled>Pilih Kategori</option>
+                        @foreach ($kategori as $id => $nama)
+                        <option value="{{ $id }}"  {{ ($produk->id_kategori ?? '') == $id ? 'selected' : '' }}>{{ $nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -96,9 +97,9 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                     <label for="id_merek" class="form-label fw-bold">Merek</label>
                     <select class="form-select form-select-sm" id="id_merek" name="id_merek" required>
-                        <option selected disabled>Pilih Merek</option>
+                        <option disabled>Pilih Merek</option>
                         @foreach ($merek as $id => $nama)
-                        <option value="{{ $id }}">{{ $nama }}</option>
+                        <option value="{{ $id }}" {{ ($produk->id_merek ?? '') == $id ? 'selected' : '' }}>{{ $nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -106,7 +107,7 @@
                 <!-- Deskripsi -->
                 <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
                     <label for="deskripsi" class="form-label fw-bold">Deskripsi</label>
-                    <textarea class="form-control form-control-sm" name="deskripsi" id="deskripsi" rows="2" placeholder="Masukkan deskripsi produk"></textarea>
+                    <textarea class="form-control form-control-sm" name="deskripsi" id="deskripsi" rows="2" placeholder="Masukkan deskripsi produk">{{ $produk->deskripsi  }}</textarea>
                 </div>
             </div>
 
@@ -130,8 +131,7 @@
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end mt-4">
-                <button type="reset" class="btn btn-outline-secondary btn-sm me-2">Reset</button>
-                <button type="submit" class="btn btn-outline-primary btn-sm">Simpan</button>
+                <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
             </div>
           </form>
         </div>

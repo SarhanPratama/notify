@@ -1,9 +1,9 @@
 <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5 font-weight-bold" id="roleModalLabel">Form Input Role</h1>
-          <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+        <div class="modal-header color">
+          <h1 class="modal-title fs-6 font-weight-bold text-white" id="roleModalLabel">Form Input Role</h1>
+          <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
           {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
         </div>
         <form action="{{ route('role.store') }}" method="POST" enctype="multipart/form-data">

@@ -60,7 +60,9 @@
   <script src="{{ url('vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="{{ url('vendor/jquery-easing/jquery.easing.min.js')}}"></script>
   <script src="{{ url('assets/js/ruang-admin.min.js')}}"></script>
-  <script src="{{ url('vendor/chart.js/Chart.min.js')}}"></script>
+  {{-- <script src="{{ url('vendor/chart.js/Chart.min.js')}}"></script> --}}
+
+
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

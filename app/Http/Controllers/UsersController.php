@@ -28,7 +28,8 @@ class UsersController extends Controller
         //     });
         // })->paginate($perPage);
 
-        $users = User::all();
+        $users = User::with(['cabang', 'roles'])->get();
+        // $users = Karyawan::with(['user', 'cabang', 'role'])->get();
 
         return view('users.index', compact('breadcrumbs', 'title', 'users'));
     }
@@ -52,14 +53,14 @@ class UsersController extends Controller
     public function show($id)
     {
 
-        $title = 'Form Karyawan';
+        $title = 'Detail Karyawan';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel', 'url' => route('users.index')],
             ['label' => 'Detail Karyawan', 'url' => null],
         ];
 
-        $user = User::with('Karyawan', 'roles')->findOrFail($id);
+        $user = User::findOrFail($id);
 
         return view('users.show', compact('user', 'breadcrumbs', 'title'));
     }
@@ -74,7 +75,7 @@ class UsersController extends Controller
             ['label' => 'Form Karyawan', 'url' => null],
         ];
 
-        $user = User::with('Karyawan')->findOrFail($id);
+        $user = User::findOrFail($id);
         // DD($users);
         $cabang = Cabang::pluck('nama', 'id');
 
@@ -82,12 +83,13 @@ class UsersController extends Controller
 
         return view('users.edit', compact('title', 'breadcrumbs', 'user', 'cabang', 'roles'));
     }
+
     public function update(Request $request, $id)
     {
-        // Validasi input
+
         $request->validate([
             'name'      => 'required|string|max:255',
-            'usia'      => 'required|integer|min:18',
+            'tgl_lahir' => 'required|date',
             'telepon'   => 'required|string|max:15',
             'id_roles'  => 'required|exists:roles,id',
             'id_cabang' => 'required|exists:cabang,id',
@@ -98,55 +100,42 @@ class UsersController extends Controller
         // Cari user berdasarkan ID
         $user = User::findOrFail($id);
 
-        // Cek apakah karyawan ada
-        $karyawan = $user->karyawan;
-
         // Update data user
         $user->update([
-            'name' => $request->name,
+            'name'      => $request->name,
+            'tgl_lahir' => $request->tgl_lahir,
+            'telepon'   => $request->telepon,
+            // 'id_roles'  => $request->id_roles,
+            'id_cabang' => $request->id_cabang,
+            'alamat'    => $request->alamat,
             'updated_at' => now(),
         ]);
 
         // Update role
         $role = Role::findById($request->id_roles, 'web');
-        $user->syncRoles([$role->name]);
-
-        // Siapkan data karyawan
-        $karyawanData = [
-            'usia'      => $request->usia,
-            'telepon'   => $request->telepon,
-            'id_roles'  => $request->id_roles,
-            'id_cabang' => $request->id_cabang,
-            'alamat'    => $request->alamat,
-        ];
+        $user->syncRoles([$role->name]); // Gunakan syncRoles untuk menyinkronkan role
 
         // Proses upload foto jika ada
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($karyawan && $karyawan->foto && file_exists(public_path('uploads/karyawan/' . $karyawan->foto))) {
-                unlink(public_path('uploads/karyawan/' . $karyawan->foto));
+            if ($user->foto && file_exists(public_path('uploads/users/' . $user->foto))) {
+                unlink(public_path('uploads/users/' . $user->foto));
             }
 
+            // Upload foto baru
             $foto = $request->file('foto');
             $namaFoto = time() . '.' . $foto->extension();
-            $foto->move(public_path('uploads/karyawan'), $namaFoto);
+            $foto->move(public_path('uploads/users'), $namaFoto);
 
-            $karyawanData['foto'] = $namaFoto;
+            // Update foto pada user
+            $user->foto = $namaFoto;
+            $user->save();
         }
 
-        // Update atau buat data karyawan
-        if ($karyawan) {
-            // Update data karyawan yang sudah ada
-            $karyawan->update($karyawanData);
-        } else {
-            // Buat data karyawan baru dan kaitkan dengan user
-            $karyawanData['id_users'] = $user->id; // Tambahkan id_users ke data
-            Karyawan::create($karyawanData);
-        }
-
-        notify()->success('Data Karyawan berhasil diperbarui!');
+        notify()->success('Data User berhasil diperbarui!');
 
         return redirect()->route('users.index');
     }
+
 
 }

@@ -1,7 +1,13 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
+@include('layouts.breadcrumbs')
+
+{{-- @if (session('notify'))
+    <script>
+        notify().{{ session('notify')['type'] }}('{{ session('notify')['message'] }}');
+    </script>
+@endif --}}
 
 <div class="container">
     <div class="row text-sm">
@@ -11,19 +17,27 @@
                 <div class="card-body text-center p-4">
                     <div class="d-flex flex-column align-items-center mb-4 gap-2">
                         <div>
-                            <img src="{{ asset('uploads/karyawan/' . ($user->Karyawan->foto ?? 'foto.jpg')) }}"
+                            <img src="{{ $user->karyawan && $user->foto ? asset('uploads/karyawan/' . $user->foto) : asset('assets/img/boy.png') }}"
                                  class="rounded-circle img-thumbnail"
                                  style="width: 150px; height: 150px; object-fit: cover;" alt="Foto Profil">
                         </div>
 
                         <div class="position-absolute top-0 end-0 p-2 rounded-circle">
-                            <label for="foto" style="cursor: pointer;">
-                                <i class="bi bi-camera mt-2 fs-4"></i>
-                                <input type="file" id="foto" name="foto" form="profile-form" class="d-none form-control">
-                            </label>
+                            <form id="photo-form" action="{{ route('profile.foto', $user->id)}}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('POST')
+
+                                <!-- Ikon Kamera untuk Memicu Input File -->
+                                <label for="fotoInput" style="cursor: pointer;">
+                                    <i class="bi bi-camera mt-2 fs-4"></i>
+                                </label>
+
+                                <!-- Input File (Dihilangkan dari tampilan) -->
+                                <input type="file" name="foto" class="d-none" id="fotoInput" onchange="submitForm()">
+                            </form>
                         </div>
                     </div>
-                    <h4 class="fw-bold mb-1">{{ $user->name }}</h4>
+                    <h4 class="fw-bold mb-1">{{ $user->name }} ({{ \Carbon\Carbon::parse($user->tgl_lahir)->age }})</h4>
                     <p class="text-muted mb-2">{{ $user->email }}</p>
                     <!-- Added Role and Branch information -->
                     <p class="text-muted mb-3"><i class="bi bi-clock me-1"></i>Terakhir diperbarui: {{ \Carbon\Carbon::parse($user->updated_at)->format('d M Y, H:i') }}</p>
@@ -55,7 +69,7 @@
                     <ul class="nav nav-tabs card-header-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active fw-bold btn-outline-primary" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true" >
-                                <i class="fa fa-user fs-6 me-2" aria-hidden="true"></i>Informasi Profil
+                                <i class="fa fa-user fs-6 me-2" aria-hidden="true"></i>Informasi Profile
                             </button>
                         </li>
                         {{-- <li class="nav-item" role="presentation">
@@ -87,18 +101,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3 col-sm-6 mb-3">
-                                        <label for="usia" class="form-label">Usia</label>
+                                    <div class="col-md-3 col-sm-6 col-12 mb-3">
+                                        <label for="tgl_lahir" class="form-label">Tanggal Lahir</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text color"><i class="fa fa-calendar-o text-light fs-6" aria-hidden="true"></i></span>
-                                            <input type="number" class="form-control" id="usia" name="usia" value="{{ $user->Karyawan->usia ?? '' }}" min="18" max="100">
+                                            <input type="date" class="form-control" name="tgl_lahir" value="{{ $user->tgl_lahir ?? '' }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-6 mb-3">
+                                    <div class="col-md-3 col-sm-6 col-12 mb-3">
                                         <label for="phone" class="form-label">Nomor Telepon</label>
                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text color input-group-sm"><i class="fa fa-phone text-light fs-6" aria-hidden="true"></i></span>
-                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->Karyawan->telepon ?? '' }}">
+                                            <input type="text" class="form-control" id="phone" name="telepon" value="{{ $user->telepon ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -109,7 +123,7 @@
                                     <label for="role" class="form-label">Role</label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text color input-group-sm"><i class="fa fa-shield text-light fs-6" aria-hidden="true"></i></span>
-                                        <input type="text" class="form-control" id="role" name="role" value="{{ $user->Karyawan->role->name ?? '-' }}" readonly>
+                                        <input type="text" class="form-control" id="role" name="role" value="{{ $user->role->name ?? '-' }}" readonly>
                                     </div>
                                     <div class="form-text">Role hanya dapat diubah oleh administrator</div>
                                 </div>
@@ -119,7 +133,7 @@
                                     <label for="cabang" class="form-label">Cabang</label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text color input-group-sm"><i class="fa fa-building text-light fs-6" aria-hidden="true"></i></span>
-                                        <input type="text" class="form-control" id="cabang" name="cabang" value="{{ $user->Karyawan->cabang->nama ?? '-' }}" readonly>
+                                        <input type="text" class="form-control" id="cabang" name="cabang" value="{{ $user->cabang->nama ?? '-' }}" readonly>
                                     </div>
                                     <div class="form-text">Cabang hanya dapat diubah oleh administrator</div>
                                 </div>
@@ -128,19 +142,26 @@
 
                                 <div class="mb-4">
                                     <label for="bio" class="form-label">Alamat</label>
-                                    <textarea class="form-control text-sm" id="bio" name="alamat" rows="3">{{ $user->Karyawan->alamat ?? '' }}</textarea>
+                                    <textarea class="form-control text-sm" id="bio" name="alamat" rows="3">{{ $user->alamat ?? '' }}</textarea>
                                 </div>
                                 </div>
-                                    <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-between">
+                                    <div>
                                         <button type="submit" class="btn btn-outline-primary btn-sm">
                                             <i class="bi bi-save me-2"></i>Update
                                         </button>
                                     </div>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                            <i class="bi bi-trash me-2"></i>Hapus Akun
+                                        </button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
 
                         <!-- Pengaturan Tab -->
-                        <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                        {{-- <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                             <form action="#" method="POST">
                                 <div class="mb-3">
                                     <label class="form-label d-block">Notifikasi Email</label>
@@ -180,7 +201,7 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -234,14 +255,39 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-outline-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel">Hapus Akun</h5>
+                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+            </div>
+            <form action="{{ route('profile.destroy', $user->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.</p>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Masukkan Password Anda</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus Akun</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- JS Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -267,16 +313,21 @@
         });
     });
 
-    // Preview foto profil sebelum upload
-    document.getElementById('foto').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector('.img-thumbnail').src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let cameraIcon = document.querySelector("label[for='fotoInput']");
+        let fileInput = document.getElementById("fotoInput");
+
     });
+
+    function submitForm() {
+        document.getElementById('photo-form').submit();
+    }
+    // document.getElementById('submit-btn').addEventListener('click', function() {
+    //     // Trigger both form submissions
+    //     document.getElementById('photo-form').submit();  // Submit the photo form
+    //     document.getElementById('profile-form').submit();  // Submit the profile form
+    // });
+
 </script>
 @endsection

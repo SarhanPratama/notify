@@ -39,7 +39,7 @@ class CabangController extends Controller
         // dd($request);
         $request->validate([
             'nama' => 'required',
-            'telepon' => 'required',
+            'telepon' => 'required|string|max:15',
             'alamat' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
@@ -63,11 +63,11 @@ class CabangController extends Controller
     }
 
     public function edit($id) {
-        $title = 'Form update karyawan';
+        $title = 'Form Update Cabang';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel', 'url' => route('cabang.index')],
-            ['label' => 'Form update karyawan', 'url' => null],
+            ['label' => 'Form Update Cabang', 'url' => null],
         ];
 
         $cabang = Cabang::where('id', $id)->first();
@@ -88,7 +88,7 @@ class CabangController extends Controller
 
 
         if ($request->hasFile('foto')) {
-        
+
             if ($cabang->foto) {
                 Storage::delete('public/images/cabang' . $cabang->foto);
             }

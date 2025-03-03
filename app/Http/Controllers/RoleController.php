@@ -59,8 +59,8 @@ class RoleController extends Controller
     try {
         $role = Role::findOrFail($id);
         $role->delete();
-
-        return redirect()->back()->with('success', 'Role berhasil dihapus');
+        notify()->success('Berhasil menghapus data');
+        return redirect()->back();
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Gagal menghapus role');
     }

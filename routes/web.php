@@ -8,8 +8,10 @@ use App\Http\Controllers\CabangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\AksesRoleController;
+use App\Http\Controllers\bahanBakuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
+use App\Models\bahanBaku;
 
 Route::get('/', function () {
     // notify()->success('Welcome to Laravel Notify ⚡️');
@@ -18,8 +20,6 @@ Route::get('/', function () {
 });
 
 Route::get('profil', function() {
-
-
     return view('profile.index', compact('title', 'breadcrumbs'));
 });
 
@@ -33,6 +33,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/foto/{id}', [ProfileController::class, 'updateFoto'])->name('profile.foto');
+    Route::delete('/profile/{id}', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
@@ -55,10 +57,19 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route::post('akses-role', [AksesRoleController::class, 'update'])->name('akses-role.update');
     // Route::get('akses-role/{id}/edit', [AksesRoleController::class, 'edit'])->name('akses-role.edit');
 
+    Route::get('bahan-baku', [bahanBakuController::class, 'index'])->name('bahan-baku.index');
+    Route::post('bahan-baku', [bahanBakuController::class, 'store'])->name('bahan-baku.store');
+    Route::get('bahan-baku/{id}/edit', [bahanBakuController::class, 'edit'])->name('bahan-baku.edit');
+    Route::put('bahan-baku/{id}', [bahanBakuController::class, 'update'])->name('bahan-baku.update');
+    Route::delete('bahan-baku/{id}', [bahanBakuController::class, 'destroy'])->name('bahan-baku.destroy');
 
     Route::get('/produk', [ProductsController::class, 'index'])->name('produk.index');
     Route::get('/produk/create', [ProductsController::class, 'create'])->name('produk.create');
     Route::post('/produk', [ProductsController::class, 'store'])->name('produk.store');
+    Route::get('/produk/{id}', [ProductsController::class, 'show'])->name('produk.show');
+    Route::get('/produk/{id}/edit', [ProductsController::class, 'edit'])->name('produk.edit');
+    Route::put('/produk/{id}', [ProductsController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
 
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');

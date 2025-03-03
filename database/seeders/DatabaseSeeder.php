@@ -21,18 +21,21 @@ class DatabaseSeeder extends Seeder
         //     SatuanSeeder::class,
         // ]);
 
-        $this->call([
-            MerekSeeder::class,
-        ]);
+        // $this->call([
+        //     MerekSeeder::class,
+        // ]);
 
         // $this->call([
         //     KategoriSeeder::class,
         // ]);
 
-        // $this->call([
-        //     RolePermissionSeeder::class,
-        //     UserSeeder::class,
-        // ]);
+        $this->call([
+            MerekSeeder::class,
+            RolePermissionSeeder::class,
+            UserSeeder::class,
+            KategoriSeeder::class,
+            SatuanSeeder::class,
+        ]);
 
         // User::factory()->create([
         //     'name' => 'Test User',

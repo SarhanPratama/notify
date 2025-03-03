@@ -4,11 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -24,6 +25,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'tgl_lahir',
+        'telepon',
+        'alamat',
+        'foto',
+        'id_cabang',
     ];
 
     /**
@@ -49,12 +55,14 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function Karyawan()
+    public function cabang()
     {
-        return $this->hasOne(Karyawan::class, 'id_users');
+        return $this->belongsTo(Cabang::class, 'id_cabang');
     }
 
-    // public function Role() {
-    //     return $this->()
+    // public function role()
+    // {
+    //     return $this->belongsTo(Role::class, 'id_role');
     // }
+
 }

@@ -23,31 +23,40 @@
                     <tr>
                         <th class="text-start">No</th>
                         <th>Produk</th>
-                        <th>Telepon</th>
-                        <th>Alamat</th>
+                        <th>Stok</th>
+                        <th>Harga Modal</th>
+                        <th>Harga Jual</th>
+                        <th>Kategori</th>
+                        <th>Merek</th>
                         <th class="text-center">Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($cabang as $item)
+                        @foreach ($produk as $item)
                         <tr>
                             <td class="text-start">{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $item->nama}}</td>
-                            <td>{{ $item->telepon}}</td>
-                            <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
-                                {{ Str::limit($item->alamat, 30, '...') }}
-                            </td>
+                            <td>{{ ucwords($item->nama) }}</td>
+                            <td>{{ $item->stok}}</td>
+                            <td>Rp. {{ number_format($item->harga_modal, 0, ',', '.')}}</td>
+                            <td>Rp. {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
+                            <td>{{ ucwords($item->kategori->nama) }}</td>
+                            <td>{{ ucwords($item->merek->nama) }}</td>
+
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
-                                    <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning me-1">
+                                    <a href="{{ route('produk.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning">
                                         <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="{{ route('produk.show', $item->id) }}"  class="btn btn-sm btn-outline-success">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
                                     </a>
                                 </div>
                                 <div>
                                     <button class="btn btn-sm btn-outline-danger"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#cabangDestroyModal{{ $item->id }}">
+                                        data-bs-target="#produkDestroyModal{{ $item->id }}">
                                         <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -84,28 +93,28 @@
                             </div>
                         </div>
 
-                        <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="produkDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header" style="background-color: #6777ef">
+                                    <div class="modal-header bg-danger">
                                         <h1 class="modal-title fs-5 font-weight-bold text-light" id="cabangDestroyModalLabel">Konfirmasi Hapus</h1>
                                         <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->nama }}</strong>?</p>
+                                        <p>Apakah anda yakin ingin menghapus produk <strong>{{ ucwords($item->nama) }}</strong>?</p>
                                     </div>
-                                    <form action="{{ route('cabang.destroy', $item->id) }}" method="POST">
+                                    <form action="{{ route('produk.destroy', $item->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-outline-primary btn-sm">Delete</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                         @endforeach --}}
+                         @endforeach
                     </tbody>
                 </table>
                 </div>

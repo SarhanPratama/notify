@@ -1,9 +1,9 @@
 @php
-    use App\Models\Karyawan;
+    use App\Models\User;
     $id = auth()->user()->id;
     $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
     $unreadCount = DB::table('notifications')->where('is_read', false)->count();
-    $foto = Karyawan::find($id);
+    $foto = User::find($id);
 @endphp
 
 <nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
@@ -152,7 +152,7 @@
       <li class="nav-item dropdown no-arrow">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
-          <img class="img-profile rounded-circle" src="{{ asset('uploads/karyawan/' . ($foto->foto ?? 'foto.jpg')) }}" style="max-width: 60px">
+          <img class="img-profile rounded-circle"  src="{{ $foto->foto ? asset('uploads/karyawan/' . $foto->foto) : asset('assets/img/boy.png') }}">
           <span class="ml-2 d-none d-lg-inline text-white small">{{ auth()->user()->name}}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -183,20 +183,20 @@
          aria-hidden="true">
          <div class="modal-dialog" role="document">
            <div class="modal-content">
-             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabelLogout">Ohh No!</h5>
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-               </button>
+             <div class="modal-header bg-danger">
+               <h5 class="modal-title text-light" id="exampleModalLabelLogout">Ohh No!</h5>
+               <i class="bi bi-x-lg btn btn-outline-light btn-sm"
+               data-bs-dismiss="modal" aria-label="Close"></i>
+
              </div>
              <div class="modal-body">
                <p>Are you sure you want to logout?</p>
              </div>
              <div class="modal-footer">
-               <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+               <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Cancel</button>
                <form action="{{ Route('logout')}}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-outline-danger">Logout</button>
+                <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
                </form>
              </div>
            </div>

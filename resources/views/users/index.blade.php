@@ -9,7 +9,7 @@
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->
       <div class="card">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
             <h6 class="font-weight-bold text-light text-sm">Karyawan</h6>
             {{-- <form action="{{ route('users.index') }}" method="GET" class="d-flex align-items-center">
 
@@ -59,10 +59,10 @@
 
                 <tr>
                     <td class="text-start">{{ $loop->iteration }}</td>
-                    <td>{{ $item->name}}</td>
-                    <td>{{ $item->Karyawan->role->name ?? '-'}}</td>
-                    <td>{{ $item->Karyawan->cabang->nama ?? '-' }}</td>
-                    <td>{{ $item->Karyawan->telepon ?? '-'}}</td>
+                    <td>{{ ucwords($item->name) }}</td>
+                    <td>{{ Ucwords($item->roles->first()->name ?? '-') }}</td>
+                    <td>{{ ucwords($item->cabang->nama ?? '-') }}</td>
+                    <td>{{ $item->telepon ?? '-'}}</td>
                     {{-- <td class="text-truncate" style="max-width: 200px;"  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                         {{ Str::limit($item->alamat, 30, '...') }}
                     </td> --}}
@@ -85,9 +85,7 @@
                                 data-bs-target="#usersDestroyModal{{ $item->id }}">
                                 <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                             </button>
-
                         </div>
-
                     </td>
                 </tr>
 
@@ -95,8 +93,8 @@
                     aria-labelledby="usersDestroyModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header color">
-                                <h1 class="modal-title fs-5 text-light font-weight-bold"
+                            <div class="modal-header bg-danger">
+                                <h1 class="modal-title fs-6 text-light font-weight-bold"
                                     id="usersDestroyModalLabel">Konfirmasi Hapus</h1>
                                 <i class="bi bi-x-lg btn btn-outline-light btn-sm"
                                     data-bs-dismiss="modal" aria-label="Close"></i>
@@ -110,10 +108,10 @@
                                 @method('DELETE')
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm"
-                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        data-bs-dismiss="modal">Close</button>
                                     <button type="submit"
-                                        class="btn btn-outline-danger btn-sm">Hapus</button>
+                                        class="btn btn-outline-danger btn-sm">Delete</button>
                                 </div>
                             </form>
                         </div>

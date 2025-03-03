@@ -43,14 +43,16 @@
             <span>Produk</span>
         </a>
         <div id="collapseProduk" class="collapse
-        {{ request()->routeIs('produk.index')
-            ? 'show'
-            : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
+        {{ request()->routeIs('produk.index') ||
+           request()->routeIs('bahan-baku.index')
+            ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {{-- <h6 class="collapse-header">Produk</h6> --}}
                 <a class="collapse-item {{ request()->routeIs('produk.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('produk.index') }}">List Produk</a>
-                <a class="collapse-item" href="form_advanceds.html">Form Advanceds</a>
+                <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
+                {{-- <a class="collapse-item" href="{{ routes('bahan.index') }}">Resep</a> --}}
             </div>
         </div>
     </li>
@@ -109,9 +111,7 @@
         request()->routeIs('permission.index') ||
         request()->routeIs('akses-role.index')
             ? 'show'
-            : '' }}
-
-        "
+            : '' }} "
             aria-labelledby="headingKaryawan" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {{-- <h6 class="collapse-header">Forms</h6> --}}
