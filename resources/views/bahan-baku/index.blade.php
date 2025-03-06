@@ -137,7 +137,7 @@
 
 
   <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog ">
       <div class="modal-content">
         <div class="modal-header color">
           <h1 class="modal-title fs-6 text-light font-weight-bold" id="createModalLabel">Form input Bahan Baku</h1>

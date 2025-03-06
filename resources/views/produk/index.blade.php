@@ -120,13 +120,9 @@
                 </div>
 
                     <div class="card-footer d-flex justify-content-center">
-
                     </div>
-
             </div>
         </div>
     </div>
   </div>
-  @include('cabang.create')
-  {{-- @include('cabang.update') --}}
 @endsection

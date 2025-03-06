@@ -35,24 +35,52 @@
     </li> --}}
     <li class="nav-item">
         <a class="nav-link collapsed
-        {{ request()->routeIs('produk.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }}"
+        {{-- {{ request()->routeIs('produk.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
+         "
          href="#" data-toggle="collapse" data-target="#collapseProduk"
-            aria-expanded="{{ request()->routeIs('produk.index') ? 'true' : 'false' }}"
+            {{-- aria-expanded="{{ request()->routeIs('produk.index') ? 'true' : 'false' }}" --}}
             aria-controls="collapseProduk">
-            <i class="fab fa-fw fa-wpforms"></i>
+            <i class="fa fa-cube" aria-hidden="true"></i>
             <span>Produk</span>
         </a>
         <div id="collapseProduk" class="collapse
-        {{ request()->routeIs('produk.index') ||
-           request()->routeIs('bahan-baku.index')
-            ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
+        {{ in_array(request()->route()->getName(),
+        ['produk.index', 'produk.create', 'produk.edit', 'produk.show',
+        'bahan-baku.index',
+        'resep.index'
+        ]) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {{-- <h6 class="collapse-header">Produk</h6> --}}
-                <a class="collapse-item {{ request()->routeIs('produk.index') ? 'active font-weight-bold' : '' }}"
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['produk.index', 'produk.create', 'produk.edit', 'produk.show']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('produk.index') }}">List Produk</a>
                 <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
-                {{-- <a class="collapse-item" href="{{ routes('bahan.index') }}">Resep</a> --}}
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a>
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed
+        {{-- {{ request()->routeIs('produk.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
+         "
+         href="#" data-toggle="collapse" data-target="#collapseInventory"
+            {{-- aria-expanded="{{ request()->routeIs('produk.index') ? 'true' : 'false' }}" --}}
+            aria-controls="collapseInventory">
+            <i class="fa fa-truck" aria-hidden="true"></i>
+            <span>Inventory</span>
+        </a>
+        <div id="collapseInventory" class="collapse
+        {{ in_array(request()->route()->getName(),
+        ['supplier.index'
+        ]) ? 'show' : '' }}" aria-labelledby="headingInventory" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {{-- <h6 class="collapse-header">Produk</h6> --}}
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['supplier.index']) ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('supplier.index') }}">Supplier</a>
+                {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
             </div>
         </div>
     </li>
@@ -96,26 +124,35 @@
         Konfigurasi
     </div>
     <li class="nav-item">
-        <a class="nav-link collapsed  {{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }}"
+        <a class="nav-link collapsed
+        {{-- {{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
+         "
             href="#" data-toggle="collapse" data-target="#collapseUser"
-            aria-expanded="{{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? 'true' : 'false' }}"
+            {{-- aria-expanded="{{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? 'true' : 'false' }}" --}}
             aria-controls="collapseUser">
             <i class="fa fa-cog" aria-hidden="true"></i>
             <span>Konfigurasi</span>
         </a>
         <div id="collapseUser"
             class="collapse
-        {{ request()->routeIs('users.index') ||
+             {{ in_array(request()->route()->getName(),
+        ['users.index', 'users.create', 'users.edit', 'users.show',
+        'cabang.index',
+        'role.index',
+        'permission.index',
+        'akses-role.index'
+        ]) ? 'show' : '' }}
+        {{-- {{ request()->routeIs('users.index') ||
         request()->routeIs('cabang.index') ||
         request()->routeIs('role.index') ||
         request()->routeIs('permission.index') ||
         request()->routeIs('akses-role.index')
             ? 'show'
-            : '' }} "
+            : '' }} " --}}
             aria-labelledby="headingKaryawan" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 {{-- <h6 class="collapse-header">Forms</h6> --}}
-                <a class="collapse-item {{ request()->routeIs('users.index') ? 'active font-weight-bold' : '' }}"
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['users.index', 'users.create', 'users.edit', 'users.show']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('users.index') }}">Karyawan</a>
                 <a class="collapse-item {{ request()->routeIs('cabang.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('cabang.index') }}">Cabang</a>

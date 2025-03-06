@@ -38,7 +38,6 @@
           <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row g-3 text-sm">
-
                 <div class="col-lg-4 col-md-6">
                     <label for="nama" class="form-label fw-bold">Nama Lengkap</label>
                     <input type="text" class="form-control form-control-sm" id="nama" name="nama" placeholder="Masukkan nama karyawan" required>

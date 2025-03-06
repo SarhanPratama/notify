@@ -1,0 +1,152 @@
+@extends('layouts.master')
+
+@section('content')
+
+
+    @include('layouts.breadcrumbs')
+
+  <div class="container">
+    <div class="row">
+        <div class="col col-lg-12">
+        <!-- Simple Tables -->
+
+            <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
+                <h6 class="font-weight-bold text-light text-sm">Supplier</h6>
+
+                    <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Tambah
+                    </button>
+                </div>
+                <div class="table-responsive">
+                <table class="table table-striped text-sm" id="dataTableHover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th class="text-start">No</th>
+                        <th>Supplier</th>
+                        <th>Telepon</th>
+                        <th>Alamat</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{-- @foreach ($cabang as $item)
+                        <tr class="text-start">
+                            <td class="text-start">{{ $loop->iteration }}</td>
+                            <td> {{ ucwords($item->nama) }}</td>
+                            <td>{{ $item->telepon }}</td>
+                            <td class=""  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
+                                {{ Str::limit($item->alamat, 30, '...') }}
+                            </td>
+                            <td class="d-flex justify-content-center text-nowrap gap-2">
+                                <div>
+                                    <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning">
+                                        <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#cabangDestroyModal{{ $item->id }}">
+                                        <i class="fa fa-trash fs-6" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        <div class="modal fade" id="permissionUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionUpdateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update Cabang</h1>
+                                        <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                    </div>
+                                    <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" id="modal_id" name="id">
+                                        <div class="modal-body text-sm">
+                                            <div class="mb-3">
+                                                <label for="cabang">Permission</label>
+                                                <input type="text" name="name" class="form-control form-control-sm" value="{{ $item->name }}" placeholder="Masukkan permission" required>
+                                                @error('name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger">
+                                        <h1 class="modal-title fs-5 font-weight-bold text-light" id="cabangDestroyModalLabel">Konfirmasi Hapus</h1>
+                                        <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->nama }}</strong>?</p>
+                                    </div>
+                                    <form action="{{ route('cabang.destroy', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                         @endforeach --}}
+                    </tbody>
+                </table>
+                </div>
+                    <div class="card-footer d-flex justify-content-center">
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header color">
+          <h1 class="modal-title fs-6 text-light font-weight-bold" id="exampleModalLabel">Form input Supplier</h1>
+          <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+          {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
+        </div>
+        <form action="{{ route('supplier.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-body text-sm fw-bold">
+                <div class="mb-3">
+                    <label>Supplier <span class="text-danger">*</span> </label>
+                    <input type="text" name="nama" class="form-control form-control-sm"  placeholder="Masukkan nama supplier" required>
+                </div>
+                <div class="mb-3">
+                    <label>Telepon <span class="text-danger">*</span></label>
+                    <input type="text" name="telepon" class="form-control form-control-sm"  placeholder="Masukkan nomor telepon" required>
+                </div>
+                <div class="mb-3">
+                    <label>Alamat</label>
+                    <textarea class="form-control form-control-sm" name="alamat" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="reset" class="btn btn-outline-warning btn-sm">Reset</button>
+                <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+@endsection

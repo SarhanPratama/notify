@@ -12,6 +12,7 @@ class resep extends Model
         'jumlah',
         'id_products',
         'id_bahan_baku',
+        'instruksi',
     ];
 
     public function produk()
@@ -19,11 +20,13 @@ class resep extends Model
         return $this->belongsTo(products::class, 'id_products');
     }
 
-    /**
-     * Relasi dengan model BahanBaku.
-     */
     public function bahanBaku()
     {
-        return $this->belongsTo(BahanBaku::class, 'id_bahan_baku');
+        return $this->belongsTo(bahanBaku::class, 'id_bahan_baku');
+    }
+
+    public function detailResep()
+    {
+        return $this->hasMany(DetailResep::class, 'id_resep');
     }
 }

@@ -1,17 +1,19 @@
 <?php
 
+use App\Models\bahanBaku;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ResepController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermissionController;
-use App\Models\bahanBaku;
 
 Route::get('/', function () {
     // notify()->success('Welcome to Laravel Notify ⚡️');
@@ -71,6 +73,11 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::put('/produk/{id}', [ProductsController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
 
+    Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
+    Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
+    Route::put('/resep/{id}', [ResepController::class, 'update'])->name('resep.update');
+    Route::delete('/resep/{id}', [ResepController::class, 'destroy'])->name('resep.destroy');
+
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');
     Route::post('/users', [UsersController::class, 'store'])->name('users.store');
@@ -84,6 +91,9 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/cabang/{id}/edit', [CabangController::class, 'edit'])->name('cabang.edit');
     Route::put('/cabang/{id}', [CabangController::class, 'update'])->name('cabang.update');
     Route::delete('/cabang/{id}', [CabangController::class, 'destroy'])->name('cabang.destroy');
+
+    Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
+    Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
 
 
 Route::get('/notifications/mark-as-read', function () {

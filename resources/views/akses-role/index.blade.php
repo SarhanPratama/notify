@@ -82,7 +82,6 @@
                                         <div class="row">
                                             @foreach ($permissions as $id => $name)
                                                 <div class="col-md-3">
-
                                                         <div class="card-body d-flex align-items-center text-sm text-nowrap">
                                                             <div class="form-check form-switch ">
                                                                 <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $name }}"
@@ -90,10 +89,10 @@
                                                                     {{ $role->permissions->contains('name', $name) ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="permissionSwitch{{ $id }}">{{ $name }}</label>
                                                             </div>
+
                                                             {{-- <i class="bi bi-check-circle-fill text-primary" style="font-size: 1.5rem;"></i> --}}
                                                         </div>
-
-                                                </div>
+                                            </div>
                                             @endforeach
                                         </div>
                                     </div>
@@ -120,6 +119,8 @@
     </div>
   </div>
 </div>
+
+
 {{-- @include('role.destroy') --}}
 {{-- @include('role.create') --}}
 {{-- @include('role.update') --}}

@@ -73,14 +73,14 @@
                 </div>
 
                 <!-- Status -->
-                <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                {{-- <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                     <label for="status" class="form-label fw-bold">Status</label>
                     <select class="form-select form-select-sm" id="status" name="status" required>
                         <option selected disabled>Pilih Status</option>
                         <option value="aktif">Aktif</option>
                         <option value="nonaktif">Nonaktif</option>
                     </select>
-                </div>
+                </div> --}}
 
                 <!-- Kategori -->
                 <div class="col-lg-4 col-md-6 col-sm-6 col-6">
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Submit Button -->
-            <div class="d-flex justify-content-end mt-4">
+            <div class="d-flex justify-content-center mt-4">
                 <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
             </div>
           </form>
