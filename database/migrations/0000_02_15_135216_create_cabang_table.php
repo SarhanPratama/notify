@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->text('alamat');
-            $table->integer('telepon');
+            $table->string('telepon', 20);
             $table->string('foto')->nullable();
             $table->timestamps();
         });

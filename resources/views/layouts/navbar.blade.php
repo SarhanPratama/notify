@@ -6,12 +6,12 @@
     $foto = User::find($id);
 @endphp
 
-<nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
+<nav class="navbar navbar-expand navbar-light topbar mb-4 static-top bg-maron">
     <button id="sidebarToggleTop" class="btn rounded-circle mr-3">
-      <i class="fa fa-bars text-light"></i>
+        <i class="fa fa-bars text-light"></i>
     </button>
     <ul class="navbar-nav ml-auto">
-      {{-- <li class="nav-item dropdown no-arrow">
+        {{-- <li class="nav-item dropdown no-arrow">
         <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-search fa-fw"></i>
@@ -31,41 +31,41 @@
           </form>
         </div>
       </li> --}}
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
-           aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-bell fa-fw"></i>
-            @if($unreadCount > 0)
-                <span class="badge badge-danger badge-counter mb-2">{{ $unreadCount }}</span>
-            @endif
-        </a>
-        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-             aria-labelledby="alertsDropdown">
-            <h6 class="dropdown-header">
-                Alerts Center
-            </h6>
-            @foreach($notifications as $notif)
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-primary">
-                            <i class="fas fa-user-plus text-white"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">{{ $notif->created_at }}</div>
-
-                        <span class="font-weight-bold">{{ $notif->message }}</span>
-                    </div>
-                </a>
-            @endforeach
-            <a class="dropdown-item text-center small text-gray-500" href="{{ route('notifications.markAsRead') }}">
-                Tandai Semua Dibaca
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                @if ($unreadCount > 0)
+                    <span class="badge badge-primary badge-counter mb-2">{{ $unreadCount }}</span>
+                @endif
             </a>
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">
+                    Alerts Center
+                </h6>
+                @foreach ($notifications as $notif)
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-user-plus text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">{{ $notif->created_at }}</div>
 
-            {{-- <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> --}}
-        </div>
-    </li>
-      <li class="nav-item dropdown no-arrow mx-1">
+                            <span class="font-weight-bold">{{ $notif->message }}</span>
+                        </div>
+                    </a>
+                @endforeach
+                <a class="dropdown-item text-center small text-gray-500" href="{{ route('notifications.markAsRead') }}">
+                    Tandai Semua Dibaca
+                </a>
+
+                {{-- <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> --}}
+            </div>
+        </li>
+        {{-- <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-envelope fa-fw"></i>
@@ -76,7 +76,7 @@
           <h6 class="dropdown-header">
             Message Center
           </h6>
-          {{-- <a class="dropdown-item d-flex align-items-center" href="#">
+          <a class="dropdown-item d-flex align-items-center" href="#">
             <div class="dropdown-list-image mr-3">
               <img class="rounded-circle" src="{{ url('assets/img/man.png')}}" style="max-width: 60px" alt="">
               <div class="status-indicator bg-success"></div>
@@ -97,11 +97,11 @@
                 say this to all dogs, even if they aren't good...</div>
               <div class="small text-gray-500">Jaenab · 2w</div>
             </div>
-          </a> --}}
+          </a>
           <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
         </div>
-      </li>
-      {{-- <li class="nav-item dropdown no-arrow mx-1">
+      </li> --}}
+        {{-- <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-tasks fa-fw "></i>
@@ -148,61 +148,105 @@
           <a class="dropdown-item text-center small text-gray-500" href="#">View All Taks</a>
         </div>
       </li> --}}
-      <div class="topbar-divider d-none d-sm-block"></div>
-      <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          <img class="img-profile rounded-circle"  src="{{ $foto->foto ? asset('uploads/karyawan/' . $foto->foto) : asset('assets/img/boy.png') }}">
-        <div class="d-flex flex-column">
-            <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name}}</span>
+        <div class="topbar-divider d-none d-sm-block"></div>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <img class="img-profile rounded-circle"
+                    src="{{ $foto->foto ?  asset('storage/' . $foto->foto) : asset('assets/img/boy.png') }}">
+                <div class="d-flex flex-column">
+                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name }}</span>
 
-            <span class="ml-2 text-white small">{{ ucwords(auth()->user()->roles->first()->name) }}</span>
-        </div>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="{{ route('profile.index')}}">
-            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-            Profile
-          </a>
-          <a class="dropdown-item" href="#">
-            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-            Settings
-          </a>
-          <a class="dropdown-item" href="#">
-            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-            Activity Log
-          </a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-            Logout
-          </a>
-        </div>
-      </li>
+                    <span class="ml-2 text-white"
+                        style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()->name) }}</span>
+                </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="{{ route('profile.index') }}">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-maron"></i>
+                    Profile
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-maron"></i>
+                    Settings
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-maron"></i>
+                    Activity Log
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-maron"></i>
+                    Logout
+                </a>
+            </div>
+        </li>
     </ul>
-  </nav>
+</nav>
 
-         <!-- Modal Logout -->
-         <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
-         aria-hidden="true">
-         <div class="modal-dialog" role="document">
-           <div class="modal-content">
-             <div class="modal-header bg-danger">
-               <h5 class="modal-title text-light" id="exampleModalLabelLogout">Ohh No!</h5>
-               <i class="bi bi-x-lg btn btn-outline-light btn-sm"
-               data-bs-dismiss="modal" aria-label="Close"></i>
-
-             </div>
-             <div class="modal-body">
-               <p>Are you sure you want to logout?</p>
-             </div>
-             <div class="modal-footer">
-               <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Cancel</button>
-               <form action="{{ Route('logout')}}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
-               </form>
-             </div>
-           </div>
-         </div>
-       </div>
+<!-- Modal Logout -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelLogout"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-light" id="exampleModalLabelLogout">Logout</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin keluar?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Cancel</button>
+                <form action="{{ Route('logout') }}" method="POST">
+                    @csrf
+                    {{-- <div class="form-group">
+                        <label for="select2Multiple">Multiple-Select Boxes (pillbox)</label>
+                        <select class="select2-multiple form-control" name="states[]"
+                            multiple="multiple" id="select2Multiple">
+                            <option value="">Select</option>
+                            <option value="Aceh">Aceh</option>
+                            <option value="Sumatra Utara">Sumatra Utara</option>
+                            <option value="Sumatra Barat">Sumatra Barat</option>
+                            <option value="Riau">Riau</option>
+                            <option value="Kepulauan Riau" selected>Kepulauan Riau</option>
+                            <option value="Jambi">Jambi</option>
+                            <option value="Bengkulu">Bengkulu</option>
+                            <option value="Sumatra Selatan">Sumatra Selatan</option>
+                            <option value="Kepulauan Bangka Belitung">Kepulauan Bangka
+                                Belitung</option>
+                            <option value="Lampung">Lampung</option>
+                            <option value="Banten">Banten</option>
+                            <option value="Jawa Barat" selected>Jawa Barat</option>
+                            <option value="Jakarta">Jakarta</option>
+                            <option value="Jawa Tengah">Jawa Tengah</option>
+                            <option value="Yogyakarta">Yogyakarta</option>
+                            <option value="Jawa TImur">Jawa Timur</option>
+                            <option value="Bali">Bali</option>
+                            <option value="Nusa Tenggara Barat">Nusa Tenggara Barat</option>
+                            <option value="Nusa Tenggara Timur">Nusa Tenggara Timur</option>
+                            <option value="Kalimantan Barat">Kalimantan Barat</option>
+                            <option value="Kalimantan Selatan">Kalimantan Selatan</option>
+                            <option value="Kalimantan Tengah">Kalimantan Tengah</option>
+                            <option value="Kalimantan Timur">Kalimantan Timur</option>
+                            <option value="Kalimantan Utara">Kalimantan Utara</option>
+                            <option value="Gorontalo">Gorontalo</option>
+                            <option value="Sulawaesi Barat">Sulawesi Barat</option>
+                            <option value="Sulawesi Selatan">Sulawesi Selatan</option>
+                            <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+                            <option value="Sulawesi Tenggara">Sulawesi Tenggara</option>
+                            <option value="Sulawesi Utara">Sulawesi Utara</option>
+                            <option value="Maluku">Maluku</option>
+                            <option value="Maluku Utara">Maluku Utara</option>
+                            <option value="Papua Barat">Papua Barat</option>
+                            <option value="Papua">Papua</option>
+                        </select>
+                    </div> --}}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

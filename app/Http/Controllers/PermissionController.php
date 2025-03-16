@@ -9,10 +9,11 @@ class PermissionController extends Controller
 {
     public function index(Request $request) {
 
-        $title = 'Tabel Permission';
+        $title = 'Permission';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Permission', 'url' => null],
+            ['label' => 'Permission', 'url' => route('permission.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
         // $perPage = $request->input('per_page', 10);
         // $search = $request->input('search');

@@ -11,10 +11,11 @@ class ProductsController extends Controller
 {
     public function index() {
 
-        $title = 'Tabel Produk';
+        $title = 'Produk';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Produk', 'url' => null],
+            ['label' => 'Produk', 'url' => route('produk.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
         $produk = products::with(['merek', 'kategori'])->get();
@@ -24,18 +25,20 @@ class ProductsController extends Controller
 
     public function create() {
 
-        $title = 'Form Produk';
+        $title = 'Produk';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel', 'url' => route('produk.index')],
-            ['label' => 'Form Produk', 'url' => null],
+            ['label' => 'Produk', 'url' => route('produk.index')],
+            ['label' => 'Form Tambah', 'url' => null],
         ];
+
+        $kode = 'P-' . str_pad(products::count() + 1, 4, '0', STR_PAD_LEFT);
 
         $kategori = Kategori::pluck('nama', 'id');
         $merek = Merek::pluck('nama', 'id');
 
 
-        return view('produk.create', compact('title', 'breadcrumbs', 'kategori', 'merek'));
+        return view('produk.create', compact('title', 'breadcrumbs', 'kategori', 'merek', 'kode'));
     }
 
     public function store(Request $request)
@@ -46,7 +49,7 @@ class ProductsController extends Controller
         'stok' => 'required|integer|min:0',
         'harga_modal' => 'required|numeric|min:0',
         'harga_jual' => 'required|numeric|min:0',
-        'status' => 'nullable|in:aktif,nonaktif',
+        // 'status' => 'nullable|in:aktif,nonaktif',
         'id_kategori' => 'required|exists:kategori,id',
         'id_merek' => 'required|exists:merek,id',
         'deskripsi' => 'nullable|string',
@@ -78,11 +81,11 @@ class ProductsController extends Controller
     }
 
     public function edit($id) {
-        $title = 'Form Update Produk';
+        $title = 'Produk';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel', 'url' => route('produk.index')],
-            ['label' => 'Form Update Produk', 'url' => null],
+            ['label' => 'Form Edit', 'url' => null],
         ];
         // $produk = products::where('id', $id)->with('kategori', 'merek')->first();
         // $produk = products::findOrFail($id);
@@ -152,6 +155,47 @@ class ProductsController extends Controller
 
         notify()->success('Produk berhasil dihapus');
         return redirect()->route('produk.index');
+    }
+
+    public function merekStore(Request $request) {
+        $request->validate([
+            'nama' => 'required'
+        ]);
+
+        try {
+            $merek = Merek::create($request->all());
+
+            notify()->success('Data "' . $merek->nama . '" berhasil ditambahkan.');
+        }
+        catch (\Exception $e) {
+            if ($e->getCode() == 23000) {
+                notify()->error('Data dengan nama "' . $request->nama . '" sudah ada.');
+            } else {
+                notify()->error('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+            }
+        }
+        return redirect()->back();
+    }
+
+    public function kategoriStore(Request $request) {
+        $request->validate([
+            'nama' => 'required'
+        ]);
+
+        try {
+            $kategori = Kategori::create($request->all());
+
+            notify()->success('Data "' . $kategori->nama . '" berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            if ($e->getCode() == 23000) {
+                notify()->error('Data dengan nama "' . $request->nama . '" sudah ada.');
+            } else {
+
+                notify()->error('Terjadi kesalahan saat menyimpan data. Silakan coba lagi.');
+            }
+        }
+
+        return redirect()->back();
     }
 
 }

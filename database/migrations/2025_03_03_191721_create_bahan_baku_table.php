@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->integer('stok');
             $table->integer('stok_minimum');
-            $table->foreignId('id_satuan')->constrained('satuan')->onDelete('cascade');
+            $table->foreignId('id_satuan')->constrained('satuan')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

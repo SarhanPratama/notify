@@ -45,7 +45,7 @@ define([
 
     if (this._request != null) {
       // JSONP requests cannot always be aborted
-      if (typeof this._request.abort === 'function') {
+      if ($.isFunction(this._request.abort)) {
         this._request.abort();
       }
 
@@ -70,7 +70,7 @@ define([
 
         if (self.options.get('debug') && window.console && console.error) {
           // Check to make sure that the response included a `results` key.
-          if (!results || !results.results || !Array.isArray(results.results)) {
+          if (!results || !results.results || !$.isArray(results.results)) {
             console.error(
               'Select2: The AJAX results did not return an array in the ' +
               '`results` key of the response.'

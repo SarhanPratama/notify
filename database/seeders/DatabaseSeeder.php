@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+
 use App\Models\Merek;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -30,11 +30,13 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
+            CabangSeeder::class,
             MerekSeeder::class,
             RolePermissionSeeder::class,
             UserSeeder::class,
             KategoriSeeder::class,
             SatuanSeeder::class,
+
         ]);
 
         // User::factory()->create([

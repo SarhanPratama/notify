@@ -1,54 +1,82 @@
 @include('layouts.link')
+@php
+    $title = 'Login';
+@endphp
+
+<title>Seroo - {{ $title }}</title>
+<style>
+    .text-maron {
+        color: #861414;
+    }
+
+    .bg-maron {
+        background-color: #861414;
+    }
+</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <main class="main-content">
-    <section class="vh-100">
+    <section class="vh-100" style="background-color: #f8f9fa;">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                    <div class="card" style="border-radius: 1rem;">
-                        <div class="card-body p-5">
-                            <!-- Logo/Header Section -->
-                            <div class="text-center mb-5">
-                                <h1 class="card-title font-weight-bolder fs-2">Login</h1>
-                            </div>
-                            <!-- Error Messages -->
-                            @if($errors->any())
-                            <div class="alert alert-primary alert-dismissible fade" role="alert">
-                                <i class="bi bi-exclamation-circle me-2"></i>
-                                {{ $errors->first() }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            @endif
+                <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+                    <div class="card text-light shadow-lg bg-maron">
+                        <div class="card-header">
+                            {{-- <img src="..." class="card-img-top" alt="..."> --}}
+                            <img src="{{ asset('assets/img/logo/brand.png') }}" alt="Logo"
+                                class="card-img-top mx-auto w-25">
+                        </div>
+                        <div class="card-body px-3">
+                            <div class="text-center">
 
-                            <!-- Login Form -->
-                            <form action="{{ route('login') }}" method="POST">
+                                <label class="card-title" style="font-size: 20px; font-weight:bold;">
+                                    <p>
+                                        Login
+                                    </p>
+                                </label>
+                                @if($errors->any())
+                                <div class="alert alert-light alert-dismissible fade show d-flex align-content-center" role="alert">
+                                    <i class="bi bi-exclamation-circle me-2 text-maron"></i>
+                                        <p class="text-sm">Email atau Password tidak valid.</p>
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                </div>
+                            @endif
+                            </div>
+                            <form action="{{ route('login') }}" method="POST" class="text-sm">
                                 @csrf
                                 <div class="mb-3 font-weight-bold">
-
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" name="email" placeholder="Email" aria-label="email" aria-describedby="basic-addon1">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control form-control-sm" name="email"
+                                        placeholder="Email" aria-label="email" required>
                                 </div>
 
-                                <div class="mb-5 font-weight-bold">
-                                    <label for="password">Password</label>
-                                    <a href="{{ Route('password.request')}}" class="text-decoration-none text-primary float-end">
-                                        Forgot Password?
-                                    </a>
-                                    <input type="password" class="form-control" name="password" placeholder="Password" aria-label="password" aria-describedby="basic-addon1">
+                                <div class="mb-4 font-weight-bold">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control form-control-sm" name="password"
+                                        placeholder="Password" aria-label="password" required>
                                 </div>
 
                                 <!-- Submit Button -->
-                                <button type="submit" class="btn btn-outline-primary w-100 mb-3">
-                                    Sign In
+                                <button type="submit" class="btn btn-sm btn-outline-light w-100 text-center mb-3">
+                                    <strong>
+                                        Login
+                                    </strong>
                                 </button>
 
-                                <!-- Registration Link -->
-                                <div class="text-center">
-                                    <p class="">Don't have an account?
-                                        <a href="{{ route('register') }}" class="text-primary text-decoration-none fw-bold">
+                                <div class="card-footer d-flex justify-content-between">
+                                    <div>
+                                        <a href="{{ route('register') }}"
+                                            class="text-light text-decoration-underline fw-bold">
                                             Create Account
                                         </a>
-                                    </p>
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('password.request') }}"
+                                            class="text-decoration-underline text-light fw-bold">
+                                            Forgot Password
+                                        </a>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -58,3 +86,5 @@
         </div>
     </section>
 </main>
+
+@include('layouts.script')

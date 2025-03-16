@@ -1,46 +1,24 @@
 <ul class="navbar-nav sidebar sidebar accordion" id="accordionSidebar">
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon">
-            {{-- <img src="{{ url('assets/img/logo/brand.jpg')}}" width="100%"> --}}
+    <a class="sidebar-brand d-flex align-items-center justify-content-center bg-maron" href="{{ route('admin.dashboard') }}">
+        <div class="navbar-brand">
+            <img src="{{ url('assets/img/logo/brand.png')}}" width="100">
         </div>
-        <div class="sidebar-brand-text mx-3 text-dark">RuangAdmin</div>
     </a>
     <hr class="sidebar-divider my-0">
     <li class="nav-item active">
         <a class="nav-link" href="{{ route('admin.dashboard') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <i class="fas fa-fw fa-tachometer-alt text-maron"></i>
             <span>Dashboard</span></a>
     </li>
     <hr class="sidebar-divider">
     <div class="sidebar-heading">
         Features
     </div>
-    {{-- <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBootstrap"
-            aria-expanded="true" aria-controls="collapseBootstrap">
-            <i class="far fa-fw fa-window-maximize"></i>
-            <span>Bootstrap UI</span>
-        </a>
-        <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Bootstrap UI</h6>
-                <a class="collapse-item" href="alerts.html">Alerts</a>
-                <a class="collapse-item" href="buttons.html">Buttons</a>
-                <a class="collapse-item" href="dropdowns.html">Dropdowns</a>
-                <a class="collapse-item" href="modals.html">Modals</a>
-                <a class="collapse-item" href="popovers.html">Popovers</a>
-                <a class="collapse-item" href="progress-bar.html">Progress Bars</a>
-            </div>
-        </div>
-    </li> --}}
     <li class="nav-item">
-        <a class="nav-link collapsed
-        {{-- {{ request()->routeIs('produk.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
-         "
+        <a class="nav-link collapsed fw-bold"
          href="#" data-toggle="collapse" data-target="#collapseProduk"
-            {{-- aria-expanded="{{ request()->routeIs('produk.index') ? 'true' : 'false' }}" --}}
             aria-controls="collapseProduk">
-            <i class="fa fa-cube" aria-hidden="true"></i>
+            <i class="fa fa-cube text-maron" aria-hidden="true"></i>
             <span>Produk</span>
         </a>
         <div id="collapseProduk" class="collapse
@@ -50,7 +28,6 @@
         'resep.index'
         ]) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {{-- <h6 class="collapse-header">Produk</h6> --}}
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['produk.index', 'produk.create', 'produk.edit', 'produk.show']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('produk.index') }}">List Produk</a>
                 <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
@@ -61,76 +38,35 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed
-        {{-- {{ request()->routeIs('produk.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
+        <a class="nav-link collapsed fw-bold
          "
          href="#" data-toggle="collapse" data-target="#collapseInventory"
-            {{-- aria-expanded="{{ request()->routeIs('produk.index') ? 'true' : 'false' }}" --}}
             aria-controls="collapseInventory">
-            <i class="fa fa-truck" aria-hidden="true"></i>
+            <i class="fa fa-truck text-maron" aria-hidden="true"></i>
             <span>Inventory</span>
         </a>
         <div id="collapseInventory" class="collapse
         {{ in_array(request()->route()->getName(),
-        ['supplier.index'
+        ['supplier.index', 'pembelian.index'
         ]) ? 'show' : '' }}" aria-labelledby="headingInventory" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {{-- <h6 class="collapse-header">Produk</h6> --}}
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['supplier.index']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('supplier.index') }}">Supplier</a>
-                {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
-                    href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
-                <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['pembelian.index']) ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('pembelian.index') }}">Pembelian</a>
             </div>
         </div>
     </li>
-    {{-- <li class="nav-item">
-        <a class="nav-link collapsed"
-            href="#" data-toggle="collapse" data-target="#collapseForm" aria-expanded="true"
-            aria-controls="collapseForm">
-            <i class="fab fa-fw fa-wpforms"></i>
-            <span>Forms</span>
-        </a>
-        <div id="collapseForm" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Forms</h6>
-                <a class="collapse-item" href="form_basics.html">Form Basics</a>
-                <a class="collapse-item" href="form_advanceds.html">Form Advanceds</a>
-            </div>
-        </div>
-    </li> --}}
-    {{-- <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTable"
-            aria-expanded="true" aria-controls="collapseTable">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Tables</span>
-        </a>
-        <div id="collapseTable" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Tables</h6>
-                <a class="collapse-item" href="simple-tables.html">Simple Tables</a>
-                <a class="collapse-item" href="datatables.html">DataTables</a>
-            </div>
-        </div>
-    </li> --}}
-    {{-- <li class="nav-item">
-        <a class="nav-link" href="ui-colors.html">
-            <i class="fas fa-fw fa-palette"></i>
-            <span>UI Colors</span>
-        </a>
-    </li> --}}
     <hr class="sidebar-divider">
     <div class="sidebar-heading">
         Konfigurasi
     </div>
     <li class="nav-item">
-        <a class="nav-link collapsed
-        {{-- {{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? '' : 'collapsed' }} --}}
+        <a class="nav-link collapsed fw-bold
          "
             href="#" data-toggle="collapse" data-target="#collapseUser"
-            {{-- aria-expanded="{{ request()->routeIs('users.index') || request()->routeIs('cabang.index') ? 'true' : 'false' }}" --}}
             aria-controls="collapseUser">
-            <i class="fa fa-cog" aria-hidden="true"></i>
+            <i class="fa fa-cog text-maron" aria-hidden="true"></i>
             <span>Konfigurasi</span>
         </a>
         <div id="collapseUser"
@@ -142,16 +78,9 @@
         'permission.index',
         'akses-role.index'
         ]) ? 'show' : '' }}
-        {{-- {{ request()->routeIs('users.index') ||
-        request()->routeIs('cabang.index') ||
-        request()->routeIs('role.index') ||
-        request()->routeIs('permission.index') ||
-        request()->routeIs('akses-role.index')
-            ? 'show'
-            : '' }} " --}}
+
             aria-labelledby="headingKaryawan" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {{-- <h6 class="collapse-header">Forms</h6> --}}
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['users.index', 'users.create', 'users.edit', 'users.show']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('users.index') }}">Karyawan</a>
                 <a class="collapse-item {{ request()->routeIs('cabang.index') ? 'active font-weight-bold' : '' }}"
@@ -165,28 +94,6 @@
             </div>
         </div>
     </li>
-    {{-- <li class="nav-item">
-      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePage" aria-expanded="true"
-        aria-controls="collapsePage">
-        <i class="fas fa-fw fa-columns"></i>
-        <span>Pages</span>
-      </a>
-      <div id="collapsePage" class="collapse" aria-labelledby="headingPage" data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-          <h6 class="collapse-header">Example Pages</h6>
-          <a class="collapse-item" href="login.html">Login</a>
-          <a class="collapse-item" href="register.html">Register</a>
-          <a class="collapse-item" href="404.html">404 Page</a>
-          <a class="collapse-item" href="blank.html">Blank Page</a>
-        </div>
-      </div>
-    </li> --}}
-    {{-- <li class="nav-item">
-      <a class="nav-link" href="charts.html">
-        <i class="fas fa-fw fa-chart-area"></i>
-        <span>Charts</span>
-      </a>
-    </li> --}}
     <hr class="sidebar-divider">
-
+    <div class="version" id="version-ruangadmin"></div>
 </ul>

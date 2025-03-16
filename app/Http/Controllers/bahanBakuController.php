@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 class bahanBakuController extends Controller
 {
     public function index() {
-        $title = 'Tabel Bahan Baku';
+        $title = 'Bahan Baku';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Bahan Baku', 'url' => null],
+            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
         $bahan_baku = bahanBaku::with('satuan')->get();

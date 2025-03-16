@@ -12,10 +12,11 @@ class AksesRoleController extends Controller
 {
     public function index(Request $request) {
 
-        $title = 'Tabel Akses Role';
+        $title = 'Akses Role';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Akses Role', 'url' => null],
+            ['label' => 'Akses Role', 'url' => route('akses-role.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
         $search = $request->input('search');

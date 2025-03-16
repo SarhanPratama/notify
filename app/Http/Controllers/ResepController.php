@@ -13,10 +13,11 @@ class ResepController extends Controller
 {
     public function index() {
 
-        $title = 'Tabel Resep';
+        $title = 'Resep';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Resep', 'url' => null],
+            ['label' => 'Resep', 'url' => route('resep.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
         $resep = resep::with('bahanBaku', 'produk', 'detailResep')->get();
@@ -50,7 +51,8 @@ class ResepController extends Controller
                     'jumlah' => $request->jumlah[$index],
                 ]);
             }
-            return redirect()->back()->with('success', 'Resep berhasil disimpan!');
+            notify()->success('Data resep "' . $resep->produk->nama . '" berhasil ditambahkan.');
+            return redirect()->back();
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -98,10 +100,10 @@ class ResepController extends Controller
             $resep->detailResep()->delete();
 
             $resep->delete();
-            notify()->success('Data Berhasil Diupdate');
+            notify()->success('Data resep berhasil dihapus');
             return redirect()->back();
         } catch (\Exception $e) {
-            notify()->error('Data gagal Diupdate');
+            notify()->error('Data resep gagal dihapus');
             return redirect()->back();
         }
     }

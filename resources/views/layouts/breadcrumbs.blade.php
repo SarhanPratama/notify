@@ -1,5 +1,5 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h4 mb-0" style="color: #6777ef">{{ $title}}</h1>
+    <h1 class="h4 mb-0 text-maron fw-bold">{{ $title}}</h1>
     <ol class="breadcrumb text-sm">
         @foreach ($breadcrumbs as $breadcrumb)
         @if ($breadcrumb['url'])

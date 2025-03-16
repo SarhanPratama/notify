@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cabang;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CabangController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
 
 
-        $search = $request->input('search');
-        $perPage = $request->input('per_page');
+        // $search = $request->input('search');
+        // $perPage = $request->input('per_page');
 
         // $cabang = Cabang::when($search, function ($query, $search) {
         //     return $query->where(function ($query) use ($search) {
@@ -25,17 +27,19 @@ class CabangController extends Controller
 
         // dd($cabang);{}
 
-        $title = 'Tabel Cabang';
+        $title = 'Cabang';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Cabang', 'url' => null],
+            ['label' => 'Cabang', 'url' => route('cabang.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        return view('cabang.index', compact('cabang', 'search', 'breadcrumbs', 'title', 'perPage'));
+        return view('cabang.index', compact('cabang', 'breadcrumbs', 'title'));
     }
 
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         // dd($request);
         $request->validate([
             'nama' => 'required',
@@ -43,26 +47,26 @@ class CabangController extends Controller
             'alamat' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-        $imageFile = $request->file('foto');
 
-        if ($imageFile) {
-            $imageName = time().'.'.$imageFile->extension();
-            $path = $imageFile->storeAs('public/images/cabang', $imageName);
-        } else {
-            $imageName = 'default.jpg';
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            $fotoName = time() . '_' . $foto->getClientOriginalName();
+            $fotoPath = $foto->storeAs('uploads/cabang', $fotoName, 'public');
         }
 
         Cabang::create([
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
-            'foto' => $imageName
+            'foto' => $fotoPath
         ]);
         notify()->success('Data berhasil di input');
         return redirect()->back();
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $title = 'Form Update Cabang';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
@@ -75,7 +79,8 @@ class CabangController extends Controller
         return view('cabang.update', compact('cabang', 'breadcrumbs', 'title'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
 
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -87,27 +92,22 @@ class CabangController extends Controller
         $cabang = Cabang::findOrFail($id);
 
 
+        $fotoPath = $cabang->foto;
         if ($request->hasFile('foto')) {
-
-            if ($cabang->foto) {
-                Storage::delete('public/images/cabang' . $cabang->foto);
+            if ($cabang->foto && file_exists(storage_path('app/public/' . $cabang->foto))) {
+                unlink(storage_path('app/public/' . $cabang->foto));
             }
 
-            // Simpan gambar baru
-            $imageFile = $request->file('foto');
-            $imageName = time().'.'.$imageFile->extension();
-            $imageFile->storeAs('public/images/cabang', $imageName);
-        } else {
-            // Jika tidak ada gambar baru, gunakan gambar lama
-            $imageName = $cabang->foto;
+            $foto = $request->file('foto');
+            $fotoName = time() . '_' . $foto->getClientOriginalName();
+            $fotoPath = $foto->storeAs('uploads/cabang', $fotoName, 'public');
         }
 
-        // Update data di database
         $cabang->update([
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
-            'foto' => $imageName
+            'foto' => $fotoPath
         ]);
 
         notify()->success('Data berhasil di update');
@@ -115,20 +115,32 @@ class CabangController extends Controller
     }
 
     public function destroy($id)
-{
-    $cabang = Cabang::findOrFail($id);
+    {
+        try {
+            // Cari data cabang yang akan dihapus
+            $cabang = Cabang::findOrFail($id);
 
-    if ($cabang->foto) {
-        $filePath = storage_path('app/public/images/' . $cabang->foto);
-        if (file_exists($filePath)) {
-            unlink($filePath);
+            // Periksa apakah cabang memiliki foto dan hapus filenya
+            if ($cabang->foto) {
+                $filePath = storage_path('app/public/' . $cabang->foto);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            // Hapus cabang
+            $cabang->delete();
+
+            notify()->success('Cabang berhasil dihapus!');
+            return redirect()->route('cabang.index');
+
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
+                notify()->error('Cabang tidak bisa dihapus karena masih ada data terkait.');
+                return redirect()->route('cabang.index');
+            }
+            notify()->error('Terjadi kesalahan saat menghapus cabang.');
+            return redirect()->route('cabang.index');
         }
     }
-
-    $cabang->delete();
-
-    notify()->success('Cabang berhasil dihapus!');
-    return redirect()->back();
-}
-
 }

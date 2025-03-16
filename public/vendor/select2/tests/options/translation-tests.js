@@ -52,9 +52,7 @@ test(
         'maximumSelected',
         'noResults',
         'searching',
-        'removeAllItems',
-        'removeItem',
-        'search'
+        'removeAllItems'
       ]
     );
   }

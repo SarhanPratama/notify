@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('detail_resep', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_resep')->constrained('resep')->onDelete('cascade');
-            $table->foreignId('id_bahan_baku')->constrained('bahan_baku')->onDelete('cascade');
+            $table->foreignId('id_resep')->constrained('resep')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('id_bahan_baku')->constrained('bahan_baku')->onDelete('restrict')->onUpdate('cascade');
             $table->integer('jumlah');
             $table->timestamps();
         });

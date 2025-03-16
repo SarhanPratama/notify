@@ -15,7 +15,7 @@
             <div class="d-flex flex-column align-items-center mb-4 ">
                 <div>
 
-                    <img src="{{ $user->karyawan && $user->karyawan->foto ? asset('uploads/karyawan/' . $user->karyawan->foto) : asset('assets/img/boy.png') }}"
+                    <img src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('assets/img/boy.png') }}"
                     class="rounded-circle img-thumbnail shadow-sm"
                     style="width: 150px; height: 150px; object-fit: cover;">
                 </div>

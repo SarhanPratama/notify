@@ -9,10 +9,11 @@ class RoleController extends Controller
 {
     public function index(Request $request) {
 
-        $title = 'Tabel Role';
+        $title = 'Role';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel Role', 'url' => null],
+            ['label' => 'Role', 'url' => route('role.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
         // $perPage = $request->input('per_page');

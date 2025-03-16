@@ -6,11 +6,11 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 mb-4">
+            <div class="col-lg-12">
                 <!-- Simple Tables -->
                 <div class="card">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
-                        <h6 class="font-weight-bold text-light text-sm">Role</h6>
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
+                        <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}</h6>
 
                         {{-- <form action="{{ route('role.index') }}" method="GET" class="d-flex align-items-center">
                             <label for="per_page" class="me-2 text-sm">Tampilkan:</label>
@@ -22,7 +22,7 @@
                         </form> --}}
 
                         {{-- <div class="dropup-center dropup">
-                            <a class="" type="" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="" type="" data-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-search fa-fw text-light"></i>
                             </a>
                             <ul class="dropdown-menu mb-4 px-2 ms-3" style="width: 360px;background-color: #6777ef">
@@ -38,8 +38,8 @@
                             </ul>
                         </div> --}}
 
-                        <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-bs-toggle="modal"
-                            data-bs-target="#roleModal">
+                        <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-toggle="modal"
+                            data-target="#roleModal">
                             Tambah
                         </button>
 
@@ -48,7 +48,7 @@
                         <table class="table table-striped table-hover text-sm" id="dataTableHover">
                             <thead class="thead-light">
                                 <tr>
-                                    <th class="text-start">No</th>
+                                    <th>No</th>
                                     <th>Name</th>
                                     {{-- <th>Guard Name</th> --}}
                                     <th class="text-center">Action</th>
@@ -57,22 +57,22 @@
                             <tbody>
                                 @foreach ($role as $id => $name)
                                     <tr>
-                                        <td class="text-start">{{ $loop->iteration }}</td>
-                                        <td>{{ ucwords($name) }}</td>
+                                        <td class="align-middle">{{ $loop->iteration }}</td>
+                                        <td class="align-middle">{{ ucwords($name) }}</td>
                                         {{-- <td>{{ $guard_name}}</td> --}}
 
                                         <td class="d-flex text-nowrap justify-content-center  gap-2">
                                             <div>
-                                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
-                                                    data-bs-target="#roleUpdateModal{{ $id }}">
+                                                <button class="btn btn-sm btn-outline-warning" data-toggle="modal"
+                                                    data-target="#roleUpdateModal{{ $id }}">
 
                                                     <i class="fa fa-pencil fs-6 aria-hidden="true"></i>
                                                 </button>
                                             </div>
 
                                             <div>
-                                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                                    data-bs-target="#roleDestroyModal{{ $id }}">
+                                                <button class="btn btn-sm btn-outline-danger" data-toggle="modal"
+                                                    data-target="#roleDestroyModal{{ $id }}">
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                                 </button>
                                             </div>
@@ -84,10 +84,10 @@
                                             <div class="modal-content">
                                                 <div class="modal-header bg-warning">
                                                     <h1 class="modal-title fs-6 text-light font-weight-bold" id="roleUpdateModalLabel">
-                                                        Form Update Role</h1>
-                                                    <i class="bi bi-x-lg btn btn-outline-light btn-sm"
-                                                        data-bs-dismiss="modal" aria-label="Close"></i>
-
+                                                        Form Edit</h1>
+                                                        <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                          </button>
                                                 </div>
                                                 <form action="{{ route('role.update', $id) }}" method="POST"
                                                     enctype="multipart/form-data">
@@ -96,7 +96,7 @@
                                                     <input type="hidden" id="modal_id" name="id">
                                                     <div class="modal-body text-sm">
                                                         <div class="mb-3">
-                                                            <label for="cabang">Role</label>
+                                                            <label for="cabang">Role <span class="text-danger">*</span></label>
                                                             <input type="text" name="name"
                                                                 class="form-control form-control-sm"
                                                                 value="{{ $name }}" placeholder="Masukkan nama role"
@@ -108,7 +108,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-outline-danger btn-sm"
-                                                            data-bs-dismiss="modal">Close</button>
+                                                            data-dismiss="modal">Close</button>
                                                         <button type="submit"
                                                             class="btn btn-outline-warning btn-sm">Update</button>
                                                     </div>
@@ -121,15 +121,16 @@
                                         aria-labelledby="roleDestroyModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header bg-danger">
+                                                <div class="modal-header bg-maron">
                                                     <h1 class="modal-title fs-6 text-light font-weight-bold"
                                                         id="roleDestroyModalLabel">Konfirmasi Hapus</h1>
-                                                    <i class="bi bi-x-lg btn btn-outline-light btn-sm"
-                                                        data-bs-dismiss="modal" aria-label="Close"></i>
+                                                        <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                          </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Apakah anda yakin ingin menghapus role <strong> {{ $name }}
-                                                        </strong>?</p>
+                                                    <p>Apakah anda yakin ingin menghapus role <strong>"{{ $name }}
+                                                        "</strong>?</p>
                                                 </div>
                                                 <form action="{{ route('role.destroy', $id) }}" method="POST">
                                                     @csrf
@@ -137,7 +138,7 @@
 
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-outline-primary btn-sm"
-                                                            data-bs-dismiss="modal">Close</button>
+                                                            data-dismiss="modal">Close</button>
                                                         <button type="submit"
                                                             class="btn btn-outline-danger btn-sm">Delete</button>
                                                     </div>

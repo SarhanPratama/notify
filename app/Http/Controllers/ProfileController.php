@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -55,6 +56,7 @@ class ProfileController extends Controller
 
 
     public function updateFoto(Request $request, $id) {
+        // dd($id);
         $user = User::findOrFail($id);
 
         $request->validate([
@@ -66,20 +68,20 @@ class ProfileController extends Controller
             'foto.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
         ]);
 
-        if (!$user->Karyawan) {
+        if (!$user) {
             notify()->error('Karyawan tidak ditemukan!');
             return redirect()->back();
         }
 
-        if ($user->Karyawan->foto && file_exists(public_path('uploads/karyawan/' . $user->Karyawan->foto))) {
-            unlink(public_path('uploads/karyawan/' . $user->Karyawan->foto));
+        if ($user->foto && Storage::exists('public/' . $user->foto)) {
+            Storage::delete('public/' . $user->foto);
         }
 
         $foto = $request->file('foto');
-        $namaFoto = time() . '.' . $foto->extension();
-        $foto->move(public_path('uploads/karyawan'), $namaFoto);
+        $fotoName = time() . '_' . $foto->getClientOriginalName();
+        $fotoPath = $foto->storeAs('uploads/users', $fotoName, 'public');
 
-        $user->Karyawan->update(['foto' => $namaFoto]);
+        $user->update(['foto' => $fotoPath]);
 
         notify()->success('Foto berhasil diupdate!');
         return redirect()->back();
@@ -101,8 +103,8 @@ class ProfileController extends Controller
         $user->roles()->detach();
         $user->permissions()->detach();
 
-        if ($user->foto && file_exists(public_path('uploads/karyawan/' . $user->foto))) {
-            unlink(public_path('uploads/karyawan/' . $user->foto));
+        if ($user->foto && Storage::exists('public/' . $user->foto)) {
+            Storage::delete('public/' . $user->foto);
         }
 
         $user->delete();

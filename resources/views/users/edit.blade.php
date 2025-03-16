@@ -1,133 +1,190 @@
 @extends('layouts.master')
 
 @section('content')
-    <style>
-        .preview-img {
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border: 3px solid #ddd;
-            border-radius: 10px;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
-        }
 
-        .preview-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+<style>
+    .preview-img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 3px solid #ddd;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+    }
 
-    @include('layouts.breadcrumbs')
+    .preview-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <!-- Form Tambah Karyawan -->
-                <div class="card shadow-lg">
-                    <div
-                        class="card-header text-white d-flex flex-row align-items-center justify-content-between bg-warning">
-                        {{-- <h6 class="m-0 font-weight-bold">Form Tambah Karyawan</h6> --}}
-                        <a href="{{ route('users.index') }}" class="btn btn-sm btn-outline-light">
-                            <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT') <!-- Menambahkan metode PUT untuk pembaruan -->
-                            <div class="row g-3 text-sm ">
+    .form-control {
+        border: 1px solid #ddd;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s;
+    }
 
-                                <div class="col-lg-4 col-md-6">
-                                    <label for="nama" class="form-label fw-bold">Nama Lengkap</label>
-                                    <input type="text" class="form-control form-control-sm" name="name"
-                                        value="{{ $user->name }}" placeholder="Masukkan nama karyawan" required>
-                                </div>
+    .form-control:focus {
+        border-color: #8e1616;
+        box-shadow: 0 0 5px rgba(142, 22, 22, 0.5);
+    }
 
-                                <div class="col-lg-4 col-md-6 col-sm-6 col-6">
-                                    <label for="usia" class="form-label fw-bold">Usia</label>
-                                    <input type="date" class="form-control form-control-sm" name="tgl_lahir"
-                                        value="{{ $user->tgl_lahir ?? '' }}" placeholder="Masukkan usia" required>
-                                </div>
+    .preview-container {
+        background-color: #f8f9fa;
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        transition: border-color 0.3s ease-in-out;
+    }
 
-                                <div class="col-lg-4 col-md-6 col-sm-6 col-6 ">
-                                    <label for="telepon" class="form-label fw-bold">Telepon</label>
-                                    <input type="text" class="form-control form-control-sm" name="telepon"
-                                        value="{{ $user->telepon ?? '' }}" placeholder="Masukkan telepon" required>
-                                </div>
+    .preview-container:hover {
+        border-color: #8e1616;
+    }
+</style>
 
-                                <div class="col-lg-4 col-md-6 col-sm-6 col-6">
-                                    <label for="jabatan" class="form-label fw-bold">Jabatan</label>
-                                    <select class="form-select form-select-sm" name="id_roles" required>
-                                        <option value="" disabled>Pilih Role</option>
-                                        @foreach ($roles as $id => $name)
-                                        <option value="{{ $id }}"
-                                            {{ $user->roles->pluck('id')->contains($id) ? 'selected' : '' }}>
-                                            {{ $name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+@include('layouts.breadcrumbs')
 
-                                <div class="col-lg-4 col-md-6 col-sm-6 col-6">
-                                    <label for="cabang" class="form-label fw-bold">Cabang</label>
-                                    <select class="form-select form-select-sm" name="id_cabang" required>
-                                        <option disabled>Pilih Cabang</option>
-                                        @foreach ($cabang as $id => $nama)
-                                            <option value="{{ $id }}"
-                                                {{ ($user->id_cabang ?? '') == $id ? 'selected' : '' }}>
-                                                {{ $nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <!-- Form Edit Karyawan -->
+            <div class="card shadow-lg">
+                <div class="card-header py-3 text-white d-flex flex-row align-items-center justify-content-between bg-warning">
+                    <a href="{{ route('users.index') }}" class="btn btn-sm btn-outline-light">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </a>
+                </div>
 
-                                <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-4">
-                                    <label for="alamat" class="form-label fw-bold">Alamat</label>
-                                    <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1">{{ $user->alamat ?? '' }}</textarea>
+                <div class="card-body">
+                    <form action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <div class="row">
+                            <!-- Form Input (Kiri) -->
+                            <div class="col-lg-8">
+                                <div class="row g-3 fw-bold text-sm">
+                                    <!-- Nama Lengkap -->
+                                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                        <label for="nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="nama" name="name" value="{{ $user->name }}" placeholder="Masukkan nama" required>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6 col-sm-6 col-12">
+                                        <label class="form-label">Email <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            name="email" placeholder="Masukkan email"  value="{{ $user->email}}" required>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="password">Password <span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control form-control-sm" name="password"
+                                            placeholder="Password" aria-label="password"
+                                            required>
+                                            {{-- <small class="form-text text-light">Pass minimal 8 karakter</small> --}}
+                                    </div>
+
+                                    <!-- Confirm Password Input -->
+                                    <div class="col-6">
+                                        <label for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control form-control-sm"
+                                            name="password_confirmation" placeholder="Confirm Password"
+                                            aria-label="password_confirmation" required>
+                                    </div>
+
+                                    <!-- Tanggal Lahir -->
+                                    <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                        <label for="tanggal_lahir" class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_lahir" name="tgl_lahir" value="{{ $user->tgl_lahir }}" required>
+                                    </div>
+
+                                    <!-- Telepon -->
+                                    <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                        <label for="telepon" class="form-label">Telepon <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="telepon" name="telepon" value="{{ $user->telepon }}" placeholder="Masukkan telepon" required>
+                                    </div>
+
+                                    <!-- Role -->
+                                    <div class="col-lg-6 col-md-6">
+                                        <label for="jabatan" class="form-label">Role <span class="text-danger">*</span></label>
+                                        <select class="form-select select2-single" id="jabatan" name="id_roles" required>
+                                            <option selected disabled>Pilih Role</option>
+                                            @foreach ($roles as $id => $name)
+                                            <option value="{{ $id }}" {{ in_array($name, $userRole->toArray()) ? 'selected' : '' }}>{{ $name }}</option>                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Cabang -->
+                                    <div class="col-lg-6 col-md-6">
+                                        <label for="cabang" class="form-label">Cabang <span class="text-danger">*</span></label>
+                                        <select class="form-select select2-single" id="cabang" name="id_cabang" required>
+                                            <option selected disabled>Pilih Cabang</option>
+                                            @foreach ($cabang as $id => $nama)
+                                            <option value="{{ $id }}" {{ $user->id_cabang == $id ? 'selected' : '' }}>{{ $nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Alamat -->
+                                    <div class="col-lg-12">
+                                        <label for="alamat" class="form-label">Alamat</label>
+                                        <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="3" placeholder="Masukkan alamat">{{ $user->alamat }}</textarea>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-sm">
-                                <label for="foto" class="form-label fw-bold">Foto</label>
-                                <div class="input-group">
-                                    <input type="file" name="foto" class="form-control form-control-sm" id="fotoInput"
-                                        onchange="previewImage(event)">
-                                    <label class="input-group-text text-sm">Upload</label>
+                            <!-- Preview Foto dan Input Foto (Kanan) -->
+                            <div class="col-lg-4">
+                                <div class="sticky-top" style="top: 20px;">
+                                    <!-- Preview Foto -->
+                                    <div class="text-center mb-3 fw-bold text-sm">
+                                        <label class="form-label">Preview Foto</label>
+                                        <div class="preview-container">
+                                            @if ($user->foto)
+                                                <img id="fotoPreview" src="{{ asset('storage/' . $user->foto) }}" class="img-thumbnail preview-img m-auto">
+                                            @else
+                                                <img id="fotoPreview" src="" class="img-thumbnail preview-img m-auto">
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Input Foto -->
+                                    <div class="text-center">
+                                        <div class="input-group input-group-sm">
+                                            <input type="file" name="foto" class="form-control" id="fotoInput" onchange="previewImage(event)">
+                                            <label class="input-group-text">Pilih File</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-12 text-center mt-2 text-sm">
-                                <label class="form-label fw-bold">Preview Foto</label>
-                                <div class="preview-container d-flex justify-content-center">
-                                    {{-- <img id="fotoPreview" src="{{ $user->Karyawan->foto ? asset('uploads/karyawan/' . ($user->Karyawan->foto ?? 'foto.jpg')) : '' }}" class="img-thumbnail preview-img m-auto" alt="Preview Foto"> --}}
-                                    <img id="fotoPreview"
-                                        src="{{ optional($user->karyawan)->foto ? asset('uploads/karyawan/' . ($user->karyawan->foto ?? 'foto.jpg')) : asset('uploads/karyawan/foto.jpg') }}"
-                                        class="img-thumbnail preview-img m-auto" alt="Preview Foto">
-                                </div>
+                        <!-- Submit Button -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <button type="reset" class="btn btn-sm btn-outline-danger me-2">Reset</button>
+                                <button type="submit" class="btn btn-sm btn-outline-warning">Update</button>
                             </div>
-
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        function previewImage(event) {
-            const input = event.target;
-            const preview = document.getElementById('fotoPreview');
+</div>
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('fotoPreview');
 
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
         }
-    </script>
+    }
+</script>
+
 @endsection

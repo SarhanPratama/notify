@@ -31,9 +31,6 @@ define(function () {
     },
     removeAllItems: function () {
       return 'Supprimer tous les éléments';
-    },
-    removeItem: function () {
-      return 'Supprimer l\'élément';
     }
   };
 });

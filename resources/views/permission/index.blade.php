@@ -9,8 +9,8 @@
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->
       <div class="card">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #6777ef">
-            <h6 class="font-weight-bold text-light text-sm">Permission</h6>
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
+            <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}</h6>
             {{-- <form action="{{ route('permission.index') }}" method="GET" class="d-flex align-items-center">
                 <select name="per_page" id="per_page" class="form-select form-select-sm " onchange="this.form.submit()">
                     <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
@@ -20,7 +20,7 @@
                 </select>
             </form>
             <div class="dropup-center dropup">
-                <a class="" type="" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="" type="" data-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-search fa-fw text-light"></i>
                 </a>
                 <ul class="dropdown-menu mb-4 px-2" style="width: 300px; background-color: #6777ef">
@@ -33,7 +33,7 @@
                 </ul>
             </div> --}}
 
-            <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-bs-toggle="modal" data-bs-target="#permissionModal">
+            <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-toggle="modal" data-target="#permissionModal">
                 Tambah
             </button>
         </div>
@@ -41,7 +41,7 @@
         <table class="table table-striped  table-hover table-flush text-sm text-nowrap" id="dataTableHover">
             <thead class="thead-light">
             <tr>
-                <th class="text-start">No</th>
+                <th>No</th>
                 <th>Name</th>
                 <th class="text-center">Action</th>
             </tr>
@@ -49,20 +49,20 @@
             <tbody>
                 @foreach ($permission as $item)
                 <tr>
-                    <td class="text-start">{{ $loop->iteration }}</td>
-                    <td>{{ ucwords($item->name) }}</td>
+                    <td class="align-middle">{{ $loop->iteration }}</td>
+                    <td class="align-middle">{{ ucwords($item->name) }}</td>
                     <td class="d-flex text-nowrap justify-content-center gap-2">
                         <div>
                             <button class="btn btn-sm btn-outline-warning"
-                                data-bs-toggle="modal"
-                                data-bs-target="#permissionUpdateModal{{ $item->id }}">
+                                data-toggle="modal"
+                                data-target="#permissionUpdateModal{{ $item->id }}">
                                 <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
                             </button>
                         </div>
                         <div>
                             <button class="btn btn-sm btn-outline-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#permissionDestroyModal{{ $item->id }}">
+                                data-toggle="modal"
+                                data-target="#permissionDestroyModal{{ $item->id }}">
                                 <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -73,16 +73,18 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-warning">
-                                <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionUpdateModalLabel">Form Update Permission</h1>
-                                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
-                            </div>
+                                <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionUpdateModalLabel">Form Edit</h1>
+                                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
                             <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <input type="hidden" id="modal_id" name="id">
-                                <div class="modal-body text-sm">
+                                <div class="modal-body text-sm fw-bold">
                                     <div class="mb-3">
-                                        <label for="cabang">Permission</label>
+                                        <label for="cabang">Permission <span class="text-danger">*</span></label>
                                         <input type="text" name="name" class="form-control form-control-sm" value="{{ $item->name }}" placeholder="Masukkan permission" required>
                                         @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -90,7 +92,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
                                 </div>
                             </form>
@@ -101,18 +103,18 @@
                 <div class="modal fade" id="permissionDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionDestroyModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header bg-danger">
+                            <div class="modal-header bg-maron">
                                 <h1 class="modal-title fs-6 font-weight-bold text-light" id="permissionDestroyModalLabel">Konfirmasi Hapus</h1>
-                                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-dismiss="modal" aria-label="Close"></i>
                             </div>
                             <div class="modal-body">
-                                <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->name }}</strong>?</p>
+                                <p>Apakah anda yakin ingin menghapus Permission <strong>"{{ $item->name }}"</strong>?</p>
                             </div>
                             <form action="{{ route('permission.destroy', $item->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                 </div>
                             </form>

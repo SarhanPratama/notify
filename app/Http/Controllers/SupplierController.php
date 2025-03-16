@@ -2,21 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
     public function index() {
-        $title = 'Tabel supplier';
+        $title = 'Supplier';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Tabel supplier', 'url' => null],
+            ['label' => 'Supplier', 'url' => route('supplier.index')],
+            ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        return view('supplier.index', compact('title', 'breadcrumbs'));
+        $supplier = Supplier::all();
+
+        return view('supplier.index', compact('title', 'breadcrumbs', 'supplier'));
     }
 
-    public function store() {
-        
+    public function store(Request $request) {
+        $request->validate([
+            'nama' => 'required',
+            'telepon' => 'required',
+            'alamat' => 'required'
+        ]);
+
+        Supplier::create([
+            'nama' => $request->nama,
+            'telepon' => $request->telepon,
+            'alamat' => $request->alamat
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function update(Request $request, $id) {
+        $supplier = Supplier::findOrFail($id);
+        $request->validate([
+            'nama' => 'required',
+            'telepon' => 'required',
+            'alamat' => 'required'
+        ]);
+
+        $supplier->update([
+            'nama' => $request->nama,
+            'telepon' => $request->telepon,
+            'alamat' => $request->alamat
+        ]);
+
+        return redirect()->back();
     }
 }

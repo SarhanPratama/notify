@@ -13,17 +13,14 @@ return new class extends Migration
     {
         Schema::create('pembelian', function (Blueprint $table) {
             $table->id();
-            // $table->date('tgl');
+            $table->date('tgl');
             $table->decimal('total', 15, 2);
             $table->string('status')->default('pending');
-            $table->foreignId('id_supplier')->constrained('supplier')->onDelete('cascade');
+            $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pembelian');

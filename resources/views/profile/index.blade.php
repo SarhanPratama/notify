@@ -1,13 +1,8 @@
 @extends('layouts.master')
 
 @section('content')
-@include('layouts.breadcrumbs')
 
-{{-- @if (session('notify'))
-    <script>
-        notify().{{ session('notify')['type'] }}('{{ session('notify')['message'] }}');
-    </script>
-@endif --}}
+@include('layouts.breadcrumbs')
 
 <div class="container">
     <div class="row text-sm">
@@ -17,7 +12,7 @@
                 <div class="card-body text-center p-4">
                     <div class="d-flex flex-column align-items-center mb-4 gap-2">
                         <div>
-                            <img src="{{ $user->karyawan && $user->foto ? asset('uploads/karyawan/' . $user->foto) : asset('assets/img/boy.png') }}"
+                            <img src="{{ $user->foto ? asset('storage/' . $user->foto) : asset('assets/img/boy.png') }}"
                                  class="rounded-circle img-thumbnail"
                                  style="width: 150px; height: 150px; object-fit: cover;" alt="Foto Profil">
                         </div>
@@ -85,7 +80,7 @@
                         <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
                             <form id="profile-form" action="{{ route('profile.update', $user->id)}}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <div class="row">
+                                <div class="row fw-bold">
                                     <div class="col-md-3 mb-3 col-sm-6 col-12">
                                         <label for="name" class="form-label">Nama Lengkap</label>
                                         <div class="input-group input-group-sm">
@@ -115,20 +110,16 @@
                                             <input type="text" class="form-control" id="phone" name="telepon" value="{{ $user->telepon ?? '' }}">
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
-                                <!-- Added Role Access field -->
-                                <div class="col-md-6 col-sm-6">
+                                <div class="col-md-6 col-sm-6 mb-3">
                                     <label for="role" class="form-label">Role</label>
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text color input-group-sm"><i class="fa fa-shield text-light fs-6" aria-hidden="true"></i></span>
-                                        <input type="text" class="form-control" id="role" name="role" value="{{ $user->role->name ?? '-' }}" readonly>
+                                        <input type="text" class="form-control" id="role" name="role" value="{{ $user->roles->first()->name ?? '-' }}" readonly>
                                     </div>
                                     <div class="form-text">Role hanya dapat diubah oleh administrator</div>
                                 </div>
 
-                                <!-- Added Branch field -->
                                 <div class="col-md-6 col-sm-6 mb-3">
                                     <label for="cabang" class="form-label">Cabang</label>
                                     <div class="input-group input-group-sm">
@@ -138,22 +129,21 @@
                                     <div class="form-text">Cabang hanya dapat diubah oleh administrator</div>
                                 </div>
 
-
-
                                 <div class="mb-4">
                                     <label for="bio" class="form-label">Alamat</label>
                                     <textarea class="form-control text-sm" id="bio" name="alamat" rows="3">{{ $user->alamat ?? '' }}</textarea>
                                 </div>
                                 </div>
+
                                 <div class="d-flex justify-content-between">
                                     <div>
                                         <button type="submit" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-save me-2"></i>Update
+                                            Update
                                         </button>
                                     </div>
                                     <div>
                                         <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                                            <i class="bi bi-trash me-2"></i>Hapus Akun
+                                            Hapus Akun
                                         </button>
                                     </div>
                                 </div>
@@ -275,14 +265,14 @@
                 @method('DELETE')
                 <div class="modal-body">
                     <p>Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.</p>
-                    <div class="mb-3">
+                    <div class="my-3">
                         <label for="password" class="form-label">Masukkan Password Anda</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control form-control-sm" id="password" name="password" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Hapus Akun</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                 </div>
             </form>
         </div>

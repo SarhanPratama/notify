@@ -16,17 +16,6 @@
             @endforeach
         </div>
 
-        <div>
-            <label for="select2Multiple">Multiple-Select Boxes (pillbox)</label>
-            <select class="select2-multiple form-control" name="states[]" multiple="multiple"
-              id="select2Multiple">
-              <option value="">Select</option>
-              <option value="Aceh">Aceh</option>
-              <option value="Sumatra Utara">Sumatra Utara</option>
-              <option value="Sumatra Barat">Sumatra Barat</option>
-              <option value="Riau">Riau</option>
-            </select>
-        </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
     </form>

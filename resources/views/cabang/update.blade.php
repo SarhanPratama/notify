@@ -18,7 +18,7 @@
           <form action="{{ route('cabang.update', $cabang->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="row text-sm">
+            <div class="row text-sm fw-bold">
                 <div class="col col-lg-6 col-md-12 col-sm-12 col-12">
                     <div class="form-group">
                         <label for="cabang">Cabang</label>

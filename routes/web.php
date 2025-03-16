@@ -13,6 +13,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PermissionController;
 
 Route::get('/', function () {
@@ -41,7 +42,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
 
-    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin');
+    Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin|karyawan');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');
     Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
@@ -65,6 +66,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::put('bahan-baku/{id}', [bahanBakuController::class, 'update'])->name('bahan-baku.update');
     Route::delete('bahan-baku/{id}', [bahanBakuController::class, 'destroy'])->name('bahan-baku.destroy');
 
+    Route::post('/satuan', [RoleController::class, 'store'])->name('satuan.store');
+
     Route::get('/produk', [ProductsController::class, 'index'])->name('produk.index');
     Route::get('/produk/create', [ProductsController::class, 'create'])->name('produk.create');
     Route::post('/produk', [ProductsController::class, 'store'])->name('produk.store');
@@ -72,6 +75,9 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/produk/{id}/edit', [ProductsController::class, 'edit'])->name('produk.edit');
     Route::put('/produk/{id}', [ProductsController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
+
+    Route::post('/merek', [ProductsController::class, 'merekStore'])->name('merek.store');
+    Route::post('/kategori', [ProductsController::class, 'kategoriStore'])->name('kategori.store');
 
     Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
     Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
@@ -94,6 +100,11 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
     Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
+    Route::put('/supplier/{id}', [SupplierController::class, 'update'])->name('supplier.update');
+    Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
+
+    Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+
 
 
 Route::get('/notifications/mark-as-read', function () {

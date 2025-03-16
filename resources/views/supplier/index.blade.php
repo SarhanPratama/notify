@@ -11,10 +11,10 @@
         <!-- Simple Tables -->
 
             <div class="card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between color">
-                <h6 class="font-weight-bold text-light text-sm">Supplier</h6>
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
+                <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}</h6>
 
-                    <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button type="button" class="btn btn-outline-light btn-sm btn-lg" data-toggle="modal" data-target="#exampleModal">
                         Tambah
                     </button>
                 </div>
@@ -30,24 +30,25 @@
                     </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($cabang as $item)
-                        <tr class="text-start">
-                            <td class="text-start">{{ $loop->iteration }}</td>
-                            <td> {{ ucwords($item->nama) }}</td>
-                            <td>{{ $item->telepon }}</td>
-                            <td class=""  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
+                        @foreach ($supplier as $item)
+                        <tr>
+                            <td class="align-middle">{{ $loop->iteration }}</td>
+                            <td class="align-middle"> {{ ucwords($item->nama) }}</td>
+                            <td class="align-middle">{{ $item->telepon }}</td>
+                            <td class="align-middle" class=""  data-bs-toggle="tooltip" title="{{ $item->alamat }}">
                                 {{ Str::limit($item->alamat, 30, '...') }}
                             </td>
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
-                                    <a href="{{ route('cabang.edit', $item->id)}}"  class="btn btn-sm btn-outline-warning">
-                                        <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
-                                    </a>
+                                    <button class="btn btn-sm btn-outline-warning"  data-toggle="modal"
+                                    data-target="#supplierUpdateModal{{ $item->id }}">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                                 <div>
                                     <button class="btn btn-sm btn-outline-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#cabangDestroyModal{{ $item->id }}">
+                                        data-toggle="modal"
+                                        data-target="#supplierDestroyModal{{ $item->id }}">
                                         <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -55,28 +56,34 @@
                             </td>
                         </tr>
 
-                        <div class="modal fade" id="permissionUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="permissionUpdateModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="supplierUpdateModal{{ $item->id }}" tabindex="-1" aria-labelledby="supplierUpdateModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5 font-weight-bold" id="permissionUpdateModalLabel">Form Update Cabang</h1>
-                                        <i class="bi bi-x-lg btn btn-outline-danger btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
-                                    </div>
-                                    <form action="{{ route('permission.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                                    <div class="modal-header bg-warning">
+                                        <h6 class="modal-title font-weight-bold text-light" id="supplierUpdateModalLabel">Form Edit</h6>
+                                        <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
+                                        </div>
+                                    <form action="{{ route('supplier.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
-                                        <input type="hidden" id="modal_id" name="id">
-                                        <div class="modal-body text-sm">
+                                        <div class="modal-body text-sm fw-bold">
                                             <div class="mb-3">
-                                                <label for="cabang">Permission</label>
-                                                <input type="text" name="name" class="form-control form-control-sm" value="{{ $item->name }}" placeholder="Masukkan permission" required>
-                                                @error('name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
+                                                <label>Supplier <span class="text-danger">*</span> </label>
+                                                <input type="text" name="nama" class="form-control form-control-sm" value="{{ $item->nama}}"  placeholder="Masukkan nama supplier" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Telepon <span class="text-danger">*</span></label>
+                                                <input type="text" name="telepon" class="form-control form-control-sm" value="{{ $item->telepon }}" placeholder="Masukkan nomor telepon" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Alamat <span class="text-danger">*</span></label>
+                                                <textarea class="form-control form-control-sm" name="alamat" rows="3">{{ $item->alamat}}</textarea>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
                                             <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
                                         </div>
                                     </form>
@@ -84,28 +91,30 @@
                             </div>
                         </div>
 
-                        <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="supplierDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="supplierDestroyModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header bg-danger">
-                                        <h1 class="modal-title fs-5 font-weight-bold text-light" id="cabangDestroyModalLabel">Konfirmasi Hapus</h1>
-                                        <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
+                                        <h6 class="modal-title font-weight-bold text-light" id="supplierDestroyModalLabel">Konfirmasi Hapus</h6>
+                                        <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                          </button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Apakah anda yakin ingin menghapus Permission <strong>{{ $item->nama }}</strong>?</p>
+                                        <p>Apakah anda yakin ingin menghapus supplier <strong>"{{ $item->nama }}"</strong>?</p>
                                     </div>
-                                    <form action="{{ route('cabang.destroy', $item->id) }}" method="POST">
+                                    <form action="{{ route('supplier.destroy', $item->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Close</button>
                                             <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                         @endforeach --}}
+                         @endforeach
                     </tbody>
                 </table>
                 </div>
@@ -119,10 +128,11 @@
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header color">
-          <h1 class="modal-title fs-6 text-light font-weight-bold" id="exampleModalLabel">Form input Supplier</h1>
-          <i class="bi bi-x-lg btn btn-outline-light btn-sm" data-bs-dismiss="modal" aria-label="Close"></i>
-          {{-- <button type="button" class="btn-close btn-outline-primary" data-bs-dismiss="modal" aria-label="Close"></button> --}}
+        <div class="modal-header bg-maron">
+          <h6 class="modal-title text-light font-weight-bold" id="exampleModalLabel">Form Tambah</h6>
+          <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <form action="{{ route('supplier.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -136,12 +146,12 @@
                     <input type="text" name="telepon" class="form-control form-control-sm"  placeholder="Masukkan nomor telepon" required>
                 </div>
                 <div class="mb-3">
-                    <label>Alamat</label>
+                    <label>Alamat <span class="text-danger">*</span></label>
                     <textarea class="form-control form-control-sm" name="alamat" rows="3"></textarea>
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
                 <button type="reset" class="btn btn-outline-warning btn-sm">Reset</button>
                 <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
             </div>
