@@ -12,7 +12,7 @@ class DetailPembelian extends Model
     protected $table = 'detail_pembelian';
 
     protected $fillable = [
-        'produk',
+        'id_produk',
         'quantity',
         'harga',
         'total_harga',
@@ -21,6 +21,6 @@ class DetailPembelian extends Model
 
     public function pembelian()
     {
-        return $this->belongsTo(Pembelian::class);
+        return $this->belongsTo(Pembelian::class, 'id_pembelian');
     }
 }

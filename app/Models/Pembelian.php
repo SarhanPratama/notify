@@ -12,6 +12,7 @@ class Pembelian extends Model
     protected $table = 'pembelian';
 
     protected $fillable = [
+        'kode',
         'total',
         'status',
         'id_supplier'
@@ -19,11 +20,11 @@ class Pembelian extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Supplier::class, 'id_supplier');
     }
 
     public function detailPembelian()
     {
-        return $this->hasMany(DetailPembelian::class);
+        return $this->hasMany(DetailPembelian::class, 'id_pembelian');
     }
 }

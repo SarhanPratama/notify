@@ -104,6 +104,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
     Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+    Route::post('/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
 
 
 

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategori;
+use Carbon\Carbon;
 use App\Models\Merek;
+use App\Models\Kategori;
 use App\Models\products;
+use App\Models\Pembelian;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('pembelian', function (Blueprint $table) {
             $table->id();
-            $table->date('tgl');
+
+            $table->integer('kode')->unique();
             $table->decimal('total', 15, 2);
             $table->string('status')->default('pending');
             $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
