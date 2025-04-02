@@ -13,12 +13,12 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\MitraController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PermissionController;
 
 Route::get('/', function () {
-    // notify()->success('Welcome to Laravel Notify ⚡️');
-    // smilify('success', 'You are successfully reconnected');
     return redirect()->route('login');
 });
 
@@ -39,14 +39,12 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/profile/foto/{id}', [ProfileController::class, 'updateFoto'])->name('profile.foto');
     Route::delete('/profile/{id}', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard')->middleware('role:admin|karyawan|keuangan');
 
     Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:admin|karyawan');
     Route::post('/role', [RoleController::class, 'store'])->name('role.store');
     Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
-
 
     Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
     Route::post('/permission', [PermissionController::class, 'store'])->name('permission.store');
@@ -104,8 +102,12 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
     Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+    Route::get('/pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
     Route::post('/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
+    Route::put('/pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
+    Route::put('/pembelian/status/{id}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
 
+    Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
 
 
 Route::get('/notifications/mark-as-read', function () {
@@ -115,3 +117,7 @@ Route::get('/notifications/mark-as-read', function () {
 
 });
 
+Route::get('/absen/', [MitraController::class, 'index'])->name('absen.index');
+
+Route::get('/mitra/create', [MitraController::class, 'create'])->name('mitra.create');
+Route::post('/mitra/', [MitraController::class, 'store'])->name('mitra.store');

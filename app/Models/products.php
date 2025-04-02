@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use App\Models\Discount;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class products extends Model
 {
@@ -35,5 +36,10 @@ class products extends Model
     public function resep()
     {
         return $this->hasMany(Resep::class, 'id_products');
+    }
+
+    public function discounts()
+    {
+        return $this->hasMany(Discounts::class);
     }
 }

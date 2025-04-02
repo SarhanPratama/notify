@@ -29,6 +29,7 @@ class bahanBakuController extends Controller
             'nama' => 'required',
             'stok' => 'required',
             'stok_minimum' => 'required',
+            'harga' => 'required',
             'id_satuan' => 'required'
         ]);
 
@@ -37,6 +38,7 @@ class bahanBakuController extends Controller
                 'nama' => $request->nama,
                 'stok' => $request->stok,
                 'stok_minimum' => $request->stok_minimum,
+                'harga' => $request->harga,
                 'id_satuan' => $request->id_satuan,
             ]);
 
@@ -44,6 +46,34 @@ class bahanBakuController extends Controller
             return redirect()->back();
         } catch (\Exception $e) {
             notify()->success('Gagal menambah data');
+            return redirect()->back();
+        }
+
+        return redirect()->back();
+    }
+
+    public function update(Request $request, $id) {
+        $request->validate([
+            'nama' => 'required',
+            'stok' => 'required',
+            'stok_minimum' => 'required',
+            'harga' => 'required',
+            'id_satuan' => 'required'
+        ]);
+        $bahanBaku = bahanBaku::findOrFail($id);
+        try {
+            $bahanBaku->update([
+                'nama' => $request->nama,
+                'stok' => $request->stok,
+                'stok_minimum' => $request->stok_minimum,
+                'harga' => $request->harga,
+                'id_satuan' => $request->id_satuan,
+            ]);
+
+            notify()->success('Berhasil update data');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            notify()->success('Gagal update data');
             return redirect()->back();
         }
 

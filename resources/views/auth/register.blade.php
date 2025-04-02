@@ -10,7 +10,7 @@
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-4">
-                    <div class="card text-light shadow-lg" style="background-color: #8e1616;">
+                    <div class="card text-light shadow-lg" style="background-color: #9c1515;">
                         <div class="card-header">
                             {{-- <img src="..." class="card-img-top" alt="..."> --}}
                             <img src="{{ asset('assets/img/logo/brand.png') }}" alt="Logo"

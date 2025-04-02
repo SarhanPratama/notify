@@ -58,6 +58,7 @@
                         <th>Cabang</th>
                         <th>Telepon</th>
                         <th>Alamat</th>
+                        <th>Lokasi</th>
                         <th class="text-center">Action</th>
                     </tr>
                     </thead>
@@ -70,6 +71,7 @@
                             <td class="text-nowrap align-middle"  data-toggle="tooltip" title="{{ $item->alamat }}">
                                 {{ Str::limit($item->alamat, 30, '...') }}
                             </td>
+                            <td class="text-nowrap align-middle">{{ $item->lokasi }}</td>
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
                                     <button class="btn btn-sm btn-outline-warning"
@@ -125,10 +127,16 @@
                                                             <input type="text" name="telepon" class="form-control form-control-sm" value="{{ $item->telepon }}" placeholder="Masukkan telepon" required>
                                                         </div>
 
+
                                                         <!-- Alamat -->
                                                         <div class="col-12">
                                                             <label for="alamat" class="form-label fw-bold">Alamat <span class="text-danger">*</span></label>
                                                             <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="3" placeholder="Masukkan alamat" required>{{ $item->alamat }}</textarea>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <label for="lokasi" class="form-label fw-bold">Url Lokasi<span class="text-danger"> *</span></label>
+                                                            <input type="text" name="lokasi" id="lokasi" class="form-control form-control-sm" value="{{ $item->lokasi}}" placeholder="Masukkan url lokasi" required>
                                                         </div>
 
                                                         <!-- Upload Foto -->
@@ -245,6 +253,11 @@
                                 <div class="col-12">
                                     <label for="alamat" class="form-label fw-bold">Alamat <span class="text-danger">*</span></label>
                                     <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="3" placeholder="Masukkan alamat" required></textarea>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="lokasi" class="form-label fw-bold">Url Lokasi<span class="text-danger"> *</span></label>
+                                    <input type="text" name="lokasi" id="lokasi" class="form-control form-control-sm" placeholder="Masukkan " required>
                                 </div>
 
                                 <!-- Upload Foto -->

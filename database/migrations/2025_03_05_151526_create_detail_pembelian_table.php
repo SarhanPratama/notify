@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('detail_pembelian', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_produk')->constrained('products')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('id_bahan_baku')->constrained('bahan_baku')->onDelete('restrict')->onUpdate('cascade');
             $table->integer('quantity');
             $table->decimal('harga', 15, 2);
             $table->decimal('total_harga', 15, 2);

@@ -23,4 +23,10 @@ class DetailPembelian extends Model
     {
         return $this->belongsTo(Pembelian::class, 'id_pembelian');
     }
+
+    public function bahanBaku()
+{
+    return $this->belongsTo(bahanBaku::class, 'id_produk');
+}
+
 }

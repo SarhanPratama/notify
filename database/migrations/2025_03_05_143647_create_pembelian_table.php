@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->integer('kode')->unique();
             $table->decimal('total', 15, 2);
-            $table->string('status')->default('pending');
+            $table->enum('status', ['pending', 'disetujui', 'success'])->default('pending');
             $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });

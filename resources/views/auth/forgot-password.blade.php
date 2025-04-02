@@ -10,7 +10,7 @@
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-4">
-                    <div class="card shadow-lg" style="border-radius: 1rem; border: none; background-color: #8e1616;">
+                    <div class="card shadow-lg" style="border-radius: 1rem; border: none; background-color: #9c1515;">
                         <!-- Card Header (Logo) -->
                         <div class="card-header text-center">
                             <img src="{{ asset('assets/img/logo/brand.png') }}" alt="Logo" class="img-fluid mx-auto" style="max-width: 100px;">

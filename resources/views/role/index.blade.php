@@ -78,6 +78,7 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    
                                     <div class="modal fade" id="roleUpdateModal{{ $id }}" tabindex="-1"
                                         aria-labelledby="roleUpdateModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">

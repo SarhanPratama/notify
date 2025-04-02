@@ -74,21 +74,19 @@
                                                 placeholder="Masukkan email" required>
                                         </div>
 
-                                        <div class="col-6">
+                                        {{-- <div class="col-6">
                                             <label for="password">Password <span class="text-danger">*</span></label>
                                             <input type="password" class="form-control form-control-sm" name="password"
                                                 placeholder="Password" aria-label="password" required>
-                                            {{-- <small class="form-text text-light">Pass minimal 8 karakter</small> --}}
-                                        </div>
+                                        </div> --}}
 
-                                        <!-- Confirm Password Input -->
-                                        <div class="col-6">
+                                        {{-- <div class="col-6">
                                             <label for="password_confirmation">Confirm Password <span
                                                     class="text-danger">*</span></label>
                                             <input type="password" class="form-control form-control-sm"
                                                 name="password_confirmation" placeholder="Confirm Password"
                                                 aria-label="password_confirmation" required>
-                                        </div>
+                                        </div> --}}
 
                                         <!-- Tanggal Lahir -->
                                         <div class="col-lg-4 col-md-6 col-sm-6 col-6">
@@ -98,12 +96,17 @@
                                                 name="tgl_lahir" required>
                                         </div>
 
-                                        <!-- Telepon -->
-                                        <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                        {{-- <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                                             <label for="telepon" class="form-label">Telepon <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="telepon"
                                                 name="telepon" placeholder="Masukkan telepon" required>
+                                        </div> --}}
+
+                                        <!-- Telepon -->
+                                        <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                            <label for="telepon" class="form-label">Telepon <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" id="telepon" name="telepon" pattern="^\+62\d{8,12}$" placeholder="Masukkan telepon" required>
                                         </div>
 
                                         <div class="col-lg-12">
@@ -114,7 +117,7 @@
 
 
                                         <!-- Role -->
-                                        <div class="col-lg-4 col-md-6 col-6 mb-3">
+                                        <div class="col-lg-4 col-md-6 col-12 mb-3">
                                             <label for="jabatan" class="form-label">Role <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select select2-single" id="jabatan" name="id_roles"
@@ -122,21 +125,21 @@
                                                 <option selected disabled>-- Pilih Role --</option>
                                                 @foreach ($roles as $id => $name)
                                                     <option value="{{ $id }}">
-                                                        {{ $name }}
+                                                        {{ ucwords($name) }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
 
                                         <!-- Cabang -->
-                                        <div class="col-lg-4 col-md-6 col-6 mb-3">
+                                        <div class="col-lg-4 col-md-6 col-12 mb-3">
                                             <label for="cabang" class="form-label">Cabang <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select select2-single" id="cabang" name="id_cabang"
                                                 required>
                                                 <option selected disabled>-- Pilih Cabang --</option>
                                                 @foreach ($cabang as $id => $nama)
-                                                    <option value="{{ $id }}">{{ $nama }}
+                                                    <option value="{{ $id }}">{{ ucwords($nama) }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -181,6 +184,9 @@
                     </div>
                 </div>
             </div>
+            <div class="col-4">
+
+            </div>
         </div>
     </div>
 
@@ -198,5 +204,11 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        document.getElementById('telepon').addEventListener('input', function(event) {
+            var input = event.target;
+            if (input.value && !input.value.startsWith('+62')) {
+                input.value = '+62' + input.value.replace(/^0+/, '');
+            }
+        });
     </script>
 @endsection

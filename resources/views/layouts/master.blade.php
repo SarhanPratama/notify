@@ -25,7 +25,7 @@
 
         .bg-maron {
             /* background-color: #8e1616; */
-            background-color: #861414;
+            background-color: #9c1515;
         }
 
         .text-maron {

@@ -16,6 +16,7 @@ class Cabang extends Model
         'nama',
         'alamat',
         'telepon',
+        'lokasi',
         'foto',
     ];
 

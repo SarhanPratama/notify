@@ -71,8 +71,8 @@ class UsersController extends Controller
             'id_cabang'         => 'required|exists:cabang,id',
             'alamat'            => 'nullable|string',
             'foto'              => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'password'          => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|string|min:8',
+        //     'password'          => 'required|string|min:8|confirmed',
+        //     'password_confirmation' => 'required|string|min:8',
         ]);
 
         $user = User::create([
@@ -82,7 +82,7 @@ class UsersController extends Controller
             'telepon'           => $request->telepon,
             'id_cabang'         => $request->id_cabang,
             'alamat'            => $request->alamat,
-            'password'          => Hash::make($request->password),
+            // 'password'          => Hash::make($request->password),
             'created_at'        => now(),
             'updated_at'        => now(),
         ]);
@@ -155,8 +155,8 @@ class UsersController extends Controller
             'id_cabang' => 'required|exists:cabang,id',
             'alamat'    => 'nullable|string',
             'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'password'          => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|string|min:8',
+            // 'password'          => 'required|string|min:8|confirmed',
+            // 'password_confirmation' => 'required|string|min:8',
         ]);
 
         // dd($request->all());
@@ -168,7 +168,7 @@ class UsersController extends Controller
             'telepon'   => $request->telepon,
             'id_cabang' => $request->id_cabang,
             'alamat'    => $request->alamat,
-            'password'  => Hash::make($request->password),
+            // 'password'  => Hash::make($request->password),
             'updated_at' => now(),
         ]);
 

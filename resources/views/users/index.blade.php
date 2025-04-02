@@ -36,7 +36,11 @@
                                         <td class="align-middle">{{ ucwords($item->name) }}</td>
                                         <td class="align-middle">{{ Ucwords($item->roles->first()->name ?? '-') }}</td>
                                         <td class="align-middle">{{ ucwords($item->cabang->nama ?? '-') }}</td>
-                                        <td class="align-middle">{{ $item->telepon ?? '-' }}</td>
+                                        <td class="align-middle">
+                                            <a href="https://wa.me/{{ $item->telepon ?? 'nomor_default' }}" target="_blank">
+                                                {{ $item->telepon ?? '-' }}
+                                            </a>
+                                        </td>
                                         {{-- <td class="text-truncate" style="max-width: 200px;"  data-toggle="tooltip" title="{{ $item->alamat }}">
                         {{ Str::limit($item->alamat, 30, '...') }}
                     </td> --}}

@@ -45,6 +45,7 @@ class CabangController extends Controller
             'nama' => 'required',
             'telepon' => 'required|string|max:15',
             'alamat' => 'required',
+            'lokasi' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -59,6 +60,7 @@ class CabangController extends Controller
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
+            'lokasi' => $request->lokasi,
             'foto' => $fotoPath
         ]);
         notify()->success('Data berhasil di input');
@@ -86,6 +88,7 @@ class CabangController extends Controller
             'nama' => 'required|string|max:255',
             'telepon' => 'required|string|max:15',
             'alamat' => 'required|string',
+            'lokasi' => 'required|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -107,6 +110,7 @@ class CabangController extends Controller
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
+            'lokasi' => $request->lokasi,
             'foto' => $fotoPath
         ]);
 

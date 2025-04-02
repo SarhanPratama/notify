@@ -74,21 +74,21 @@
                                             name="email" placeholder="Masukkan email"  value="{{ $user->email}}" required>
                                     </div>
 
-                                    <div class="col-6">
+                                    {{-- <div class="col-6">
                                         <label for="password">Password <span class="text-danger">*</span></label>
                                         <input type="password" class="form-control form-control-sm" name="password"
                                             placeholder="Password" aria-label="password"
                                             required>
-                                            {{-- <small class="form-text text-light">Pass minimal 8 karakter</small> --}}
-                                    </div>
 
-                                    <!-- Confirm Password Input -->
-                                    <div class="col-6">
+                                    </div> --}}
+
+
+                                    {{-- <div class="col-6">
                                         <label for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
                                         <input type="password" class="form-control form-control-sm"
                                             name="password_confirmation" placeholder="Confirm Password"
                                             aria-label="password_confirmation" required>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Tanggal Lahir -->
                                     <div class="col-lg-4 col-md-6 col-sm-6 col-6">
@@ -97,9 +97,14 @@
                                     </div>
 
                                     <!-- Telepon -->
-                                    <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                    {{-- <div class="col-lg-4 col-md-6 col-sm-6 col-6">
                                         <label for="telepon" class="form-label">Telepon <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control form-control-sm" id="telepon" name="telepon" value="{{ $user->telepon }}" placeholder="Masukkan telepon" required>
+                                    </div> --}}
+
+                                    <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+                                        <label for="telepon" class="form-label">Telepon <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control form-control-sm" id="telepon" name="telepon" pattern="^\+62\d{8,12}$" value="+62{{ $user->telepon }}" placeholder="Masukkan telepon" required>
                                     </div>
 
                                     <!-- Role -->

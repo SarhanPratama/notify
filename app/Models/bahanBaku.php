@@ -15,6 +15,7 @@ class bahanBaku extends Model
         'nama',
         'stok',
         'stok_minimum',
+        'harga',
         'id_satuan',
     ];
 
