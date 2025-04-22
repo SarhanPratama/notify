@@ -31,15 +31,14 @@
                     href="{{ route('produk.index') }}">List Produk</a>
                 {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('bahan-baku.index') }}">Bahan Baku</a> --}}
-                <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a>
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['discount.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('discount.index') }}">Diskon</a>
             </div>
         </div>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed fw-bold
-         "
+        <a class="nav-link collapsed fw-bold"
          href="#" data-toggle="collapse" data-target="#collapseInventory"
             aria-controls="collapseInventory">
             <i class="fa fa-truck text-maron" aria-hidden="true"></i>
@@ -47,20 +46,44 @@
         </a>
         <div id="collapseInventory" class="collapse
         {{ in_array(request()->route()->getName(),
-        ['supplier.index', 'pembelian.index', 'bahan-baku.index'
+        ['supplier.index', 'pembelian.index', 'bahan-baku.index', 'penjualan.index'
         ]) ? 'show' : '' }}" aria-labelledby="headingInventory" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['supplier.index']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('supplier.index') }}">Supplier</a>
-                    <a class="collapse-item {{ in_array(request()->route()->getName(), ['bahan-baku.index']) ? 'active font-weight-bold' : '' }}"
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['bahan-baku.index']) ? 'active font-weight-bold' : '' }}"
                         href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['stok.index']) ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('stok.index') }}">Stok</a> --}}
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['pembelian.index']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('pembelian.index') }}">Pembelian</a>
+                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['penjualan.index']) ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('penjualan.index') }}">Penjualan</a>
             </div>
         </div>
     </li>
 
-    
+    <li class="nav-item">
+        <a class="nav-link collapsed fw-bold"
+         href="#" data-toggle="collapse" data-target="#collapselaporan"
+            aria-controls="collapselaporan">
+            <i class="fa fa-cube text-maron" aria-hidden="true"></i>
+            <span>Laporan</span>
+        </a>
+        <div id="collapselaporan" class="collapse
+        {{ in_array(request()->route()->getName(),
+        ['laporan-stok']) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['laporan-stok',]) ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('laporan-stok') }}">Laporan Bahan Baku</a>
+                {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('bahan-baku.index') }}">Bahan Baku</a> --}}
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['discount.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('discount.index') }}">Diskon</a> --}}
+            </div>
+        </div>
+    </li>
+
     <hr class="sidebar-divider">
     <div class="sidebar-heading">
         Konfigurasi

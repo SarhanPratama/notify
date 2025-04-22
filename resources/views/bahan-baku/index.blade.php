@@ -25,8 +25,12 @@
                                     <th class="text-start">No</th>
                                     <th>Bahan Baku </th>
                                     <th>Harga</th>
-                                    <th>Stok</th>
+                                    <th>Stok Awal</th>
+                                    {{-- <th>Stok Masuk</th>
+                                    <th>Stok Keluar</th> --}}
+                                    <th>Stok Akhir</th>
                                     <th>Stok Minimum</th>
+                                    <th>Kategori</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -36,10 +40,21 @@
                                         <td class="align-middle">{{ $loop->iteration }}</td>
                                         <td class="align-middle">{{ ucwords($item->nama) }}</td>
                                         <td class="align-middle">Rp {{ number_format($item->harga, 2, ',', '.') }}</td>
-                                        <td class="align-middle"><span class="badge bg-primary">{{ $item->stok }}
+                                        <td class="align-middle"><span
+                                                class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
                                                 {{ $item->satuan->nama }}</span></td>
-                                        <td class="align-middle"><span class="badge bg-warning">{{ $item->stok_minimum }}
+                                        {{-- <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->totalmasuk }}
+                                            {{ $item->satuan->nama }}</span></td> --}}
+                                        {{-- <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->totalkeluar }}
+                                            {{ $item->satuan->nama }}</span></td> --}}
+                                        <td class="align-middle"><span
+                                                class="badge fw-bolder bg-warning">{{ $item->saldoakhir }}
                                                 {{ $item->satuan->nama }}</span></td>
+                                        <td class="align-middle"><span
+                                                class="badge fw-bolder bg-secondary">{{ $item->stok_minimum }}
+                                                {{ $item->satuan->nama }}</span></td>
+                                        <td class="align-middle"><span class="badge fw-bolder bg-success">
+                                                {{ ucwords($item->kategori->nama) }}</span></td>
                                         <td class="d-flex justify-content-center text-nowrap gap-2">
                                             <div>
                                                 <button class="btn btn-sm btn-outline-warning" data-toggle="modal"
@@ -87,17 +102,24 @@
                                                                 <label>Harga <span class="text-danger">*</span></label>
                                                                 <input type="number" name="harga"
                                                                     class="form-control form-control-sm"
-                                                                    value="{{ $item->harga }}"
+                                                                    value="{{ (int) $item->harga }}"
                                                                     placeholder="Masukkan harga">
                                                             </div>
-                                                            <div class="col-6 mb-3">
-                                                                <label>Stok <span class="text-danger">*</span></label>
-                                                                <input type="number" name="stok"
+                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
+                                                                <label>Stok Awal<span class="text-danger">*</span></label>
+                                                                <input type="number" name="stok_awal"
                                                                     class="form-control form-control-sm"
-                                                                    value="{{ $item->stok }}"
-                                                                    placeholder="Masukkan stok">
+                                                                    value="{{ $item->stok_awal }}"
+                                                                    placeholder="Masukkan stok awal">
                                                             </div>
-                                                            <div class="col-6 mb-3">
+                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
+                                                                <label>Stok Akhir<span class="text-danger">*</span></label>
+                                                                <input type="number" name="stok_akhir"
+                                                                    class="form-control form-control-sm"
+                                                                    value="{{ $item->stok_akhir }}"
+                                                                    placeholder="Masukkan stok akhir">
+                                                            </div>
+                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
                                                                 <label>Stok Minimum <span
                                                                         class="text-danger">*</span></label>
                                                                 <input type="number" name="stok_minimum"
@@ -105,21 +127,36 @@
                                                                     value="{{ $item->stok_minimum }}"
                                                                     placeholder="Masukkan stok minimum">
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <div class="d-flex justify-content-between">
+                                                            <div class="col-6 mb-3">
+                                                                {{-- <div class="d-flex justify-content-between">
                                                                     <label for="select2Single"
                                                                         class="form-label fw-bold">Satuan
                                                                         <span class="text-danger">*</span></label>
                                                                     <a class="text-danger text-decoration-underline"
                                                                         href="javascript:void(0);" data-toggle="modal"
                                                                         data-target="#satuanModal">Tambah Satuan</a>
-                                                                </div>
+                                                                </div> --}}
+                                                                <label>Satuan <span class="text-danger">*</span></label>
                                                                 <select class="form-select form-select-sm" id="id_satuan"
                                                                     name="id_satuan" required>
                                                                     <option selected disabled>Pilih Satuan</option>
                                                                     @foreach ($satuan as $id => $nama)
                                                                         <option value="{{ $id }}"
                                                                             {{ $item->id_satuan == $id ? 'selected' : '' }}>
+                                                                            {{ $nama }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-6 mb-3">
+                                                                <label class="form-label">Kategori <span
+                                                                        class="text-danger">*</span></label>
+                                                                <select class="form-select form-select-sm"
+                                                                    id="id_kategori" name="id_kategori" required>
+                                                                    <option selected disabled>Pilih Kategori</option>
+                                                                    @foreach ($kategori as $id => $nama)
+                                                                        <option value="{{ $id }}"
+                                                                            {{ $item->id_kategori == $id ? 'selected' : '' }}>
                                                                             {{ $nama }}</option>
                                                                     @endforeach
                                                                 </select>
@@ -192,7 +229,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('bahan-baku.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('bahan-baku.store') }}" method="POST">
                     @csrf
                     <div class="modal-body text-sm fw-bold">
                         <div class="row">
@@ -209,21 +246,35 @@
                                 <input type="number" name="harga" class="form-control form-control-sm"
                                     placeholder="Masukkan harga">
                             </div>
-                            <div class="col-6 mb-3">
-                                <label>Stok <span class="text-danger">*</span></label>
-                                <input type="number" name="stok" class="form-control form-control-sm"
+                            <div class="col-4 mb-3">
+                                <label>Stok Awal<span class="text-danger">*</span></label>
+                                <input type="number" name="stok_awal" class="form-control form-control-sm"
                                     placeholder="Masukkan stok">
                             </div>
-                            <div class="col-6 mb-3">
+                            <div class="col-4 mb-3">
+                                <label>Stok akhir<span class="text-danger">*</span></label>
+                                <input type="number" name="stok_akhir" class="form-control form-control-sm"
+                                    placeholder="Masukkan stok">
+                            </div>
+                            <div class="col-4 mb-3">
                                 <label>Stok Minimum <span class="text-danger">*</span></label>
                                 <input type="number" name="stok_minimum" class="form-control form-control-sm"
                                     placeholder="Masukkan stok minimum">
                             </div>
-                            <div class="mb-3">
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
                                 <label class="form-label">Satuan <span class="text-danger">*</span></label>
                                 <select class="form-select form-select-sm" id="id_satuan" name="id_satuan" required>
                                     <option selected disabled>Pilih Satuan</option>
                                     @foreach ($satuan as $id => $nama)
+                                        <option value="{{ $id }}">{{ $nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-6 col-sm-12 col-12 mb-3">
+                                <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="id_kategori" name="id_kategori" required>
+                                    <option selected disabled>Pilih Kategori</option>
+                                    @foreach ($kategori as $id => $nama)
                                         <option value="{{ $id }}">{{ $nama }}</option>
                                     @endforeach
                                 </select>

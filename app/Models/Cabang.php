@@ -13,11 +13,18 @@ class Cabang extends Model
     protected $table = 'cabang';
 
     protected $fillable = [
+        'kode',
         'nama',
         'alamat',
         'telepon',
         'lokasi',
         'foto',
+        'id_user'
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'id_cabang', 'id');
+    }
 
 }

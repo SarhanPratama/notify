@@ -18,6 +18,13 @@
                         <!-- Form Input (Kiri) -->
                         <div class="col-lg-8">
                             <div class="row g-3 text-sm">
+                                <div class="col-md-6">
+                                    <label for="cabang" class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
+                                    <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan kode" required>
+                                    @error('nama')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <!-- Nama Cabang -->
                                 <div class="col-md-6">
                                     <label for="cabang" class="form-label fw-bold">Nama Cabang <span class="text-danger">*</span></label>

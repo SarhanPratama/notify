@@ -1,28 +1,28 @@
 <?php
-
-use App\Models\bahanBaku;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\MitraController;
 use App\Http\Controllers\ResepController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DiscountController;
-use App\Http\Controllers\MitraController;
 use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PermissionController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('profil', function() {
+Route::get('profil', function () {
     return view('profile.index', compact('title', 'breadcrumbs'));
 });
 
@@ -101,20 +101,33 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::put('/supplier/{id}', [SupplierController::class, 'update'])->name('supplier.update');
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
 
-    Route::get('/pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
-    Route::get('/pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
-    Route::post('/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
-    Route::put('/pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
-    Route::put('/pembelian/status/{id}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
+    Route::get('pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
+    Route::get('pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
+    Route::post('pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
+    // Route::get('pembelian/{id}', [PembelianController::class, 'index'])->name('pembelian.index');
+    Route::put('pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
+    // Route::put('pembelian/status/{kode}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
+    Route::delete('pembelian/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
+
+    Route::get('penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+    Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
+    Route::post('penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
+    Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
 
     Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
 
+    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
 
-Route::get('/notifications/mark-as-read', function () {
-    DB::table('notifications')->update(['is_read' => true]);
-    return redirect()->back();
-})->name('notifications.markAsRead');
+    Route::get('laporan-stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok');
+    Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf');
+    Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel');
 
+
+
+    Route::get('/notifications/mark-as-read', function () {
+        DB::table('notifications')->update(['is_read' => true]);
+        return redirect()->back();
+    })->name('notifications.markAsRead');
 });
 
 Route::get('/absen/', [MitraController::class, 'index'])->name('absen.index');

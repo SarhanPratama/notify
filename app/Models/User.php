@@ -29,7 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'telepon',
         'alamat',
         'foto',
-        'id_cabang',
+        'id_cabang'
     ];
 
     /**
@@ -57,7 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function cabang()
     {
-        return $this->belongsTo(Cabang::class, 'id_cabang');
+        return $this->belongsTo(Cabang::class, 'id_cabang', 'id');
     }
 
     // public function role()

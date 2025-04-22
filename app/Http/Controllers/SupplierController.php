@@ -27,11 +27,20 @@ class SupplierController extends Controller
             'alamat' => 'required'
         ]);
 
-        Supplier::create([
-            'nama' => $request->nama,
-            'telepon' => $request->telepon,
-            'alamat' => $request->alamat
-        ]);
+        try {
+            // Simpan data supplier
+            Supplier::create([
+                'nama' => $request->nama,
+                'telepon' => $request->telepon,
+                'alamat' => $request->alamat
+            ]);
+
+            notify()->success('Data supplier berhasil disimpan!');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            notify()->error('Terjadi kesalahan saat menyimpan data!');
+            return redirect()->back();
+        }
 
         return redirect()->back();
     }
@@ -44,12 +53,29 @@ class SupplierController extends Controller
             'alamat' => 'required'
         ]);
 
-        $supplier->update([
-            'nama' => $request->nama,
-            'telepon' => $request->telepon,
-            'alamat' => $request->alamat
-        ]);
+        try {
+            // Simpan data supplier
+            $supplier->update([
+                'nama' => $request->nama,
+                'telepon' => $request->telepon,
+                'alamat' => $request->alamat
+            ]);
 
+            notify()->success('Data supplier berhasil diupdate!');
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            notify()->error('Terjadi kesalahan saat menyimpan data!');
+            return redirect()->back();
+        }
+        return redirect()->back();
+    }
+
+    public function destroy($id) {
+        $supplier = Supplier::findOrFail($id);
+
+        $supplier->delete();
+
+        notify()->success('Data Supplier berhasil dihapus');
         return redirect()->back();
     }
 }

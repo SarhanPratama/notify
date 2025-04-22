@@ -55,6 +55,7 @@
                     <thead class="thead-light">
                     <tr>
                         <th class="text-start">No</th>
+                        <th>Kode</th>
                         <th>Cabang</th>
                         <th>Telepon</th>
                         <th>Alamat</th>
@@ -66,12 +67,13 @@
                         @foreach ($cabang as $item)
                         <tr>
                             <td class="align-middle">{{ $loop->iteration }}</td>
+                            <td class="text-nowrap align-middle">{{ $item->kode }}</td>
                             <td class="text-nowrap align-middle"> {{ ucwords($item->nama) }}</td>
                             <td class="text-nowrap align-middle">{{ $item->telepon }}</td>
                             <td class="text-nowrap align-middle"  data-toggle="tooltip" title="{{ $item->alamat }}">
                                 {{ Str::limit($item->alamat, 30, '...') }}
                             </td>
-                            <td class="text-nowrap align-middle">{{ $item->lokasi }}</td>
+                            <td class="text-nowrap align-middle"><a class="btn btn-sm btn-outline-info" target="_blank" href="{{ $item->lokasi}}"><i class="fa fa-map-marker fs-5" aria-hidden="true"></i></a></td>
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
                                     <button class="btn btn-sm btn-outline-warning"
@@ -143,7 +145,7 @@
                                                         <div class="mb-3">
                                                             <label for="foto" class="form-label fw-bold">Upload Foto</label>
                                                             <div class="input-group input-group-sm">
-                                                                <input type="file" name="foto" class="form-control" id="fotoInput{{ $item->id }}" onchange="previewImage(event, '{{ $item->id }}')">
+                                                                <input type="file" name="foto" class="form-control">
                                                                 <label class="input-group-text">Pilih File</label>
                                                             </div>
                                                         </div>
@@ -234,6 +236,14 @@
                         <!-- Form Input (Kiri) -->
                         <div class="col-lg-8">
                             <div class="row g-3 text-sm">
+
+                                <div class="col-md-6">
+                                    <label for="cabang" class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
+                                    <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan kode cabang" required>
+                                    @error('nama')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <!-- Nama Cabang -->
                                 <div class="col-md-6">
                                     <label for="cabang" class="form-label fw-bold">Nama Cabang <span class="text-danger">*</span></label>
@@ -244,7 +254,7 @@
                                 </div>
 
                                 <!-- Telepon -->
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label for="telepon" class="form-label fw-bold">Telepon <span class="text-danger">*</span></label>
                                     <input type="text" name="telepon" class="form-control form-control-sm" placeholder="Masukkan telepon" required>
                                 </div>

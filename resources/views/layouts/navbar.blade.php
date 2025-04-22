@@ -1,9 +1,9 @@
 @php
     use App\Models\User;
-    $id = auth()->user()->id;
+    $id = auth()->user();
     $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
     $unreadCount = DB::table('notifications')->where('is_read', false)->count();
-    $foto = User::find($id);
+    $foto = User::find($id->id);
 @endphp
 
 <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top bg-maron">
@@ -155,7 +155,7 @@
                 <img class="img-profile rounded-circle"
                     src="{{ $foto->foto ?  asset('storage/' . $foto->foto) : asset('assets/img/boy.png') }}">
                 <div class="d-flex flex-column">
-                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name }}</span>
+                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ $id->name }}</span>
 
                     <span class="ml-2 d-none d-lg-inline text-white"
                         style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()->name) }}</span>

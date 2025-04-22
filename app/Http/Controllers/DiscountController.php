@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 class DiscountController extends Controller
 {
     public function index() {
-        $title = 'Cabang';
+        $title = 'Discounts';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Cabang', 'url' => route('cabang.index')],
+            ['label' => 'Discounts', 'url' => route('discount.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
         return view('discount.index', compact('title', 'breadcrumbs'));

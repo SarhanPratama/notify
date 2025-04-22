@@ -86,7 +86,8 @@
                                                     @method('DELETE')
                                                     <div class="modal-body">
                                                         <p>Apakah anda yakin ingin menghapus users
-                                                            <strong>"{{ $item->name }}"</strong>?</p>
+                                                            <strong>"{{ $item->name }}"</strong>?
+                                                        </p>
 
                                                         <div class="my-3">
                                                             <label for="password" class="form-label">Masukkan password

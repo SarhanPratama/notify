@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('harga_jual');
             // $table->string('status');
             $table->text('deskripsi');
-            $table->foreignId('id_merek')->constrained('merek')->onDelete('restrict')->onUpdate('cascade');
+            // $table->foreignId('id_merek')->constrained('merek')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('id_kategori')->constrained('kategori')->onDelete('restrict')->onUpdate('cascade');
             $table->string('foto')->nullable();
             $table->timestamps();

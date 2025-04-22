@@ -42,8 +42,9 @@ class CabangController extends Controller
     {
         // dd($request);
         $request->validate([
+            'kode' => 'required',
             'nama' => 'required',
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'required|string',
             'alamat' => 'required',
             'lokasi' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -57,6 +58,7 @@ class CabangController extends Controller
         }
 
         Cabang::create([
+            'kode' => $request->kode,
             'nama' => $request->nama,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
@@ -83,12 +85,13 @@ class CabangController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd($request);
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'telepon' => 'required|string|max:15',
-            'alamat' => 'required|string',
-            'lokasi' => 'required|string',
+            'telepon' => 'required|string',
+            'alamat' => 'required',
+            'lokasi' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

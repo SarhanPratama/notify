@@ -5,28 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class DetailPembelian extends Model
+class mutasi extends Model
 {
     use HasFactory;
 
-    protected $table = 'detail_pembelian';
+    protected $table = 'mutasi';
 
     protected $fillable = [
-        'id_produk',
+        'id_bahan_baku',
         'quantity',
         'harga',
-        'total_harga',
-        'id_pembelian'
+        'sub_total',
+        'nobukti',
+        'jenis_transaksi',
+        'status'
     ];
 
     public function pembelian()
     {
-        return $this->belongsTo(Pembelian::class, 'id_pembelian');
+        return $this->belongsTo(Pembelian::class, 'nobukti');
     }
 
     public function bahanBaku()
 {
-    return $this->belongsTo(bahanBaku::class, 'id_produk');
+    return $this->belongsTo(bahanBaku::class, 'id_bahan_baku');
 }
 
 }

@@ -15,8 +15,10 @@ class cabangFactory extends Factory
     {
         return [
             'nama' => $this->faker->company,
+            'kode' => 'ms',
             'telepon' => $this->faker->phoneNumber,
             'alamat' => $this->faker->address,
+            'lokasi' => $this->faker->imageUrl(640, 480, 'business', true, 'location'),
         ];
     }
 }

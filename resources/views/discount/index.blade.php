@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid py-4">
+    <div class="container-fluid">
         @include('layouts.breadcrumbs')
 
         <div class="card shadow-lg ">

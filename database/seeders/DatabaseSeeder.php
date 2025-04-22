@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            CabangSeeder::class,
-            MerekSeeder::class,
+            // CabangSeeder::class,
+            // MerekSeeder::class,
             RolePermissionSeeder::class,
             UserSeeder::class,
             KategoriSeeder::class,
@@ -44,6 +44,6 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
 
         // ]);
-        Merek::factory(10)->create();
+        // Merek::factory(10)->create();
     }
 }

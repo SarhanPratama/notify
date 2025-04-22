@@ -2,41 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\bahanBaku;
 use Carbon\Carbon;
 use App\Models\Supplier;
+use App\Models\bahanBaku;
 use App\Models\Pembelian;
 use Illuminate\Http\Request;
-use App\Models\DetailPembelian;
-use App\Models\products;
+use App\Models\mutasi;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class PembelianController extends Controller
 {
 
-    private function generateKodePembelian()
-    {
-        // Ambil tanggal hari ini dalam format YYYYMMDD
-        $date = Carbon::now()->format('Ymd');
+    // private function generateKodePembelian()
+    // {
+    //     $date = Carbon::now()->format('Ymd');
 
-        // Ambil nomor urut terakhir dari database
-        $lastPembelian = Pembelian::where('kode', 'like', 'PBL-' . $date . '%')->orderBy('kode', 'desc')->first();
+    //     $lastPembelian = Pembelian::where('nobukti', 'like', 'PBL-' . $date . '%')->orderBy('nobukti', 'desc')->first();
 
-        // Jika ada, increment nomor urut
-        if ($lastPembelian) {
-            $lastNumber = (int) substr($lastPembelian->kode, -3); // Ambil 3 digit terakhir
-            $nextNumber = $lastNumber + 1;
-        } else {
-            // Jika tidak ada, mulai dari 001
-            $nextNumber = 1;
-        }
+    //     if ($lastPembelian) {
+    //         $lastNumber = (int) substr($lastPembelian->nobukti, -3);
+    //         $nextNumber = $lastNumber + 1;
+    //     } else {
+    //         $nextNumber = 1;
+    //     }
 
-        // Format kode: PBL-YYYYMMDD-XXX
-        return 'PBL-' . $date . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-    }
+    //     return 'PBL-' . $date . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    // }
 
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Pembelian';
         $breadcrumbs = [
@@ -44,7 +40,30 @@ class PembelianController extends Controller
             ['label' => 'Pembelian', 'url' => route('pembelian.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
-        $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan')->get();
+
+        if ($request->has('tanggal') && !empty($request->tanggal)) {
+            $tanggal = $request->tanggal;
+        } else {
+            $tanggal = now()->format('Y-m-d');
+        }
+
+        $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
+            ->whereDate('created_at', $tanggal)
+            ->get();
+            
+        // $query = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user');
+
+        // if ($request->has('tanggal') && $request->tanggal) {
+        //     $tanggal = Carbon::parse($request->tanggal);
+        //     $query->whereDate('created_at', $tanggal);
+        // }
+
+        // $pembelian = $query->whereDate('created_at', $request->tanggal)->get();
+
+        // $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
+        // ->whereDate('created_at', $request->tanggal)
+        // ->get();
+
         $suppliers = Supplier::pluck('nama', 'id');
         // $bahanBaku = bahanBaku::with('satuan')->get();
 
@@ -53,7 +72,7 @@ class PembelianController extends Controller
 
     public function create()
     {
-        $title = 'Pembelian';
+        $title = 'Tambah Pembelian';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Pembelian', 'url' => route('pembelian.index')],
@@ -70,59 +89,65 @@ class PembelianController extends Controller
         $request->validate([
             'id_supplier' => 'required|exists:supplier,id',
             'produk' => 'required|array',
-            'produk.*' => 'required|exists:products,id',
+            'produk.*' => 'required|exists:bahan_baku,id',
             'quantity' => 'required|array',
             'quantity.*' => 'required|integer|min:1',
             'harga' => 'required|array',
             'harga.*' => 'required|numeric|min:0',
+            'catatan' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $kodePembelian = $this->generateKodePembelian();
+            $nobukti = 'B' . now()->format('YmdHis') . rand(1000, 9999);
 
-            // Menghitung total harga pembelian
+            // Hitung total
             $total = 0;
-            foreach ($request->produk as $index => $idProduk) {
+            foreach ($request->produk as $index => $idBahanBaku) {
                 $total += $request->quantity[$index] * $request->harga[$index];
             }
 
-            // Membuat entri pembelian
+            // Simpan pembelian
             $pembelian = Pembelian::create([
-                'kode' =>  $kodePembelian,
+                'nobukti' => $nobukti,
                 'total' => $total,
                 'status' => 'pending',
+                'catatan' => $request->catatan,
                 'id_supplier' => $request->id_supplier,
+                'id_user' => Auth::id(),
             ]);
 
-            // Menambahkan detail pembelian dan memperbarui stok produk
-            foreach ($request->produk as $index => $idProduk) {
-                $produk = bahanBaku::findOrFail($idProduk); // Menemukan produk berdasarkan ID
-
-                // Perbarui stok produk (tambahkan quantity pembelian ke stok yang ada)
-                $produk->stok += $request->quantity[$index];
-                $produk->save();
-
-                // Membuat detail pembelian
-                DetailPembelian::create([
-                    'id_produk' => $idProduk,
+            // Simpan detail transaksi
+            foreach ($request->produk as $index => $idBahanBaku) {
+                $mutasi = mutasi::create([
+                    'nobukti' => $nobukti,
+                    'id_bahan_baku' => $idBahanBaku,
                     'quantity' => $request->quantity[$index],
                     'harga' => $request->harga[$index],
-                    'total_harga' => $request->quantity[$index] * $request->harga[$index],
-                    'id_pembelian' => $pembelian->id,
+                    'sub_total' => $request->quantity[$index] * $request->harga[$index],
+                    'jenis_transaksi' => 'M',
+                    'status' => 1
                 ]);
+
+                if ($mutasi->status == 1) {
+                    $bahanBaku = BahanBaku::find($idBahanBaku);
+                    if ($bahanBaku) {
+                        $bahanBaku->stok_akhir += $request->quantity[$index];
+                        $bahanBaku->save();
+                    }
+                }
             }
 
-            // Commit transaksi jika tidak ada error
             DB::commit();
 
-            notify()->success('Data Berhasil ditambahkan');
+            notify()->success('Pembelian berhasil disimpan');
             return redirect()->route('pembelian.index');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            notify()->error('Terjadi kesalahan: ' . $e->getMessage());
-            return redirect()->back();
+            notify()->error('Gagal menyimpan pembelian: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         }
     }
 
@@ -141,13 +166,107 @@ class PembelianController extends Controller
     }
 
 
-    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-    public function updateStatus(Request $request, $id)
-    {
-        $item = Pembelian::findOrFail($id);
-        $item->status = $request->input('status');
-        $item->save();
+    // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    // public function updateStatus(Request $request, $kode)
+    // {
+    //     // Validasi input status
+    //     $request->validate([
+    //         'status' => 'required|in:completed,pending,cancelled'
+    //     ]);
 
-        return redirect()->route('pembelian.index');
+    //     // Temukan pembelian berdasarkan kode
+    //     $pembelian = Pembelian::with('detailPembelian.bahanBaku')->where('nobukti', $kode)->firstOrFail();
+    //     // dd($pembelian->detailPembelian);
+    //     // Simpan status lama untuk pengecekan
+    //     $oldStatus = $pembelian->status;
+    //     $newStatus = $request->status;
+
+    //     // Jika mengubah ke Completed
+    //     if ($newStatus === 'completed' && $oldStatus !== 'completed') {
+    //         // Validasi detail pembelian
+    //         if ($pembelian->detailPembelian->isEmpty()) {
+    //             notify()->error('Detail pembelian tidak ditemukan.');
+    //             return back();
+    //         }
+
+    //         DB::beginTransaction();
+    //         try {
+    //             // Update stok produk
+    //             foreach ($pembelian->detailPembelian as $detail) {
+    //                 $produk = $detail->produk ?? bahanBaku::find($detail->id_produk);
+
+    //                 if (!$produk) {
+    //                     throw new \Exception("Produk dengan ID {$detail->id_produk} tidak ditemukan");
+    //                 }
+
+    //                 $produk->stok += $detail->quantity;
+    //                 $produk->save();
+    //             }
+
+    //             // Update status pembelian
+    //             $pembelian->status = $newStatus;
+    //             $pembelian->save();
+
+    //             DB::commit();
+    //             notify()->success('Status pembelian berhasil diupdate dan stok berhasil dibertambah.');
+
+    //         } catch (\Exception $e) {
+    //             DB::rollBack();
+    //             notify()->error('Gagal update status: ' . $e->getMessage());
+    //             return back();
+    //         }
+
+    //     } else {
+    //         // Jika bukan status Completed, cukup update status
+    //         $pembelian->status = $newStatus;
+    //         $pembelian->save();
+    //         notify()->success('Status pembelian berhasil diupdate.');
+    //     }
+
+    //     return redirect()->route('pembelian.index');
+    // }
+
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $pembelian = Pembelian::findOrFail($id);
+
+            // Ambil semua mutasi berdasarkan nomor bukti
+            $mutasiList = Mutasi::where('nobukti', $pembelian->nobukti)->get();
+
+            foreach ($mutasiList as $mutasi) {
+                // Jika status 1, rollback stok bahan baku
+                if ($mutasi->status == 1) {
+                    $bahanBaku = BahanBaku::find($mutasi->id_bahan_baku);
+                    if ($bahanBaku) {
+                        $bahanBaku->stok_akhir -= $mutasi->quantity;
+                        $bahanBaku->save();
+                    }
+                }
+
+                // Hapus mutasi
+                $mutasi->delete();
+            }
+
+            // Hapus pembelian
+            $pembelian->delete();
+
+            DB::commit();
+
+            notify()->success('Data pembelian berhasil dihapus.');
+            return redirect()->route('pembelian.index');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal menghapus pembelian: ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
+
 }
+
+
+

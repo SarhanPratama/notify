@@ -11,21 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembelian', function (Blueprint $table) {
+        Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
-
             $table->string('nobukti')->unique();
+            // $table->enum('status', ['pending', 'disetujui', 'success'])->default('pending');
             $table->decimal('total', 15, 2);
-            // $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->text('catatan')->nullable();
-            $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('id_cabang')->constrained('cabang')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('pembelian');
+        Schema::dropIfExists('penjualan');
     }
 };

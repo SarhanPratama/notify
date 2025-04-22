@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->decimal('harga', 10, 2);
-            $table->integer('stok');
+            $table->integer('stok_awal');
+            // $table->integer('stok_akhir');
             $table->integer('stok_minimum');
             $table->foreignId('id_kategori')->constrained('kategori')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('id_satuan')->constrained('satuan')->onDelete('restrict')->onUpdate('cascade');

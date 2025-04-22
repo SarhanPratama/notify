@@ -8,19 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('detail_pembelian', function (Blueprint $table) {
+        Schema::create('mutasi', function (Blueprint $table) {
             $table->id();
+            $table->string('nobukti');
             $table->foreignId('id_bahan_baku')->constrained('bahan_baku')->onDelete('restrict')->onUpdate('cascade');
             $table->integer('quantity');
             $table->decimal('harga', 15, 2);
-            $table->decimal('total_harga', 15, 2);
-            $table->foreignId('id_pembelian')->constrained('pembelian')->onDelete('restrict')->onUpdate('cascade');
+            $table->decimal('sub_total', 15, 2);
+            $table->enum('jenis_transaksi', ['masuk', 'keluar']);
+            $table->boolean('status');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('detail_pembelian');
+        Schema::dropIfExists('mutasi');
     }
 };
+

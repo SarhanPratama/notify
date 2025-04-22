@@ -15,7 +15,7 @@
                         </h6>
 
                         <div class="d-flex flex-wrap align-items-center">
-                            <form action="{{ route('pembelian.index') }}" method="GET" class="form-inline mr-3">
+                            <form action="{{ route('penjualan.index') }}" method="GET" class="form-inline mr-3">
                                 <div class="input-group input-group-sm">
                                     <input type="date" name="tanggal" class="form-control border-0 shadow-sm"
                                            value="{{ request('tanggal') }}" style="border-radius: 0.25rem 0 0 0.25rem;">
@@ -27,9 +27,8 @@
                                     </div>
                                 </div>
                             </form>
-                            
 
-                            <a href="{{ route('pembelian.create') }}"
+                            <a href="{{ route('penjualan.create') }}"
                                class="btn btn-primary btn-sm text-light font-weight-bold">
                                 Tambah
                             </a>
@@ -44,20 +43,20 @@
                                         <th class="text-nowrap">No</th>
                                         <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">No. Bukti</th>
-                                        <th class="text-nowrap">Supplier</th>
+                                        <th class="text-nowrap">Cabang</th>
                                         <th class="text-nowrap">Total</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pembelian as $item)
+                                    @foreach ($penjualan as $item)
                                         <tr class="border-bottom">
                                             <td class="align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">
                                                 {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
-                                            <td class="align-middle">{{ $item->supplier->nama }}</td>
+                                            <td class="align-middle">{{ $item->cabang->nama }}</td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
@@ -73,10 +72,11 @@
                                                             title="Hapus">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
+                                                    <a href="{{ route('penjualan.struk', $item->id)}}">struk</a>
                                                 </div>
                                             </td>
                                         </tr>
-                                        @include('pembelian.show')
+                                        @include('penjualan.show')
                                         @include('pembelian.destroy')
                                     @endforeach
                                 </tbody>

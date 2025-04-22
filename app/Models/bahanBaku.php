@@ -13,18 +13,24 @@ class bahanBaku extends Model
 
     protected $fillable = [
         'nama',
-        'stok',
+        'stok_awal',
+        // 'stok_akhir',
         'stok_minimum',
         'harga',
         'id_satuan',
+        'id_kategori'
     ];
 
     public function satuan() {
         return $this->belongsTo(Satuan::class, 'id_satuan');
     }
 
-    public function resep()
-    {
-        return $this->hasMany(Resep::class, 'id_bahan_baku');
+    public function kategori() {
+        return $this->belongsTo(Kategori::class, 'id_kategori');
     }
+
+    // public function resep()
+    // {
+    //     return $this->hasMany(Resep::class, 'id_bahan_baku');
+    // }
 }
