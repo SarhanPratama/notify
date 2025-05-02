@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PermissionController;
+use App\Models\Penjualan;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -108,6 +109,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::put('pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
     // Route::put('pembelian/status/{kode}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
     Route::delete('pembelian/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
+    Route::get('laporan-pembelian', [PembelianController::class, 'laporanPembelian'])->name('laporan-pembelian');
+    Route::get('/laporan-pembelian/pdf', [PembelianController::class, 'exportPDF'])->name('laporan-pembelian.pdf');
 
     Route::get('penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
     Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
@@ -122,6 +125,10 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf');
     Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel');
 
+    Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
+
+
+
 
 
     Route::get('/notifications/mark-as-read', function () {
@@ -131,6 +138,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('/absen/', [MitraController::class, 'index'])->name('absen.index');
+
+Route::get('/form-penjualan/', [PenjualanController::class, 'formPenjualan'])->name('form-penjualan');
 
 Route::get('/mitra/create', [MitraController::class, 'create'])->name('mitra.create');
 Route::post('/mitra/', [MitraController::class, 'store'])->name('mitra.store');

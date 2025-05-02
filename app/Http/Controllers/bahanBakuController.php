@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\bahanBaku;
-use App\Models\Kategori;
 use App\Models\Satuan;
-use Illuminate\Contracts\Cache\Store;
+use App\Models\Kategori;
+use App\Models\bahanBaku;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Cache\Store;
+use Illuminate\Support\Facades\Storage;
 
 class bahanBakuController extends Controller
 {
@@ -34,17 +35,24 @@ class bahanBakuController extends Controller
             // 'stok_akhir' => 'required',
             'stok_minimum' => 'required',
             'harga' => 'required',
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'id_satuan' => 'required',
             'id_kategori' => 'required'
         ]);
 
         try {
+            if ($request->hasFile('foto')) {
+                $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+                $fotoPath = $request->file('foto')->storeAs('uploads/bahanbaku', $filename, 'public');
+            }
+
             bahanBaku::create([
                 'nama' => $request->nama,
                 'stok_awal' => $request->stok_awal,
                 // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
+                'foto' => $fotoPath,
                 'id_satuan' => $request->id_satuan,
                 'id_kategori' => $request->id_kategori,
             ]);
@@ -55,12 +63,10 @@ class bahanBakuController extends Controller
             notify()->error('Gagal menambah data' . $e->getMessage());
             return redirect()->back();
         }
-
-        return redirect()->back();
     }
 
-    public function update(Request $request, $id) {
-        // dd($request);
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'nama' => 'required',
             'stok_awal' => 'required',
@@ -68,29 +74,45 @@ class bahanBakuController extends Controller
             'stok_minimum' => 'required',
             'harga' => 'required',
             'id_satuan' => 'required',
-            'id_kategori' => 'required'
+            'id_kategori' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $bahanBaku = bahanBaku::findOrFail($id);
+
         try {
+            $bahanBaku = bahanBaku::findOrFail($id);
+
+            if ($request->hasFile('foto')) {
+                // Hapus foto lama jika ada
+                if ($bahanBaku->foto && Storage::disk('public')->exists($bahanBaku->foto)) {
+                    Storage::disk('public')->delete($bahanBaku->foto);
+                }
+
+                $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+                $fotoPath = $request->file('foto')->storeAs('uploads/bahanbaku', $filename, 'public');
+            } else {
+                $fotoPath = $bahanBaku->foto;
+            }
+
             $bahanBaku->update([
                 'nama' => $request->nama,
                 'stok_awal' => $request->stok_awal,
                 // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
+                'foto' => $fotoPath,
                 'id_satuan' => $request->id_satuan,
                 'id_kategori' => $request->id_kategori,
             ]);
 
-            notify()->success('Berhasil update data');
+            notify()->success('Berhasil memperbarui data');
             return redirect()->back();
+
         } catch (\Exception $e) {
-            notify()->success('Gagal update data');
+            notify()->error('Gagal memperbarui data: ' . $e->getMessage());
             return redirect()->back();
         }
-
-        return redirect()->back();
     }
+
 
     public function destroy($id) {
         try {

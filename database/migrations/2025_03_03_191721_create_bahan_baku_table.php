@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('stok_awal');
             // $table->integer('stok_akhir');
             $table->integer('stok_minimum');
+            $table->string('foto');
             $table->foreignId('id_kategori')->constrained('kategori')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('id_satuan')->constrained('satuan')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();

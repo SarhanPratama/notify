@@ -23,7 +23,7 @@ class mutasi extends Model
 
     public function pembelian()
     {
-        return $this->belongsTo(Pembelian::class, 'nobukti');
+        return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
     }
 
     public function bahanBaku()

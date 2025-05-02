@@ -83,7 +83,7 @@
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                                <form action="{{ route('bahan-baku.update', $item->id) }}" method="POST">
+                                                <form action="{{ route('bahan-baku.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     @method('PUT')
                                                     <div class="modal-body text-sm fw-bold">
@@ -162,6 +162,11 @@
                                                                 </select>
                                                             </div>
 
+                                                            <div class="col-12 mb-3">
+                                                                <label>Foto <span class="text-danger">*</span></label>
+                                                                <input type="file" name="foto" class="form-control form-control-sm">
+                                                            </div>
+
                                                         </div>
 
                                                     </div>
@@ -229,7 +234,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('bahan-baku.store') }}" method="POST">
+                <form action="{{ route('bahan-baku.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body text-sm fw-bold">
                         <div class="row">
@@ -251,11 +256,11 @@
                                 <input type="number" name="stok_awal" class="form-control form-control-sm"
                                     placeholder="Masukkan stok">
                             </div>
-                            <div class="col-4 mb-3">
+                            {{-- <div class="col-4 mb-3">
                                 <label>Stok akhir<span class="text-danger">*</span></label>
                                 <input type="number" name="stok_akhir" class="form-control form-control-sm"
                                     placeholder="Masukkan stok">
-                            </div>
+                            </div> --}}
                             <div class="col-4 mb-3">
                                 <label>Stok Minimum <span class="text-danger">*</span></label>
                                 <input type="number" name="stok_minimum" class="form-control form-control-sm"
@@ -278,6 +283,10 @@
                                         <option value="{{ $id }}">{{ $nama }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label>Foto <span class="text-danger">*</span></label>
+                                <input type="file" name="foto" class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>

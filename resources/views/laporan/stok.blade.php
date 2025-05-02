@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped text-sm" id="dataTableHover">
+                        <table class="table table-striped" id="dataTableHover">
                             <thead class="thead-light">
                                 <tr class="text-nowrap">
                                     <th class="text-start">No</th>
@@ -40,9 +40,9 @@
                                         <td class="align-middle">{{ ucwords($item->nama) }}</td>
                                         <td class="align-middle"><span class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
                                                 {{ $item->nama_satuan }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->totalmasuk }}
+                                        <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->masuk }}
                                             {{ $item->nama_satuan }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->totalkeluar }}
+                                        <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->keluar }}
                                             {{ $item->nama_satuan }}</span></td>
                                         <td class="align-middle"><span class="badge fw-bolder bg-warning">{{ $item->saldoakhir }}
                                             {{ $item->nama_satuan }}</span></td>

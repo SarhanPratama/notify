@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Stok - PT. Nama Perusahaan</title>
- <!-- Hanya potongan style dan struktur HTML yang diperbarui -->
+    <title>Laporan Stok - Seroo</title>
+
 
 <style>
     body {
@@ -15,65 +15,12 @@
         padding: 40px;
     }
 
-    .container {
-        max-width: 1000px;
-        margin: auto;
-        background-color: #fff;
-    }
-
-    .company-header {
-    font-size: 0; /* hilangkan whitespace antar inline-block */
-    margin-bottom: 30px;
-    border-bottom: 2px solid #2c3e50;
-    padding-bottom: 15px;
-}
-
-.logo, .company-info {
-    display: inline-block;
-    vertical-align: top;
-}
-
     .logo {
-        width: 100px;
-        height: 100px;
-        margin-right: 20px;
-        /* border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #ddd;
-        display: flex;
-        align-items: center;
-        justify-content: center; */
-
-    }
-
-    .logo img {
-        width: 100%;
-        height: auto;
-    }
-
-    .company-info h1 {
-        font-size: 26px;
-        font-weight: bold;
-        margin: 0;
-        color: #34495e;
-    }
-
-    .company-details {
-        font-size: 14px;
-        color: #7f8c8d;
-        margin-bottom: -10px;
-    }
-
-    .header {
         text-align: center;
-        margin: 30px 0 20px;
     }
 
-    .header h1 {
-        font-size: 28px;
-        font-weight: 700;
-        color: #2c3e50;
-        margin: 0;
+    .header h2 {
+        text-align: center;
     }
 
     .header p {
@@ -191,20 +138,11 @@
 </head>
 <body>
     <div class="container">
-        <div class="company-header">
-            <div class="logo">
-                <img src="{{ public_path('assets/img/logo/icon2.png')}}" alt="Logo Perusahaan">
-            </div>
-            <div class="company-info">
-                <h1 class="company-name">SEROO</h1>
-                <p class="company-details">Jl. melatin indah blok A 7, Pekanbaru</p>
-                <p class="company-details">Telp: +62 851-8977-8372 | Email: officialtehtarikseroo@gmail.com</p>
-                {{-- <p class="company-details">www.namaperusahaan.com</p> --}}
-            </div>
+        <div class="logo">
+            <img src="{{ public_path('assets/img/logo/icon2.png') }}" alt="Logo Perusahaan" width="50px">
         </div>
-
         <div class="header">
-            <h3>LAPORAN STOK BARANG</h3>
+            <h2>Laporan Stok Bahan Baku</h2>
             <p>Periode: <span id="periode">{{ date('d F Y') }}</span></p>
         </div>
 
@@ -242,8 +180,8 @@
                     <td style="text-align: left;">{{ $d->nama }}</td>
                     <td>{{ $d->nama_satuan }}</td>
                     <td>{{ number_format($d->stok_awal, 0, ',', '.') }}</td>
-                    <td>{{ number_format($d->totalmasuk, 0, ',', '.') }}</td>
-                    <td>{{ number_format($d->totalkeluar, 0, ',', '.') }}</td>
+                    <td>{{ number_format($d->masuk, 0, ',', '.') }}</td>
+                    <td>{{ number_format($d->keluar, 0, ',', '.') }}</td>
                     <td>{{ number_format($d->saldoakhir, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
@@ -256,7 +194,7 @@
             </tbody>
         </table>
 
-        <div class="summary">
+        {{-- <div class="summary">
             <h3>Ringkasan Laporan</h3>
             <div class="summary-item">
                 <span>Total Jenis Barang</span>
@@ -278,13 +216,14 @@
                 <span>Total Saldo Akhir</span>
                 <span>{{ number_format($laporan_stok->sum('saldoakhir'), 0, ',', '.') }} unit</span>
             </div>
-        </div>
+        </div> --}}
 
         <div class="footer">
             <p>
-                <span style="float: left;">PT. Nama Perusahaan</span>
+                <span style="float: left;">PT. Nama Perusahaan</span><br>
+                {{ date('d F Y') }}
                 <span>
-                    {{ date('d F Y') }}<br>
+                    <br>
                     Mengetahui,<br><br><br><br>
                     <b>________________</b><br>
                     Manajer Gudang

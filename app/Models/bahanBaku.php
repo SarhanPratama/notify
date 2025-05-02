@@ -17,6 +17,7 @@ class bahanBaku extends Model
         // 'stok_akhir',
         'stok_minimum',
         'harga',
+        'foto',
         'id_satuan',
         'id_kategori'
     ];

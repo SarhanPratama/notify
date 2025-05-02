@@ -20,15 +20,17 @@ class PenjualanController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        if ($request->has('tanggal') && !empty($request->tanggal)) {
-            $tanggal = $request->tanggal;
-        } else {
-            $tanggal = now()->format('Y-m-d');
-        }
+            $tanggalMulai = $request->input('tanggal_mulai');
+            $tanggalSampai = $request->input('tanggal_sampai');
 
-        $penjualan = penjualan::with('cabang', 'mutasi.bahanBaku.satuan')
-            ->whereDate('created_at', $tanggal)
-            ->get();
+            $penjualan = penjualan::with('cabang', 'mutasi.bahanBaku.satuan');
+
+            // Tambahkan filter hanya jika kedua tanggal ada
+            if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
+                $penjualan = $penjualan->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+            }
+
+            $penjualan = $penjualan->latest()->get();
 
         return view('penjualan.index', compact('title', 'breadcrumbs', 'penjualan'));
     }
@@ -89,13 +91,13 @@ class PenjualanController extends Controller
                     'status' => 1
                 ]);
 
-                if ($mutasi->status == 1) {
-                    $bahanBaku = BahanBaku::find($idBahanBaku);
-                    if ($bahanBaku) {
-                        $bahanBaku->stok_akhir -= $request->quantity[$index];
-                        $bahanBaku->save();
-                    }
-                }
+                // if ($mutasi->status == 1) {
+                //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                //     if ($bahanBaku) {
+                //         $bahanBaku->stok_akhir -= $request->quantity[$index];
+                //         $bahanBaku->save();
+                //     }
+                // }
             }
 
             DB::commit();
@@ -115,4 +117,20 @@ class PenjualanController extends Controller
     return view('penjualan.struk', compact('penjualan'));
 }
 
+public function formPenjualan() {
+
+        // Get all available bahan baku with stock > 0
+        $bahanBaku = bahanBaku::with('satuan', 'kategori')
+    ->leftJoin('vsaldoakhir2', 'bahan_baku.id', '=', 'vsaldoakhir2.id')
+    ->where('vsaldoakhir2.saldoakhir', '>', 0)
+    ->get();
+
+    return view('penjualan.form-penjualan', [
+        'title' => 'Checkout Bahan Baku',
+        'bahanBaku' => $bahanBaku
+    ]);
 }
+
+}
+
+

@@ -72,10 +72,12 @@
         </a>
         <div id="collapselaporan" class="collapse
         {{ in_array(request()->route()->getName(),
-        ['laporan-stok']) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
+        ['laporan-stok', 'laporan-pembelian']) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['laporan-stok',]) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('laporan-stok') }}">Laporan Bahan Baku</a>
+                    <a class="collapse-item {{ in_array(request()->route()->getName(), ['laporan-pembelian',]) ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('laporan-pembelian') }}">Laporan Pembelian</a>
                 {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('bahan-baku.index') }}">Bahan Baku</a> --}}
                 {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}

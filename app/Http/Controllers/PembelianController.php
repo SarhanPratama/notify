@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\mutasi;
 use App\Models\Supplier;
 use App\Models\bahanBaku;
 use App\Models\Pembelian;
 use Illuminate\Http\Request;
-use App\Models\mutasi;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -41,28 +42,27 @@ class PembelianController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        if ($request->has('tanggal') && !empty($request->tanggal)) {
-            $tanggal = $request->tanggal;
-        } else {
-            $tanggal = now()->format('Y-m-d');
-        }
-
-        $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
-            ->whereDate('created_at', $tanggal)
-            ->get();
-            
-        // $query = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user');
-
-        // if ($request->has('tanggal') && $request->tanggal) {
-        //     $tanggal = Carbon::parse($request->tanggal);
-        //     $query->whereDate('created_at', $tanggal);
+        // if ($request->has('tanggal') && !empty($request->tanggal)) {
+        //     $tanggal = $request->tanggal;
+        // } else {
+        //     $tanggal = now()->format('Y-m-d');
         // }
 
-        // $pembelian = $query->whereDate('created_at', $request->tanggal)->get();
-
         // $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
-        // ->whereDate('created_at', $request->tanggal)
-        // ->get();
+        //     ->whereDate('created_at', $tanggal)
+        //     ->get();
+
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSampai = $request->input('tanggal_sampai');
+
+        $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user');
+
+        // Tambahkan filter hanya jika kedua tanggal ada
+        if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
+            $pembelian = $pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+        }
+
+        $pembelian = $pembelian->latest()->get();
 
         $suppliers = Supplier::pluck('nama', 'id');
         // $bahanBaku = bahanBaku::with('satuan')->get();
@@ -143,7 +143,6 @@ class PembelianController extends Controller
 
             notify()->success('Pembelian berhasil disimpan');
             return redirect()->route('pembelian.index');
-
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal menyimpan pembelian: ' . $e->getMessage());
@@ -258,7 +257,6 @@ class PembelianController extends Controller
 
             notify()->success('Data pembelian berhasil dihapus.');
             return redirect()->route('pembelian.index');
-
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal menghapus pembelian: ' . $e->getMessage());
@@ -266,7 +264,74 @@ class PembelianController extends Controller
         }
     }
 
+    public function laporanPembelian(Request $request)
+    {
+        $title = 'Laporan Pembelian';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
+            ['label' => 'Tabel Data', 'url' => null],
+        ];
+
+        // $laporan_pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
+        // ->where('')
+        // ->get();
+
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSampai = $request->input('tanggal_sampai');
+
+        $laporan_pembelian = Mutasi::with(['bahanBaku', 'pembelian'])
+            ->where('jenis_transaksi', 'M')
+            ->where('status', 1);
+
+        if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
+            $laporan_pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+        }
+
+        $laporan_pembelian = $laporan_pembelian->latest()->get();
+
+        // dd($laporan_pembelian);
+
+        return view('pembelian.laporan-pembelian', compact('title', 'breadcrumbs', 'laporan_pembelian'));
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $title = 'Laporan Pembelian';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
+            ['label' => 'Tabel Data', 'url' => null],
+        ];
+
+        $tanggalMulai = $request->input('tanggal_mulai');
+        $tanggalSampai = $request->input('tanggal_sampai');
+
+        $laporan_pembelian = Mutasi::with(['bahanBaku', 'pembelian.supplier'])
+            ->where('jenis_transaksi', 'M')
+            ->where('status', 1);
+
+            if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
+                $laporan_pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+                $periode = 'Periode: ' .
+                    \Carbon\Carbon::parse($tanggalMulai)->translatedFormat('d M Y') .
+                    ' - ' .
+                    \Carbon\Carbon::parse($tanggalSampai)->translatedFormat('d M Y');
+            } else {
+                $periode = 'Semua Periode';
+            }
+
+        $laporan_pembelian = $laporan_pembelian->latest()->get();
+// dd($laporan_pembelian);
+        $pdf = Pdf::loadView('pembelian.pembelian-pdf', [
+            'laporan' => $laporan_pembelian,
+            'title' => $title,
+            'breadcrumbs' => $breadcrumbs,
+            'periode' => $periode,
+
+        ])->setPaper('A4', 'landscape');
+
+
+        return $pdf->stream('Laporan_Pembelian.pdf');
+    }
 }
-
-
-

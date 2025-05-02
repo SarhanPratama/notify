@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class VSaldoAkhir extends Model
 {
-    protected $table = 'vsaldoakhir';
+    protected $table = 'vsaldoakhir2';
 
     protected $fillable = [
         'nama',
         'stok_awal',
         'saldoakhir',
-        'totalmasuk',
-        'totalkeluar',
+        'masuk',
+        'keluar',
         'nama_satuan',
     ];
 }
