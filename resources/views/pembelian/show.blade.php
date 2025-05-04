@@ -2,9 +2,9 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content shadow-lg border-0 rounded-4">
             <!-- Enhanced Header -->
-            <div class="modal-header bg-warning text-white py-3">
+            <div class="modal-header bg-success text-white py-3">
                 <h5 class="modal-title fw-bold">
-                    <i class="fas fa-file-invoice me-2"></i>Detail Pembelian #{{ $item->nobukti }}
+                    <i class="fas fa-file-invoice me-2"></i>Detail Penjualan #{{ $item->nobukti }}
                 </h5>
                 <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -176,12 +176,13 @@
             </div>
 
             <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Tutup
+                <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-dismiss="modal">
+                    {{-- <i class="fas fa-times me-2"></i> --}}
+                    Close
                 </button>
-                <button onclick="window.print()" class="btn btn-primary rounded-pill px-4">
+                {{-- <button onclick="window.print()" class="btn btn-primary rounded-pill px-4">
                     <i class="fas fa-print me-2"></i>Cetak
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>

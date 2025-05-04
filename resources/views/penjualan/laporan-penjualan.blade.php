@@ -6,13 +6,12 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <!-- Filter Form -->
                 <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
                     <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
                         <h6 class="font-weight-bold text-primary mb-2">Filter Data</h6>
                     </div>
                     <div class="card-body bg-white p-4">
-                        <form method="GET" action="{{ route('pembelian.index') }}" class="row g-3 align-items-end">
+                        <form method="GET" action="{{ route('laporan-pembelian') }}" class="row g-3 align-items-end">
                             <div class="col-md-4">
                                 <label for="tanggal_mulai"
                                     class="form-label text-secondary small text-uppercase fw-bold">Tanggal Mulai</label>
@@ -41,9 +40,14 @@
                                         class="btn btn-sm btn-outline-primary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-filter"></i> Filter Data
                                     </button>
-                                    <a href="{{ route('pembelian.index') }}"
+                                    <a href="{{ route('laporan-penjualan') }}"
                                         class="btn btn-sm btn-outline-secondary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-undo"></i> Reset
+                                    </a>
+                                    <a href="{{ route('laporan-penjualan.pdf', ['tanggal_mulai' => request('tanggal_mulai'), 'tanggal_sampai' => request('tanggal_sampai')]) }}"
+                                        target="_blank"
+                                        class="btn btn-sm btn-outline-danger px-4 py-2 d-flex align-items-center gap-2 fw-medium">
+                                        <i class="fas fa-file-pdf"></i> Export PDF
                                     </a>
                                 </div>
                             </div>
@@ -54,15 +58,10 @@
                 <div class="card shadow-sm border-0">
                     <div
                         class="card-header bg-maron text-white d-flex flex-wrap align-items-center justify-content-between py-3">
-                        <h6 class="font-weight-bold text-sm">
+                        <h6 class="font-weight-bold">
+                            {{-- <i class="fas fa-shopping-cart mr-2"></i> --}}
                             {{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
                         </h6>
-                        <div>
-                            <a href="{{ route('pembelian.create') }}"
-                                class="btn btn-primary btn-sm text-light font-weight-bold d-flex align-items-center gap-1">
-                                Tambah
-                            </a>
-                        </div>
                     </div>
 
                     <div class="card-body p-0">
@@ -73,13 +72,17 @@
                                         <th class="text-nowrap">No</th>
                                         <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">No. Bukti</th>
-                                        <th class="text-nowrap">Supplier</th>
-                                        <th class="text-nowrap">Total</th>
-                                        <th class="text-center">Aksi</th>
+                                        <th class="text-nowrap">Cabang</th>
+                                        <th class="text-nowrap">Bahan Baku</th>
+                                        <th class="text-nowrap">Quantity</th>
+                                        <th class="text-nowrap">Harga Satuan</th>
+                                        <th class="text-nowrap">Sub Total</th>
+
+                                        {{-- <th class="text-center">Aksi</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pembelian as $item)
+                                    @foreach ($laporan_penjualan as $item)
                                         <tr class="border-bottom">
                                             <td class="align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">
@@ -89,73 +92,68 @@
                                                 </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
-                                            <td class="align-middle">
+                                            <td class="align-middle font-weight-bold">
                                                 <div class="d-flex align-items-center">
                                                     <span class="bg-light text-maron p-2 rounded-circle mr-2">
-                                                        <i class="fas fa-building"></i>
+                                                        <i class="fas fa-store"></i>
                                                     </span>
                                                     <strong>
-                                                        {{ $item->supplier->nama }}
+                                                        
+                                                        {{ $item->penjualan->cabang->nama }}
                                                     </strong>
                                                 </div>
                                             </td>
-                                            <td class="align-middle text-success font-weight-bold text-nowrap">
-                                                Rp. {{ number_format($item->total, 0, ',', '.') }}
+                                            <td class="align-middle font-weight-bold">{{ $item->bahanBaku->nama }}</td>
+                                            <td class="align-middle font-weight-bold">
+                                                <span
+                                                class="badge fw-bolder bg-primary">
+                                                {{ $item->quantity }}
+                                                {{ $item->bahanBaku->satuan->nama }}
+                                            </span>
                                             </td>
-                                            <td class="text-center align-middle">
+                                            <td class="align-middle text-success font-weight-bold text-nowrap">
+                                                Rp. {{ number_format($item->harga, 0, ',', '.') }}
+                                            </td>
+                                            <td class="align-middle text-success font-weight-bold text-nowrap">
+                                                Rp. {{ number_format($item->sub_total, 0, ',', '.') }}
+                                            </td>
+                                            {{-- <td class="align-middle text-success font-weight-bold text-nowrap">
+                                                Rp. {{ number_format($item->quantity * $item->harga, 0, ',', '.') }}
+                                            </td> --}}
+                                            {{-- <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('pembelian.edit', $item->nobukti) }}" class="btn btn-outline-warning rounded-left" title="edit">
-                                                        <i class="fa fa-pencil"></i>
-                                                    </a>
-
-                                                    <button class="btn btn-outline-success" data-toggle="modal"
-                                                        data-target="#detailModal{{ $item->id }}" title="Detail">
+                                                    <button class="btn btn-outline-primary rounded-left"
+                                                            data-toggle="modal" data-target="#detailModal{{ $item->id }}"
+                                                            title="Detail">
                                                         <i class="far fa-eye"></i>
                                                     </button>
-
-                                                    <button class="btn btn-outline-danger rounded-right" data-toggle="modal"
-                                                        data-target="#deleteModal{{ $item->id }}" title="Hapus">
+                                                    <button class="btn btn-outline-danger rounded-right"
+                                                            data-toggle="modal" data-target="#deleteModal{{ $item->id }}"
+                                                            title="Hapus">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
                                                 </div>
-                                            </td>
+                                            </td> --}}
                                         </tr>
-                                        @include('pembelian.show')
-                                        @include('pembelian.destroy')
                                     @endforeach
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="7" style="text-align: right;">Total Pemasukkan</th>
+                                        <th class="text-danger fs-5">
+                                            Rp {{ number_format($laporan_penjualan->sum('sub_total'), 0, ',', '.') }}
+                                        </th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
 
                     <div class="card-footer bg-white d-flex justify-content-center py-3">
-                        {{-- {{ $pembelian->appends(['tanggal_mulai' => request('tanggal_mulai'), 'tanggal_sampai' => request('tanggal_sampai')])->links('pagination::bootstrap-4') }} --}}
+                        {{-- {{ $pembelian->appends(['tanggal' => request('tanggal')])->links('pagination::bootstrap-4') }} --}}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- @section('styles')
-        <style>
-            .form-control {
-                transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            }
-            .form-control:focus {
-                border-color: #007bff;
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-            }
-            .btn.transition-all {
-                transition: all 0.3s ease;
-            }
-            .btn.transition-all:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            .card-body {
-                background: #f8f9fa;
-                border-radius: 0.5rem;
-            }
-        </style>
-    @endsection --}}
 @endsection

@@ -109,21 +109,24 @@
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <button class="btn btn-outline-primary rounded-left"
+                                                    <a href="{{ route('penjualan.edit', $item->nobukti)}}"
+                                                        class="btn btn-sm btn-outline-warning rounded-left" title="Edit">
+                                                         <i class="fa fa-pencil"></i>
+                                                     </a>
+                                                    <button class="btn btn-outline-success"
                                                             data-toggle="modal" data-target="#detailModal{{ $item->id }}"
                                                             title="Detail">
                                                         <i class="far fa-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-outline-danger"
+                                                    <button class="btn btn-outline-danger rounded-right"
                                                             data-toggle="modal" data-target="#deleteModal{{ $item->id }}"
                                                             title="Hapus">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
-
-                                                    <a href="{{ route('penjualan.struk', $item->id)}}"
+                                                    {{-- <a href="{{ route('penjualan.struk', $item->id)}}"
                                                         class="btn btn-sm btn-outline-secondary rounded-right" title="Cetak Struk">
                                                          <i class="fas fa-receipt mr-1"></i>
-                                                     </a>
+                                                     </a> --}}
                                                 </div>
                                             </td>
                                         </tr>

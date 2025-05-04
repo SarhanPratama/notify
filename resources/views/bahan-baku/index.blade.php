@@ -53,7 +53,8 @@
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-secondary">{{ $item->stok_minimum }}
                                                 {{ $item->satuan->nama }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-success">
+                                        <td class="align-middle">
+                                            <span class="badge fw-bolder bg-success">
                                                 {{ ucwords($item->kategori->nama) }}</span></td>
                                         <td class="d-flex justify-content-center text-nowrap gap-2">
                                             <div>
@@ -77,7 +78,8 @@
                                             <div class="modal-content">
                                                 <div class="modal-header bg-warning">
                                                     <h5 class="modal-title text-light font-weight-bold" id="editModalLabel">
-                                                        Form Edit</h5>
+                                                        Form Edit
+                                                    </h5>
                                                     <button type="button" class="close text-light" data-dismiss="modal"
                                                         aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
@@ -166,9 +168,7 @@
                                                                 <label>Foto <span class="text-danger">*</span></label>
                                                                 <input type="file" name="foto" class="form-control form-control-sm">
                                                             </div>
-
                                                         </div>
-
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-outline-primary btn-sm"

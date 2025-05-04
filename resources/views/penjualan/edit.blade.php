@@ -7,7 +7,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-primary py-3 d-flex align-items-center">
+                    <div class="card-header bg-warning py-3 d-flex align-items-center">
                         <a href="{{ route('penjualan.index') }}" class="btn btn-outline-light btn-sm">
                             <i class="fa fa-arrow-left"></i>
                         </a>
@@ -28,12 +28,13 @@
                                     <select class="form-select form-select-sm" name="id_cabang" required>
                                         <option value="">-- Pilih Cabang --</option>
                                         @foreach ($cabang as $id => $nama)
-                                            <option value="{{ $id }}">{{ $nama }}</option>
+                                            <option value="{{ $id }}"
+                                                {{ $penjualan->id_cabang == $id ? 'selected' : '' }}>{{ $nama }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
-
                             <!-- Product Table -->
                             <div class="table-responsive mb-4">
                                 <div class="mb-3">
@@ -52,41 +53,46 @@
                                         </tr>
                                     </thead>
                                     <tbody id="detail-pembelian">
-                                        <tr class="detail-item">
-                                            <td>
-                                                <select class="form-select form-select-sm" name="produk[]"
-                                                    style="min-width: 200px" required>
-                                                    <option value="">-- Pilih Bahan Baku --</option>
-                                                    @foreach ($produk as $data)
-                                                        <option value="{{ $data->id }}" data-harga="{{ $data->harga }}"
-                                                            data-satuan="{{ $data->satuan ? $data->satuan->nama : '' }}">
-                                                            {{ $data->nama }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <div class="input-group input-group-sm" style="min-width: 120px">
-                                                    <input type="number" class="form-control form-control-sm quantity"
-                                                        name="quantity[]" min="1" value="1" required>
-                                                    <span class="input-group-text satuan-display"></span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm harga"
-                                                    name="harga[]" min="0" step="0.01" style="min-width: 120px"
-                                                    required>
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm total"
-                                                    style="min-width: 120px" readonly>
-                                            </td>
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-outline-danger btn-sm remove-row">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        @foreach ($penjualan->mutasi as $detail)
+                                            <tr class="detail-item">
+                                                <td>
+                                                    <select class="form-select form-select-sm" name="produk[]"
+                                                        style="min-width: 200px" required>
+                                                        <option value="">-- Pilih Bahan Baku --</option>
+                                                        @foreach ($produk as $data)
+                                                            <option value="{{ $data->id }}"
+                                                                data-harga="{{ $data->harga }}"
+                                                                data-satuan="{{ $data->satuan ? $data->satuan->nama : '' }}"
+                                                                {{ $detail->id_bahan_baku == $data->id ? 'selected' : ''}}
+                                                                >
+                                                                {{ $data->nama }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm" style="min-width: 120px">
+                                                        <input type="number" class="form-control form-control-sm quantity"
+                                                            name="quantity[]" min="1" value="{{ $detail->quantity}}" required>
+                                                        <span class="input-group-text satuan-display"></span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm harga"
+                                                        name="harga[]" min="0" step="0.01"
+                                                        style="min-width: 120px" required>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm total"
+                                                        style="min-width: 120px" readonly>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm remove-row">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -102,7 +108,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm12 col-12">
                                     <label for=""><strong>Catatan (Opsional)</strong></label>
-                                    <textarea class="form-control form-control-sm" name="catatan"></textarea>
+                                    <textarea class="form-control form-control-sm" name="catatan">{{ $penjualan->catatan}}</textarea>
                                 </div>
                             </div>
 

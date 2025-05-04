@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content shadow-lg border-0 rounded-4">
             <!-- Enhanced Header -->
-            <div class="modal-header bg-warning text-white py-3">
+            <div class="modal-header bg-success text-white py-3">
                 <h5 class="modal-title fw-bold">
                     <i class="fas fa-file-invoice me-2"></i>Detail Pembelian #{{ $item->nobukti }}
                 </h5>

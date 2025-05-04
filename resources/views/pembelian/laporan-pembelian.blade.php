@@ -72,12 +72,12 @@
                                         <th class="text-nowrap">No</th>
                                         <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">No. Bukti</th>
-                                        {{-- <th class="text-nowrap">Supplier</th> --}}
+                                        <th class="text-nowrap">Supplier</th>
                                         <th class="text-nowrap">Bahan Baku</th>
                                         <th class="text-nowrap">Quantity</th>
                                         <th class="text-nowrap">Harga Satuan</th>
                                         <th class="text-nowrap">Sub Total</th>
-                                        <th class="text-nowrap">Total</th>
+
                                         {{-- <th class="text-center">Aksi</th> --}}
                                     </tr>
                                 </thead>
@@ -86,22 +86,40 @@
                                         <tr class="border-bottom">
                                             <td class="align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">
-                                                {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                <span class="badge badge-light p-2 text-dark">
+                                                    <i class="far fa-calendar-alt text-maron mr-1"></i>
+                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
-                                            {{-- <td class="align-middle">{{ $item->pembelian->supplier->nama }}</td> --}}
+                                            <td class="align-middle font-weight-bold">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="bg-light text-maron p-2 rounded-circle mr-2">
+                                                        <i class="fas fa-building"></i>
+                                                    </span>
+                                                    <strong>
+                                                        {{ $item->pembelian->supplier->nama }}
+                                                    </strong>
+                                                </div>
+                                            </td>
                                             <td class="align-middle font-weight-bold">{{ $item->bahanBaku->nama }}</td>
-                                            <td class="align-middle font-weight-bold">{{ $item->quantity }}
-                                                {{ $item->bahanBaku->satuan->nama }}</td>
+                                            <td class="align-middle font-weight-bold">
+                                                <span
+                                                class="badge fw-bolder bg-primary">
+
+                                                {{ $item->quantity }}
+                                                {{ $item->bahanBaku->satuan->nama }}
+                                            </span>
+                                            </td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->harga, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->sub_total, 0, ',', '.') }}
                                             </td>
-                                            <td class="align-middle text-success font-weight-bold text-nowrap">
+                                            {{-- <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->quantity * $item->harga, 0, ',', '.') }}
-                                            </td>
+                                            </td> --}}
                                             {{-- <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <button class="btn btn-outline-primary rounded-left"

@@ -25,10 +25,13 @@ class mutasi extends Model
     {
         return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
     }
+    public function penjualan()
+    {
+        return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
+    }
 
     public function bahanBaku()
-{
-    return $this->belongsTo(bahanBaku::class, 'id_bahan_baku');
-}
-
+    {
+        return $this->belongsTo(bahanBaku::class, 'id_bahan_baku');
+    }
 }

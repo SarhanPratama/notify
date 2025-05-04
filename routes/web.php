@@ -105,7 +105,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
     Route::get('pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
     Route::post('pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
-    // Route::get('pembelian/{id}', [PembelianController::class, 'index'])->name('pembelian.index');
+    Route::get('pembelian/{nobukti}/edit', [PembelianController::class, 'edit'])->name('pembelian.edit');
     Route::put('pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
     // Route::put('pembelian/status/{kode}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
     Route::delete('pembelian/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
@@ -115,7 +115,11 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
     Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
     Route::post('penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
-    Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
+    Route::get('penjualan/{nobukti}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
+    Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
+    Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
+    // Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
+
 
     Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
 
