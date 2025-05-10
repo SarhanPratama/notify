@@ -10,6 +10,8 @@
     <script src="{{ url('vendor/bootstrap-touchspin/js/jquery.bootstrap-touchspin.js') }}"></script>
     <script src="{{ url('vendor/clock-picker/clockpicker.js') }}"></script>
     <script src="{{ url('assets/js/ruang-admin.min.js') }}"></script>
+    {{-- <script src="{{ url('vendor/chart.js/Chart.min.js')}}"></script> --}}
+    {{-- <script src="{{ url('assets/js/demo/chart-area-demo.js')}}"></script> --}}
 
     <!-- Page Level Custom Scripts -->
     <script>

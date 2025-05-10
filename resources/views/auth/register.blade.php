@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 @include('layouts.link')
 @php
     $title = 'Register';
@@ -13,17 +15,15 @@
                     <div class="card text-light shadow-lg" style="background-color: #9c1515;">
                         <div class="card-header">
                             {{-- <img src="..." class="card-img-top" alt="..."> --}}
-                            <img src="{{ asset('assets/img/logo/brand.png') }}" alt="Logo"
-                                class="card-img-top mx-auto w-25">
+                            <img src="{{ asset('assets/img/logo/brand.webp') }}" alt="Logo" width="100"
+                                class="mx-auto">
                         </div>
                         <div class="card-body px-3">
                             <div class="text-center">
 
-                                <label class="card-title" style="font-size: 20px; font-weight:bold;">
-                                    <p>
+                                    <p class="card-title" style="font-size: 20px; font-weight:bold;">
                                         Register
                                     </p>
-                                </label>
 
                             </div>
                             <form action="{{ route('register') }}" method="POST">
@@ -31,33 +31,33 @@
                                 <div class="row text-sm">
                                     <div class="mb-3 font-weight-bold">
                                         <label for="name">Name</label>
-                                        <input type="text" class="form-control form-control-sm" name="name"
-                                            placeholder="Masukkan name" aria-label="name"
-                                            aria-describedby="basic-addon1" required>
+                                        <input type="text" class="form-control form-control-sm" name="name" id="name"
+                                            placeholder="Masukkan name" aria-label="name" autocomplete="name"
+                                            required>
                                     </div>
                                     <!-- Email Input -->
                                     <div class="mb-3 font-weight-bold">
                                         <label for="email">Email</label>
-                                        <input type="email" class="form-control form-control-sm" name="email"
-                                            placeholder="Masukkan email" aria-label="email"
-                                            aria-describedby="basic-addon1" required>
+                                        <input type="email" class="form-control form-control-sm" name="email" id="email"
+                                            placeholder="Masukkan email" aria-label="email" autocomplete="email"
+                                            required>
                                     </div>
 
                                     <!-- Password Input -->
                                     <div class="col-6 mb-3 font-weight-bold">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control form-control-sm" name="password"
-                                            placeholder="Password" aria-label="password" aria-describedby="basic-addon1"
-                                            required>
+                                        <input type="password" class="form-control form-control-sm" name="password" id="password"
+                                            placeholder="Password" aria-label="password"
+                                            autocomplete="current-password" required>
                                             <small class="form-text text-light">Pass minimal 8 karakter</small>
                                     </div>
 
                                     <!-- Confirm Password Input -->
                                     <div class="col-6 mb-4 font-weight-bold">
                                         <label for="password_confirmation">Confirm Password</label>
-                                        <input type="password" class="form-control form-control-sm"
+                                        <input type="password" class="form-control form-control-sm" id="password_confirmation"
                                             name="password_confirmation" placeholder="Confirm Password"
-                                            aria-label="password_confirmation" aria-describedby="basic-addon1" required>
+                                            aria-label="password_confirmation" required>
                                     </div>
                                 </div>
 
@@ -79,3 +79,4 @@
         </div>
     </section>
 </main>
+</html>

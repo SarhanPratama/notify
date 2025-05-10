@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 @include('layouts.link')
 @php
     $title = 'Forgot Password';
@@ -19,12 +21,9 @@
                         <div class="card-body px-4">
                             <!-- Title -->
                             <div class="text-center mb-4">
-                                    <label class="card-title text-light" style="font-size: 20px; font-weight:bold;">
-                                        <p>
+                                        <p class="card-title text-light" style="font-size: 20px; font-weight:bold;">
                                             Forgot Password
                                         </p>
-                                    </label>
-
                                 <!-- Penjelasan di bawah judul -->
                                 <p class="text-white mt-2" style="font-size: 14px;">
                                     Masukkan email Anda, dan link reset password akan dikirim ke email tersebut.
@@ -54,7 +53,7 @@
                                 @csrf
                                 <div class="mb-4 fw-bold">
                                     <label for="email" class="form-label text-white">Email</label>
-                                    <input type="email" class="form-control form-control-sm" name="email" placeholder="Masukkan email yang terdaftar" aria-label="email" required autofocus>
+                                    <input type="email" class="form-control form-control-sm" name="email" id="email" placeholder="Masukkan email yang terdaftar" aria-label="email" autocomplete="email" required autofocus>
                                 </div>
 
                                 <!-- Submit Button -->
@@ -85,3 +84,4 @@
         </div>
     </section>
 </main>
+</html>

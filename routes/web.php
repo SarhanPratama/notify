@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
+use App\Http\Controllers\cashFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
@@ -120,6 +121,9 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
     // Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
 
+    Route::get('/kas', [cashFlowController::class, 'index'])->name('kas.index');
+    Route::get('/kas/create', [cashFlowController::class, 'create'])->name('kas.create');
+    Route::post('/kas', [cashFlowController::class, 'store'])->name('kas.store');
 
     Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
 
@@ -130,10 +134,6 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel');
 
     Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
-
-
-
-
 
     Route::get('/notifications/mark-as-read', function () {
         DB::table('notifications')->update(['is_read' => true]);

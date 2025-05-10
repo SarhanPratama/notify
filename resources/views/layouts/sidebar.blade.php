@@ -39,6 +39,28 @@
 
     <li class="nav-item">
         <a class="nav-link collapsed fw-bold"
+         href="#" data-toggle="collapse" data-target="#collapseKas"
+            aria-controls="collapseKas">
+            <i class="fa fa-cube text-maron" aria-hidden="true"></i>
+            <span>Kas</span>
+        </a>
+        <div id="collapseKas" class="collapse
+        {{ in_array(request()->route()->getName(),
+        ['kas.index', 'kas.create'
+        ]) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item {{ in_array(request()->route()->getName(), ['kas.index', 'kas.create']) ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('kas.index') }}">Arus Kas</a>
+                {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
+                    href="{{ route('bahan-baku.index') }}">Bahan Baku</a> --}}
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
+                {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['discount.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('discount.index') }}">Diskon</a> --}}
+            </div>
+        </div>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed fw-bold"
          href="#" data-toggle="collapse" data-target="#collapseInventory"
             aria-controls="collapseInventory">
             <i class="fa fa-truck text-maron" aria-hidden="true"></i>

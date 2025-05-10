@@ -49,9 +49,9 @@
 
                 <!-- Container Fluid -->
                 <div class="container-fluid" id="container-wrapper">
-                    <div class="row mb-3">
+                    {{-- <div class="row mb-3"> --}}
                         @yield('content')
-                    </div>
+                    {{-- </div> --}}
                     <!-- Row -->
                 </div>
                 <!---Container Fluid-->
