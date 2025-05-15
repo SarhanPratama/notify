@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
             $table->string('nobukti')->unique();
+            $table->date('tanggal');
             // $table->enum('status', ['pending', 'disetujui', 'success'])->default('pending');
             $table->decimal('total', 15, 2);
             $table->text('catatan')->nullable();

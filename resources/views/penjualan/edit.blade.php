@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="card shadow-lg">
@@ -15,14 +15,21 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('penjualan.store') }}" method="POST">
+                        <form action="{{ route('penjualan.update', $penjualan->nobukti) }}" method="POST">
                             @csrf
+                            @method('PUT')
 
                             <div class="row mb-4">
                                 {{-- <div class="col-lg-6 col-md 6 col-sm-12 col-12">
                                     <label for="">Karyawan</label>
                                     <input type="text" class="form-control form-control-sm" name="id_user" value="{{ Auth::user()->name}}" readonly>
                                 </div> --}}
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" for="tanggal">Tanggal <span
+                                            class="text-danger">*</span></label>
+                                    <input class="form-control form-control-sm border-0 bg-light shadow-none" type="date"
+                                        id="tanggal" name="tanggal" value="{{ $penjualan->tanggal }}" required>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Cabang <span class="text-danger">*</span></label>
                                     <select class="form-select form-select-sm" name="id_cabang" required>

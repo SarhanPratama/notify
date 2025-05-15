@@ -41,16 +41,20 @@
         <a class="nav-link collapsed fw-bold"
          href="#" data-toggle="collapse" data-target="#collapseKas"
             aria-controls="collapseKas">
-            <i class="fa fa-cube text-maron" aria-hidden="true"></i>
-            <span>Kas</span>
+            <i class="fa fa-money text-maron" aria-hidden="true"></i>
+            <span>Transaksi</span>
         </a>
         <div id="collapseKas" class="collapse
         {{ in_array(request()->route()->getName(),
-        ['kas.index', 'kas.create'
+        ['kas.index', 'kas.create', 'pembelian.index', 'pembelian.create', 'pembelian.edit', 'penjualan.index', 'penjualan.create', 'penjualan.edit'
         ]) ? 'show' : '' }}" aria-labelledby="headingProduk" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['kas.index', 'kas.create']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('kas.index') }}">Arus Kas</a>
+                    <a class="collapse-item {{ in_array(request()->route()->getName(), ['pembelian.index', 'pembelian.create', 'pembelian.edit']) ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('pembelian.index') }}">Pembelian</a>
+                     <a class="collapse-item {{ in_array(request()->route()->getName(), ['penjualan.index', 'penjualan.create', 'penjualan.edit']) ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('penjualan.index') }}">Penjualan</a>
                 {{-- <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
                     href="{{ route('bahan-baku.index') }}">Bahan Baku</a> --}}
                 {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['resep.index']) ? 'active font-weight-bold' : '' }}" href="{{ route('resep.index') }}">Resep</a> --}}
@@ -68,7 +72,7 @@
         </a>
         <div id="collapseInventory" class="collapse
         {{ in_array(request()->route()->getName(),
-        ['supplier.index', 'pembelian.index', 'bahan-baku.index', 'penjualan.index'
+        ['supplier.index', 'bahan-baku.index',
         ]) ? 'show' : '' }}" aria-labelledby="headingInventory" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['supplier.index']) ? 'active font-weight-bold' : '' }}"
@@ -77,10 +81,7 @@
                         href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
                 {{-- <a class="collapse-item {{ in_array(request()->route()->getName(), ['stok.index']) ? 'active font-weight-bold' : '' }}"
                     href="{{ route('stok.index') }}">Stok</a> --}}
-                <a class="collapse-item {{ in_array(request()->route()->getName(), ['pembelian.index']) ? 'active font-weight-bold' : '' }}"
-                    href="{{ route('pembelian.index') }}">Pembelian</a>
-                 <a class="collapse-item {{ in_array(request()->route()->getName(), ['penjualan.index']) ? 'active font-weight-bold' : '' }}"
-                        href="{{ route('penjualan.index') }}">Penjualan</a>
+
             </div>
         </div>
     </li>
@@ -89,7 +90,7 @@
         <a class="nav-link collapsed fw-bold"
          href="#" data-toggle="collapse" data-target="#collapselaporan"
             aria-controls="collapselaporan">
-            <i class="fa fa-cube text-maron" aria-hidden="true"></i>
+            <i class="fa fa-file-text-o text-maron" aria-hidden="true"></i>
             <span>Laporan</span>
         </a>
         <div id="collapselaporan" class="collapse

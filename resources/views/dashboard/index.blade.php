@@ -2,6 +2,56 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
+    <div class="row">
+        {{-- <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pengeluaran Bulan Ini</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
+                                {{ number_format($totalPengeluaran['totalPengeluaran'], 0, ',', '.') }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
+                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ abs($persentasePembelian) }}%
+                                </span>
+                                <span>Since last month</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+
+        {{-- <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pemasukkan Bulan Ini</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
+                                {{ number_format($totalPemasukkan['totalPemasukkan'], 0, ',', '.') }}</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
+                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ abs($persentasePembelian) }}%
+                                </span>
+                                <span>Since last month</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+    </div>
+
     <div class="row mb-4">
         <!-- Kas Seroo Card -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -10,15 +60,18 @@
                     <div class="row align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-uppercase mb-1">Kas Seroo</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalKasSeroo, 0, ',', '.') }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentaseKas >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fa fa-arrow-{{ $persentaseKas >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentaseKas) }}%
+
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalKasSeroo['kas_seroo_bulan_ini'], 0, ',', '.') }}
+                            </div>
+
+                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-{{ $totalKasSeroo['persentase_perubahan'] >= 0 ? 'success' : 'danger' }} mr-2">
+                                    <i class="fa fa-arrow-{{ $totalKasSeroo['persentase_perubahan'] >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ number_format(abs($totalKasSeroo['persentase_perubahan']), 2) }}%
                                 </span>
                                 <span>Since last month</span>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-wallet fa-2x text-primary"></i>
@@ -28,7 +81,55 @@
             </div>
         </div>
 
-        <!-- Total Penjualan Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pengeluaran Bulan Ini</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
+                                {{ number_format($totalPengeluaran['totalPengeluaran'], 0, ',', '.') }}</div>
+                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
+                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ abs($persentasePembelian) }}%
+                                </span>
+                                <span>Since last month</span>
+                            </div> --}}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pemasukkan Bulan Ini</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
+                                {{ number_format($totalPemasukkan['totalPemasukkan'], 0, ',', '.') }}</div>
+                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
+                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ abs($persentasePembelian) }}%
+                                </span>
+                                <span>Since last month</span>
+                            </div> --}}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- <!-- Total Penjualan Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-body">
@@ -76,7 +177,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Bahan Baku Minimum Card -->
         <div class="col-xl-3 col-md-6 mb-4">

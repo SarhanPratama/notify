@@ -131,7 +131,7 @@
                                             </td>
                                         </tr>
                                         @include('penjualan.show')
-                                        @include('pembelian.destroy')
+                                        @include('penjualan.destroy')
                                     @endforeach
                                 </tbody>
                             </table>

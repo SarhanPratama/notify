@@ -87,6 +87,7 @@ class PembelianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'tanggal' => 'required',
             'id_supplier' => 'required|exists:supplier,id',
             'produk' => 'required|array',
             'produk.*' => 'required|exists:bahan_baku,id',
@@ -112,6 +113,7 @@ class PembelianController extends Controller
             $pembelian = Pembelian::create([
                 'nobukti' => $nobukti,
                 'total' => $total,
+                'tanggal' => $request->tanggal,
                 // 'status' => 'pending',
                 'catatan' => $request->catatan,
                 'id_supplier' => $request->id_supplier,
@@ -191,49 +193,101 @@ class PembelianController extends Controller
         try {
             $pembelian = Pembelian::where('nobukti', $nobukti)->firstOrFail();
 
-            $total = 0;
+            // Hitung total baru
+            $totalBaru = 0;
             foreach ($request->produk as $index => $idBahanBaku) {
-                $total += $request->quantity[$index] * $request->harga[$index];
+                $totalBaru += $request->quantity[$index] * $request->harga[$index];
             }
 
-            $pembelian->update([
-                'total' => $total,
-                'catatan' => $request->catatan,
+            // Cek apakah data pembelian berubah
+            $dataPembelianBaru = [
                 'id_supplier' => $request->id_supplier,
-            ]);
+                'total' => $totalBaru,
+                'catatan' => $request->catatan,
+            ];
 
-            $mutasiLama = mutasi::where('nobukti', $nobukti)->get();
-            foreach ($mutasiLama as $mutasi) {
-                if ($mutasi->status == 1) {
-                    $bahanBaku = BahanBaku::find($mutasi->id_bahan_baku);
-                    if ($bahanBaku) {
-                        $bahanBaku->stok_akhir -= $mutasi->quantity;
-                        $bahanBaku->save();
-                    }
-                }
-                $mutasi->delete();
+            $dataPembelianLama = [
+                'id_supplier' => $pembelian->id_supplier,
+                'total' => $pembelian->total,
+                'catatan' => $pembelian->catatan,
+            ];
+
+            $produkLama = mutasi::where('nobukti', $nobukti)
+                ->orderBy('id_bahan_baku')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id_bahan_baku' => $item->id_bahan_baku,
+                        'quantity' => $item->quantity,
+                        'harga' => $item->harga
+                    ];
+                })->values()->toArray();
+
+            $produkBaru = collect($request->produk)->map(function ($id, $index) use ($request) {
+                return [
+                    'id_bahan_baku' => $id,
+                    'quantity' => $request->quantity[$index],
+                    'harga' => $request->harga[$index]
+                ];
+            })->sortBy('id_bahan_baku')->values()->toArray();
+
+            if (
+                $dataPembelianLama == $dataPembelianBaru &&
+                $produkLama == $produkBaru
+            ) {
+                DB::rollBack();
+                notify()->info('Tidak ada data yang diupdate');
+                return redirect()->back();
             }
 
-            // Simpan mutasi baru
-            foreach ($request->produk as $index => $idBahanBaku) {
-                $quantity = $request->quantity[$index];
-                $harga = $request->harga[$index];
+            $pembelian->update($dataPembelianBaru);
 
-                $mutasiBaru = mutasi::create([
-                    'nobukti' => $nobukti,
-                    'id_bahan_baku' => $idBahanBaku,
-                    'quantity' => $quantity,
-                    'harga' => $harga,
-                    'sub_total' => $quantity * $harga,
-                    'jenis_transaksi' => 'M',
-                    'status' => 1
-                ]);
+            $mutasiLama = mutasi::where('nobukti', $nobukti)->get()->keyBy('id_bahan_baku');
 
-                if ($mutasiBaru->status == 1) {
-                    $bahanBaku = BahanBaku::find($idBahanBaku);
-                    if ($bahanBaku) {
-                        $bahanBaku->stok_akhir += $quantity;
-                        $bahanBaku->save();
+            foreach ($produkBaru as $item) {
+                $idBahanBaku = $item['id_bahan_baku'];
+                $quantityBaru = $item['quantity'];
+                $hargaBaru = $item['harga'];
+                $subTotal = $quantityBaru * $hargaBaru;
+
+                if ($mutasiLama->has($idBahanBaku)) {
+                    $mutasi = $mutasiLama[$idBahanBaku];
+
+                    // Update stok (rollback lama, masukkan baru)
+                    if ($mutasi->status == 1) {
+                        $bahanBaku = BahanBaku::find($idBahanBaku);
+                        if ($bahanBaku) {
+                            $bahanBaku->stok_akhir -= $mutasi->quantity;
+                            $bahanBaku->stok_akhir += $quantityBaru;
+                            $bahanBaku->save();
+                        }
+                    }
+
+                    $mutasi->update([
+                        'quantity' => $quantityBaru,
+                        'harga' => $hargaBaru,
+                        'sub_total' => $subTotal,
+                    ]);
+                } else {
+                    // Tambah mutasi baru
+                    $mutasiBaru = mutasi::create([
+                        'nobukti' => $nobukti,
+                        'id_bahan_baku' => $idBahanBaku,
+                        'quantity' => $quantityBaru,
+                        'harga' => $hargaBaru,
+                        'sub_total' => $subTotal,
+                        'jenis_transaksi' => 'M',
+                        'status' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    if ($mutasiBaru->status == 1) {
+                        $bahanBaku = BahanBaku::find($idBahanBaku);
+                        if ($bahanBaku) {
+                            $bahanBaku->stok_akhir += $quantityBaru;
+                            $bahanBaku->save();
+                        }
                     }
                 }
             }
@@ -247,8 +301,6 @@ class PembelianController extends Controller
             return redirect()->back()->withInput();
         }
     }
-
-
 
 
     // use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;

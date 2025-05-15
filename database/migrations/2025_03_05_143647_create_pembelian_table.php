@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pembelian', function (Blueprint $table) {
             $table->id();
-
             $table->string('nobukti')->unique();
+            $table->date('tanggal');
             $table->decimal('total', 15, 2);
             // $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->text('catatan')->nullable();

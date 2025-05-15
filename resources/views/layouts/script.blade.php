@@ -55,13 +55,14 @@
                 todayBtn: 'linked',
             });
 
-            $('#simple-date3 .input-group.date').datepicker({
+            $('#simple-date10 .input-group.date').datepicker({
                 startView: 2,
                 format: 'dd/mm/yyyy',
                 autoclose: true,
                 todayHighlight: true,
                 todayBtn: 'linked',
             });
+
 
             $('#simple-date4 .input-daterange').datepicker({
                 format: 'dd/mm/yyyy',

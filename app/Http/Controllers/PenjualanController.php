@@ -29,7 +29,7 @@ class PenjualanController extends Controller
 
         // Tambahkan filter hanya jika kedua tanggal ada
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
-            $penjualan = $penjualan->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+            $penjualan = $penjualan->whereBetween('tanggal', [$tanggalMulai, $tanggalSampai]);
         }
 
         $penjualan = $penjualan->latest()->get();
@@ -54,6 +54,7 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'tanggal' => 'required',
             'id_cabang' => 'required|exists:cabang,id',
             'produk' => 'required|array',
             'produk.*' => 'required|exists:bahan_baku,id',
@@ -75,6 +76,7 @@ class PenjualanController extends Controller
             }
 
             $penjualan = Penjualan::create([
+                'tanggal' => $request->tanggal,
                 'nobukti' => $nobukti,
                 'total' => $total,
                 'status' => 'pending',
@@ -136,7 +138,9 @@ class PenjualanController extends Controller
 
     public function update(Request $request, $nobukti)
     {
+        // dd($request);
         $request->validate([
+            'tanggal' => 'required',
             'id_cabang' => 'required|exists:cabang,id',
             'produk' => 'required|array',
             'produk.*' => 'required|exists:bahan_baku,id',
@@ -152,58 +156,114 @@ class PenjualanController extends Controller
         try {
             $penjualan = Penjualan::where('nobukti', $nobukti)->firstOrFail();
 
-            // Hitung ulang total baru
-            $total = 0;
+            // Hitung total baru
+            $totalBaru = 0;
             foreach ($request->produk as $index => $idBahanBaku) {
-                $total += $request->quantity[$index] * $request->harga[$index];
+                $totalBaru += $request->quantity[$index] * $request->harga[$index];
             }
 
-            // Update data utama penjualan
-            $penjualan->update([
-                'total' => $total,
-                'catatan' => $request->catatan,
+            $dataPenjualanBaru = [
+                'tanggal' => $request->tanggal,
                 'id_cabang' => $request->id_cabang,
-            ]);
+                'total' => $totalBaru,
+                'catatan' => $request->catatan,
+            ];
 
-            // Hapus semua mutasi lama berdasarkan nobukti
-            $mutasiLama = Mutasi::where('nobukti', $nobukti)->get();
-            foreach ($mutasiLama as $mutasi) {
-                // Rollback stok jika perlu
-                // $bahanBaku = BahanBaku::find($mutasi->id_bahan_baku);
-                // if ($bahanBaku && $mutasi->status == 1) {
-                //     $bahanBaku->stok_akhir += $mutasi->quantity;
-                //     $bahanBaku->save();
-                // }
+            $dataPenjualanLama = [
+                'tanggal' => $penjualan->tanggal,
+                'id_cabang' => $penjualan->id_cabang,
+                'total' => $penjualan->total,
+                'catatan' => $penjualan->catatan,
+            ];
 
-                $mutasi->delete();
+            // Ambil mutasi lama dan susun datanya untuk perbandingan
+            $mutasiLama = Mutasi::where('nobukti', $nobukti)
+                ->orderBy('id_bahan_baku')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id_bahan_baku' => $item->id_bahan_baku,
+                        'quantity' => $item->quantity,
+                        'harga' => $item->harga
+                    ];
+                })->values()->toArray();
+
+            // Susun input produk dari request
+            $produkBaru = collect($request->produk)->map(function ($id, $index) use ($request) {
+                return [
+                    'id_bahan_baku' => $id,
+                    'quantity' => $request->quantity[$index],
+                    'harga' => $request->harga[$index]
+                ];
+            })->sortBy('id_bahan_baku')->values()->toArray();
+
+            // Cek apakah tidak ada data yang berubah
+            if ($dataPenjualanBaru == $dataPenjualanLama && $mutasiLama == $produkBaru) {
+                DB::rollBack();
+                notify()->info('Tidak ada data yang diupdate');
+                return redirect()->back();
             }
 
-            // Simpan mutasi baru
-            foreach ($request->produk as $index => $idBahanBaku) {
-                $quantity = $request->quantity[$index];
-                $harga = $request->harga[$index];
+            // Lanjut update penjualan
+            $penjualan->update($dataPenjualanBaru);
 
-                $mutasiBaru = Mutasi::create([
-                    'nobukti' => $nobukti,
-                    'id_bahan_baku' => $idBahanBaku,
-                    'quantity' => $quantity,
-                    'harga' => $harga,
-                    'sub_total' => $quantity * $harga,
-                    'jenis_transaksi' => 'K', // Penjualan = keluar
-                    'status' => 1
-                ]);
+            // Ambil mutasi lama untuk update
+            $mutasiLama = Mutasi::where('nobukti', $nobukti)->get()->keyBy('id_bahan_baku');
 
-                // Jika ingin update stok:
-                // $bahanBaku = BahanBaku::find($idBahanBaku);
-                // if ($bahanBaku) {
-                //     $bahanBaku->stok_akhir -= $quantity;
-                //     $bahanBaku->save();
-                // }
+            foreach ($produkBaru as $item) {
+                $idBahanBaku = $item['id_bahan_baku'];
+                $quantityBaru = $item['quantity'];
+                $hargaBaru = $item['harga'];
+                $subTotal = $quantityBaru * $hargaBaru;
+
+                if ($mutasiLama->has($idBahanBaku)) {
+                    $mutasi = $mutasiLama[$idBahanBaku];
+
+                    // Update stok: rollback lama → kurangi baru
+                    if ($mutasi->status == 1) {
+                        $bahanBaku = BahanBaku::find($idBahanBaku);
+                        if ($bahanBaku) {
+                            $bahanBaku->stok_akhir += $mutasi->quantity; // rollback stok lama
+                            $bahanBaku->stok_akhir -= $quantityBaru;     // kurangi stok baru
+                            $bahanBaku->save();
+                        }
+                    }
+
+                    // Update mutasi
+                    $mutasi->update([
+                        'quantity' => $quantityBaru,
+                        'harga' => $hargaBaru,
+                        'sub_total' => $subTotal,
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    // Mutasi belum ada, buat baru
+                    $mutasiBaru = Mutasi::create([
+                        'nobukti' => $nobukti,
+                        'id_bahan_baku' => $idBahanBaku,
+                        'quantity' => $quantityBaru,
+                        'harga' => $hargaBaru,
+                        'sub_total' => $subTotal,
+                        'jenis_transaksi' => 'K',
+                        'status' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    if ($mutasiBaru->status == 1) {
+                        $bahanBaku = BahanBaku::find($idBahanBaku);
+                        if ($bahanBaku) {
+                            $bahanBaku->stok_akhir -= $quantityBaru;
+                            $bahanBaku->save();
+                        }
+                    }
+                }
             }
 
             DB::commit();
             notify()->success('Data Penjualan berhasil diperbarui');
             return redirect()->route('penjualan.index');
+
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal memperbarui data Penjualan: ' . $e->getMessage());
@@ -211,12 +271,51 @@ class PenjualanController extends Controller
         }
     }
 
-
-    public function showStruk($id)
+    public function destroy($id)
     {
-        $penjualan = Penjualan::with('cabang', 'mutasi.bahanBaku.satuan')->findOrFail($id);
-        return view('penjualan.struk', compact('penjualan'));
+        DB::beginTransaction();
+
+        try {
+            $penjualan = Penjualan::findOrFail($id);
+
+            // Ambil semua mutasi berdasarkan nomor bukti
+            $mutasiList = Mutasi::where('nobukti', $penjualan->nobukti)->get();
+
+            foreach ($mutasiList as $mutasi) {
+                // Jika status 1, rollback stok bahan baku
+                if ($mutasi->status == 1) {
+                    $bahanBaku = BahanBaku::find($mutasi->id_bahan_baku);
+                    if ($bahanBaku) {
+                        $bahanBaku->stok_akhir -= $mutasi->quantity;
+                        $bahanBaku->save();
+                    }
+                }
+
+                // Hapus mutasi
+                $mutasi->delete();
+            }
+
+            // Hapus penjualan
+            $penjualan->delete();
+
+            DB::commit();
+
+            notify()->success('Data penjualan berhasil dihapus.');
+            return redirect()->route('penjualan.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal menghapus penjualan: ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
+
+
+
+    // public function showStruk($id)
+    // {
+    //     $penjualan = Penjualan::with('cabang', 'mutasi.bahanBaku.satuan')->findOrFail($id);
+    //     return view('penjualan.struk', compact('penjualan'));
+    // }
 
     public function laporanPenjualan(Request $request) {
         $title = 'Laporan Penjualan';

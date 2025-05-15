@@ -117,6 +117,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
     Route::post('penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
     Route::get('penjualan/{nobukti}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
+    Route::put('penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
+    Route::delete('penjualan/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
     Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
     Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
     // Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');

@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="card shadow-lg">
@@ -23,6 +23,12 @@
                                     <label for="">Karyawan</label>
                                     <input type="text" class="form-control form-control-sm" name="id_user" value="{{ Auth::user()->name}}" readonly>
                                 </div> --}}
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold" for="tanggal">Tanggal <span
+                                            class="text-danger">*</span></label>
+                                    <input class="form-control form-control-sm border-0 bg-light shadow-none" type="date"
+                                        id="tanggal" name="tanggal" required>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Supplier <span class="text-danger">*</span></label>
                                     <select class="form-select form-select-sm" name="id_supplier" required>
@@ -68,9 +74,8 @@
                                             <td>
                                                 <div class="input-group input-group-sm" style="min-width: 120px">
                                                     <input type="number" class="form-control form-control-sm quantity"
-                                                    name="quantity[]" min="1" value="1" required>
-                                                    <span
-                                                        class="input-group-text satuan-display"></span>
+                                                        name="quantity[]" min="1" value="1" required>
+                                                    <span class="input-group-text satuan-display"></span>
                                                 </div>
                                             </td>
                                             <td>
@@ -123,88 +128,88 @@
 @endsection
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Fungsi tambah baris
-    document.getElementById('tambah-detail').addEventListener('click', function() {
-        const newRow = document.querySelector('.detail-item').cloneNode(true);
-        newRow.querySelectorAll('input').forEach(input => input.value = '');
-        newRow.querySelector('select').selectedIndex = 0;
-        document.querySelector('#detail-pembelian').appendChild(newRow);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fungsi tambah baris
+        document.getElementById('tambah-detail').addEventListener('click', function() {
+            const newRow = document.querySelector('.detail-item').cloneNode(true);
+            newRow.querySelectorAll('input').forEach(input => input.value = '');
+            newRow.querySelector('select').selectedIndex = 0;
+            document.querySelector('#detail-pembelian').appendChild(newRow);
 
-        // Bind event listeners untuk baris baru
-        setupRowEventListeners(newRow);
-    });
-
-    // Fungsi untuk setup event listeners pada baris
-    function setupRowEventListeners(row) {
-        const qtyInput = row.querySelector('.quantity');
-        const hargaInput = row.querySelector('.harga');
-        const produkSelect = row.querySelector('select[name="produk[]"]');
-
-        qtyInput.addEventListener('input', function() {
-            calculateTotal(row);
+            // Bind event listeners untuk baris baru
+            setupRowEventListeners(newRow);
         });
 
-        hargaInput.addEventListener('input', function() {
-            calculateTotal(row);
+        // Fungsi untuk setup event listeners pada baris
+        function setupRowEventListeners(row) {
+            const qtyInput = row.querySelector('.quantity');
+            const hargaInput = row.querySelector('.harga');
+            const produkSelect = row.querySelector('select[name="produk[]"]');
+
+            qtyInput.addEventListener('input', function() {
+                calculateTotal(row);
+            });
+
+            hargaInput.addEventListener('input', function() {
+                calculateTotal(row);
+            });
+
+            produkSelect.addEventListener('change', function() {
+                updateSatuan(row);
+            });
+        }
+
+        // Fungsi hapus baris
+        document.querySelector('#detail-pembelian').addEventListener('click', function(e) {
+            if (e.target.closest('.remove-row')) {
+                const row = e.target.closest('tr');
+                if (document.querySelectorAll('#detail-pembelian tr').length > 1) {
+                    row.remove();
+                    updateTotal();
+                }
+            }
         });
 
-        produkSelect.addEventListener('change', function() {
-            updateSatuan(row);
-        });
-    }
+        function calculateTotal(row) {
+            const qty = parseFloat(row.querySelector('.quantity').value) || 0;
+            const harga = parseFloat(row.querySelector('.harga').value) || 0;
+            const total = qty * harga;
+            row.querySelector('.total').value = formatRupiah(total);
+            updateTotal();
+        }
 
-    // Fungsi hapus baris
-    document.querySelector('#detail-pembelian').addEventListener('click', function(e) {
-        if (e.target.closest('.remove-row')) {
-            const row = e.target.closest('tr');
-            if (document.querySelectorAll('#detail-pembelian tr').length > 1) {
-                row.remove();
-                updateTotal();
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.total').forEach(input => {
+                total += parseFloat(input.value.replace(/[^0-9]/g, '')) || 0;
+            });
+            document.getElementById('total-keseluruhan').value = formatRupiah(total);
+        }
+
+        function updateSatuan(row) {
+            const selectProduk = row.querySelector('select[name="produk[]"]');
+            const selectedOption = selectProduk.options[selectProduk.selectedIndex];
+            const satuan = selectedOption.getAttribute('data-satuan');
+            const satuanDisplay = row.querySelector('.satuan-display');
+
+            if (satuan) {
+                satuanDisplay.textContent = `${satuan}`;
+            } else {
+                satuanDisplay.textContent = '';
             }
         }
-    });
 
-    function calculateTotal(row) {
-        const qty = parseFloat(row.querySelector('.quantity').value) || 0;
-        const harga = parseFloat(row.querySelector('.harga').value) || 0;
-        const total = qty * harga;
-        row.querySelector('.total').value = formatRupiah(total);
-        updateTotal();
-    }
-
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.total').forEach(input => {
-            total += parseFloat(input.value.replace(/[^0-9]/g, '')) || 0;
-        });
-        document.getElementById('total-keseluruhan').value = formatRupiah(total);
-    }
-
-    function updateSatuan(row) {
-        const selectProduk = row.querySelector('select[name="produk[]"]');
-        const selectedOption = selectProduk.options[selectProduk.selectedIndex];
-        const satuan = selectedOption.getAttribute('data-satuan');
-        const satuanDisplay = row.querySelector('.satuan-display');
-
-        if (satuan) {
-            satuanDisplay.textContent = `${satuan}`;
-        } else {
-            satuanDisplay.textContent = '';
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(angka);
         }
-    }
 
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(angka);
-    }
-
-    document.querySelectorAll('#detail-pembelian tr.detail-item').forEach(row => {
-        setupRowEventListeners(row);
-        updateSatuan(row); // Update satuan untuk baris yang sudah ada
+        document.querySelectorAll('#detail-pembelian tr.detail-item').forEach(row => {
+            setupRowEventListeners(row);
+            updateSatuan(row); // Update satuan untuk baris yang sudah ada
+        });
     });
-});
 </script>

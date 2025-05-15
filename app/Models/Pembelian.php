@@ -14,6 +14,7 @@ class Pembelian extends Model
     protected $fillable = [
         'nobukti',
         'total',
+        'tanggal',
         // 'status',
         'catatan',
         'id_supplier',

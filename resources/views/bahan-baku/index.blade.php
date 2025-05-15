@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col col-lg-12">
                 <!-- Simple Tables -->
@@ -91,8 +91,8 @@
                                                     <div class="modal-body text-sm fw-bold">
                                                         <div class="row">
                                                             <div class="mb-3">
-                                                                <label>Bahan Baku <span class="text-danger">*</span></label>
-                                                                <input type="text" name="nama"
+                                                                <label for="nama">Bahan Baku <span class="text-danger">*</span></label>
+                                                                <input type="text" id="nama" name="nama"
                                                                     class="form-control form-control-sm"
                                                                     value="{{ $item->nama }}"
                                                                     placeholder="Masukkan nama bahan baku">
@@ -101,30 +101,30 @@
                                                                 @enderror
                                                             </div>
                                                             <div class="col-12 mb-3">
-                                                                <label>Harga <span class="text-danger">*</span></label>
-                                                                <input type="number" name="harga"
+                                                                <label for="harga">Harga <span class="text-danger">*</span></label>
+                                                                <input type="number" id="harga" name="harga"
                                                                     class="form-control form-control-sm"
                                                                     value="{{ (int) $item->harga }}"
                                                                     placeholder="Masukkan harga">
                                                             </div>
                                                             <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label>Stok Awal<span class="text-danger">*</span></label>
-                                                                <input type="number" name="stok_awal"
+                                                                <label for="stok_awal">Stok Awal<span class="text-danger">*</span></label>
+                                                                <input type="number" id="stok_awal" name="stok_awal"
                                                                     class="form-control form-control-sm"
                                                                     value="{{ $item->stok_awal }}"
                                                                     placeholder="Masukkan stok awal">
                                                             </div>
-                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label>Stok Akhir<span class="text-danger">*</span></label>
+                                                            {{-- <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
+                                                                <label for="stok">Stok Akhir<span class="text-danger">*</span></label>
                                                                 <input type="number" name="stok_akhir"
                                                                     class="form-control form-control-sm"
                                                                     value="{{ $item->stok_akhir }}"
                                                                     placeholder="Masukkan stok akhir">
-                                                            </div>
+                                                            </div> --}}
                                                             <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label>Stok Minimum <span
+                                                                <label for="stok_minimum">Stok Minimum <span
                                                                         class="text-danger">*</span></label>
-                                                                <input type="number" name="stok_minimum"
+                                                                <input type="number" id="stok_minimum" name="stok_minimum"
                                                                     class="form-control form-control-sm"
                                                                     value="{{ $item->stok_minimum }}"
                                                                     placeholder="Masukkan stok minimum">
@@ -138,7 +138,7 @@
                                                                         href="javascript:void(0);" data-toggle="modal"
                                                                         data-target="#satuanModal">Tambah Satuan</a>
                                                                 </div> --}}
-                                                                <label>Satuan <span class="text-danger">*</span></label>
+                                                                <label for="id_satuan">Satuan <span class="text-danger">*</span></label>
                                                                 <select class="form-select form-select-sm" id="id_satuan"
                                                                     name="id_satuan" required>
                                                                     <option selected disabled>Pilih Satuan</option>
@@ -151,7 +151,7 @@
                                                             </div>
 
                                                             <div class="col-6 mb-3">
-                                                                <label class="form-label">Kategori <span
+                                                                <label for="id_kategori" class="form-label">Kategori <span
                                                                         class="text-danger">*</span></label>
                                                                 <select class="form-select form-select-sm"
                                                                     id="id_kategori" name="id_kategori" required>
@@ -165,8 +165,8 @@
                                                             </div>
 
                                                             <div class="col-12 mb-3">
-                                                                <label>Foto <span class="text-danger">*</span></label>
-                                                                <input type="file" name="foto" class="form-control form-control-sm">
+                                                                <label for="foto">Foto <span class="text-danger">*</span></label>
+                                                                <input type="file" id="foto" name="foto" class="form-control form-control-sm">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -239,21 +239,21 @@
                     <div class="modal-body text-sm fw-bold">
                         <div class="row">
                             <div class="mb-3">
-                                <label>Bahan Baku <span class="text-danger">*</span></label>
-                                <input type="text" name="nama" class="form-control form-control-sm"
+                                <label for="nama">Bahan Baku <span class="text-danger">*</span></label>
+                                <input type="text" id="nama" name="nama" class="form-control form-control-sm"
                                     placeholder="Masukkan nama bahan baku">
                                 @error('nama')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-12 mb-3">
-                                <label>Harga <span class="text-danger">*</span></label>
-                                <input type="number" name="harga" class="form-control form-control-sm"
+                                <label for="harga">Harga <span class="text-danger">*</span></label>
+                                <input type="number" id="harga" name="harga" class="form-control form-control-sm"
                                     placeholder="Masukkan harga">
                             </div>
                             <div class="col-4 mb-3">
-                                <label>Stok Awal<span class="text-danger">*</span></label>
-                                <input type="number" name="stok_awal" class="form-control form-control-sm"
+                                <label for="stok_awal">Stok Awal<span class="text-danger">*</span></label>
+                                <input type="number" id="stok_awal" name="stok_awal" class="form-control form-control-sm"
                                     placeholder="Masukkan stok">
                             </div>
                             {{-- <div class="col-4 mb-3">
@@ -262,12 +262,12 @@
                                     placeholder="Masukkan stok">
                             </div> --}}
                             <div class="col-4 mb-3">
-                                <label>Stok Minimum <span class="text-danger">*</span></label>
-                                <input type="number" name="stok_minimum" class="form-control form-control-sm"
+                                <label for="stok_minimum">Stok Minimum <span class="text-danger">*</span></label>
+                                <input type="number" id="stok_minimum" name="stok_minimum" class="form-control form-control-sm"
                                     placeholder="Masukkan stok minimum">
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
-                                <label class="form-label">Satuan <span class="text-danger">*</span></label>
+                                <label for="id_satuan" class="form-label">Satuan <span class="text-danger">*</span></label>
                                 <select class="form-select form-select-sm" id="id_satuan" name="id_satuan" required>
                                     <option selected disabled>Pilih Satuan</option>
                                     @foreach ($satuan as $id => $nama)
@@ -276,7 +276,7 @@
                                 </select>
                             </div>
                             <div class="col-6 col-md-6 col-sm-12 col-12 mb-3">
-                                <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <label for="id_kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
                                 <select class="form-select form-select-sm" id="id_kategori" name="id_kategori" required>
                                     <option selected disabled>Pilih Kategori</option>
                                     @foreach ($kategori as $id => $nama)
@@ -285,8 +285,8 @@
                                 </select>
                             </div>
                             <div class="col-12 mb-3">
-                                <label>Foto <span class="text-danger">*</span></label>
-                                <input type="file" name="foto" class="form-control form-control-sm">
+                                <label for="foto">Foto <span class="text-danger">*</span></label>
+                                <input type="file" id="foto" name="foto" class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>
@@ -298,5 +298,5 @@
             </div>
         </div>
     </div>
-    @include('bahan-baku.createSatuan')
+    {{-- @include('bahan-baku.createSatuan') --}}
 @endsection
