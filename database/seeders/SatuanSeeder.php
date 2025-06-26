@@ -12,7 +12,7 @@ class SatuanSeeder extends Seeder
      */
     public function run(): void
     {
-        $satuanBarang = ['PCS', 'BOX', 'ROLL', 'PACK', 'RIM', 'UNIT', 'LUSIN', 'GROSS', 'KG', 'GRAM', 'LITER', 'ML', 'METER', 'CM', 'KARTON', 'SET', 'KODI', 'LEMBAR', 'BOTOL', 'KALENG'];
+        $satuanBarang = ['Pcs', 'Box', 'Roll', 'Pack', 'Rim', 'Unit', 'Lusin', 'Gross', 'Kg', 'Gram', 'Liter', 'Ml', 'Meter', 'Cm', 'Karton', 'Set', 'Kodi', 'Lembar', 'Botol', 'Kaleng'];
 
         foreach ($satuanBarang as $satuan) {
             \App\Models\Satuan::factory()->create([

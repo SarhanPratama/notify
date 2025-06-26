@@ -19,8 +19,13 @@ class Cabang extends Model
         'telepon',
         'lokasi',
         'foto',
-        'id_user'
+        // 'id_user'
     ];
+
+        public function Penjualan()
+    {
+        return $this->hasMany(Penjualan::class);
+    }
 
     public function users()
     {

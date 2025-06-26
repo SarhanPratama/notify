@@ -30,8 +30,8 @@
                                         id="tanggal" name="tanggal" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Supplier <span class="text-danger">*</span></label>
-                                    <select class="form-select form-select-sm" name="id_supplier" required>
+                                    <label class="form-label fw-bold">Supplier</label>
+                                    <select class="form-select form-select-sm" name="id_supplier">
                                         <option value="">Pilih Supplier</option>
                                         @foreach ($suppliers as $id => $nama)
                                             <option value="{{ $id }}">{{ $nama }}</option>

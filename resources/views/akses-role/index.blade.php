@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <!-- Simple Tables -->
@@ -12,7 +12,7 @@
                         <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}</h6>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover text-sm text-nowrap" id="dataTableHover">
+                        <table class="table table-striped table-hover text-sm" id="dataTableHover">
                             <thead class="thead-light">
                                 <tr>
                                     <th>No</th>

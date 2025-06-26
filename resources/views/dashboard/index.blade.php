@@ -2,441 +2,347 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="row">
-        {{-- <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pengeluaran Bulan Ini</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPengeluaran['totalPengeluaran'], 0, ',', '.') }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentasePembelian) }}%
-                                </span>
-                                <span>Since last month</span>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
+    {{-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Admin Gudang</h1>
+    </div> --}}
 
-        {{-- <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pemasukkan Bulan Ini</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPemasukkan['totalPemasukkan'], 0, ',', '.') }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentasePembelian) }}%
-                                </span>
-                                <span>Since last month</span>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-    </div>
-
-    <div class="row mb-4">
-        <!-- Kas Seroo Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Kas Seroo</div>
-
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                Rp {{ number_format($totalKasSeroo['kas_seroo_bulan_ini'], 0, ',', '.') }}
-                            </div>
-
-                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $totalKasSeroo['persentase_perubahan'] >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fa fa-arrow-{{ $totalKasSeroo['persentase_perubahan'] >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ number_format(abs($totalKasSeroo['persentase_perubahan']), 2) }}%
-                                </span>
-                                <span>Since last month</span>
-                            </div> --}}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-wallet fa-2x text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pengeluaran Bulan Ini</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPengeluaran['totalPengeluaran'], 0, ',', '.') }}</div>
-                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
+    <!-- Statistik Cards -->
+    @hasanyrole('admin gudang|owner')
+        <div class="row">
+            <!-- Total Bahan Baku -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Bahan Baku</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $stats['total_bahan_baku'] }}</div>
+                                {{-- <div class="mt-2 mb-0 text-muted text-xs">
                                 <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
                                     <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
                                     {{ abs($persentasePembelian) }}%
                                 </span>
                                 <span>Since last month</span>
                             </div> --}}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pemasukkan Bulan Ini</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPemasukkan['totalPemasukkan'], 0, ',', '.') }}</div>
-                            {{-- <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentasePembelian) }}%
-                                </span>
-                                <span>Since last month</span>
-                            </div> --}}
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- <!-- Total Penjualan Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Penjualan</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPenjualan, 0, ',', '.') }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentasePenjualan >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fas fa-arrow-{{ $persentasePenjualan >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentasePenjualan) }}%
-                                </span>
-                                <span>Since last month</span>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-boxes fa-2x text-primary"></i>
                             </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-shopping-cart fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bahan Kritis -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                    Bahan Kritis</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ $stats['bahan_kritis'] }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Total Pembelian Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
+            {{-- <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="row align-items-center">
+                    <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Pembelian</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($totalPembelian, 0, ',', '.') }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-{{ $persentasePembelian >= 0 ? 'success' : 'danger' }} mr-2">
-                                    <i class="fas fa-arrow-{{ $persentasePembelian >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ abs($persentasePembelian) }}%
-                                </span>
-                                <span>Since last month</span>
-                            </div>
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Bahan Kritis</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['bahan_kritis'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-truck fa-2x text-info"></i>
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div> --}}
 
-        <!-- Bahan Baku Minimum Card -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-uppercase mb-1">Bahan Baku Minimum</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $bahanBakuMinimumCount }}</div>
-                            <div class="mt-2 mb-0 text-muted text-xs">
-                                <span class="text-danger mr-2"><i class="fas fa-exclamation-circle"></i> Perlu
-                                    Restock</span>
+            <!-- Pembelian Bulan Ini -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Pembelian Bahan Baku Bulan Ini</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    Rp. {{ number_format($stats['pembelian_bulan_ini'], 0, ',', '.') }}
+                                </div>
                             </div>
+                            <div class="col-auto">
+                                <i class="fas fa-shopping-cart fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribusi Hari Ini -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Penjualan Bahan Baku Bulan Ini</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.
+                                    {{ number_format($stats['penjualan_bulan_ini'], 0, ',', '.') }}</div>
+                            </div>
+
+                            <div class="col-auto">
+                                <i class="fas fa-truck fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Distribusi Hari Ini</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['distribusi_hari_ini'] }}</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-boxes fa-2x text-warning"></i>
+                            <i class="fas fa-truck fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
+        </div> --}}
         </div>
-    </div>
 
-
-
-    <!-- Grafik Laporan Bulanan -->
-    <div class="row">
-        <div class="col-xl-8 col-lg-7">
-            <div class="card mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Laporan Bulanan</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Opsi:</div>
-                            <a class="dropdown-item" href="#" onclick="updateChart('penjualan')">Penjualan</a>
-                            <a class="dropdown-item" href="#" onclick="updateChart('pembelian')">Pembelian</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#" onclick="updateChart('semua')">Tampilkan Semua</a>
+        <!-- Grafik dan Tabel -->
+        <div class="row">
+            <!-- Grafik Stok -->
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Trend Stok 30 Hari Terakhir</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area" style="height: 400px;">
+                            <canvas id="stockChart"></canvas>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Supplier Teraktif -->
+            {{-- <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Supplier Teraktif</h6>
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="monthlyReportChart" height="300"></canvas>
+                    <div class="text-center">
+                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 15rem;"
+                            src="{{ asset('svg/undraw_processing.svg') }}" alt="Supplier Illustration">
                     </div>
+                    <p class="text-center">
+                        <strong>{{ $stats['supplier_aktif'] }}</strong> supplier aktif bulan ini
+                    </p>
+                    <a href="{{ route('supplier.index') }}">Lihat daftar supplier &rarr;</a>
                 </div>
+            </div>
+        </div> --}}
+        </div>
+
+        <!-- Bahan Baku Kritis -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-danger">
+                    <i class="fas fa-exclamation-circle"></i> Bahan Baku Kritis
+                </h6>
+            </div>
+            <div class="card-body">
+                @if ($bahanBakuKritis->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nama Bahan</th>
+                                    <th>Stok Tersedia</th>
+                                    <th>Stok Minimal</th>
+                                    {{-- <th>Supplier</th> --}}
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bahanBakuKritis as $bahan)
+                                    <tr>
+                                        <td>{{ $bahan->nama }}</td>
+                                        <td
+                                            class="{{ $bahan->stok_akhir < $bahan->stok_minimum ? 'text-danger font-weight-bold' : '' }}">
+                                            {{ $bahan->stok_akhir }} {{ $bahan->satuan->nama ?? '' }}
+                                        </td>
+                                        <td>{{ $bahan->stok_minimum }}</td>
+                                        {{-- <td>{{ $bahan->supplier->nama ?? '-' }}</td> --}}
+                                        <td>
+                                            <a href="{{ route('pembelian.create', ['bahan_id' => $bahan->id]) }}"
+                                                class="btn btn-sm btn-primary">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> Tidak ada bahan baku kritis saat ini
+                    </div>
+                @endif
             </div>
         </div>
 
-        <!-- Bahan Baku Terlaris -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Bahan Baku Terlaris</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle btn btn-primary btn-sm" href="#" role="button"
-                            id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Bulan Ini <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Pilih Periode</div>
-                            <a class="dropdown-item" href="#" onclick="updateTopProducts('today')">Hari Ini</a>
-                            <a class="dropdown-item" href="#" onclick="updateTopProducts('week')">Minggu Ini</a>
-                            <a class="dropdown-item active" href="#" onclick="updateTopProducts('month')">Bulan
-                                Ini</a>
-                            <a class="dropdown-item" href="#" onclick="updateTopProducts('year')">Tahun Ini</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @foreach ($topBahanBaku as $index => $bahan)
-                        <div class="mb-3">
-                            <div class="small text-gray-500">{{ $bahan->nama }}
-                                <div class="small float-right"><b>{{ $bahan->total_terjual }}
-                                        {{ $bahan->satuan->nama ?? '' }}</b></div>
-                            </div>
-                            <div class="progress" style="height: 12px;">
-                                @php
-                                    $percentage = ($bahan->total_terjual / $maxTerjual) * 100;
-                                    $colors = ['bg-warning', 'bg-success', 'bg-danger', 'bg-info', 'bg-primary'];
-                                @endphp
-                                <div class="progress-bar {{ $colors[$index % count($colors)] }}" role="progressbar"
-                                    style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="card-footer text-center">
-                    <a class="m-0 small text-primary card-link" href="{{ route('bahan-baku.index') }}">Lihat Semua <i
-                            class="fas fa-chevron-right"></i></a>
-                </div>
+        <!-- Riwayat Pembelian Terakhir -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-history"></i> Riwayat Pembelian Terakhir
+                </h6>
             </div>
-        </div>
-    </div>
-
-    <!-- Daftar Bahan Baku Minimum -->
-    <div class="row">
-        <div class="col-xl-8 col-lg-7 mb-4">
-            <div class="card">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Bahan Baku Mencapai Batas Minimum</h6>
-                </div>
+            <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-items-center table-flush">
-                        <thead class="thead-light">
+                    <table class="table table-hover" width="100%" cellspacing="0">
+                        <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Nama Bahan Baku</th>
-                                <th>Stok Sekarang</th>
-                                <th>Stok Minimum</th>
-                                <th>Satuan</th>
+                                <th>No. Pembelian</th>
+                                <th>Tanggal</th>
+                                <th>Supplier</th>
+                                <th>Total</th>
+                                <th>Detail</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($bahanBakuMinimum as $index => $bahan)
-                                <tr style="background-color: #ffe6e6;">
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $bahan->nama }}</td>
-                                    <td><span class="badge bg-danger">{{ $bahan->stok_akhir }}</span></td>
-                                    <td>{{ $bahan->stok_minimum }}</td>
-                                    <td>{{ $bahan->satuan->nama ?? '-' }}</td>
-                                </tr>
-                            @empty
+                            @foreach ($riwayatPembelian as $pembelian)
                                 <tr>
-                                    <td colspan="5" style="text-align: center;">✅ Semua stok masih aman</td>
+                                    <td>{{ $pembelian->nobukti }}</td>
+                                    <td>{{ $pembelian->tanggal }}</td>
+                                    <td>{{ $pembelian->supplier->nama }}</td>
+                                    <td>Rp {{ number_format($pembelian->total, 0, ',', '.') }}</td>
+                                    <td>
+                                        <a href="{{ url('pembelian.show', $pembelian->id) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
                                 </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer text-center">
-                    <a class="m-0 small text-primary card-link" href="{{ route('bahan-baku.index') }}">Lihat Semua <i
-                            class="fas fa-chevron-right"></i></a>
-                </div>
             </div>
         </div>
 
-        <!-- Aktivitas Terakhir -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card">
-                <div class="card-header py-4 bg-primary d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-light">Aktivitas Terakhir</h6>
-                </div>
-                <div>
-                    @foreach ($recentActivities as $activity)
-                        <div class="customer-message align-items-center">
-                            <a class="{{ $activity->is_important ? 'font-weight-bold' : '' }}" href="#">
-                                <div class="text-truncate message-title">
-                                    <i class="fas fa-{{ $activity->icon }} mr-2"></i>
-                                    {{ $activity->description }}
-                                </div>
-                                <div
-                                    class="small text-gray-500 message-time {{ $activity->is_important ? 'font-weight-bold' : '' }}">
-                                    {{-- {{ $activity->user->name }} · {{ $activity->created_at->diffForHumans() }} --}}
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                    <div class="card-footer text-center">
-                        <a class="m-0 small text-primary card-link" href="{{ url('aktivitas.index') }}">Lihat Semua <i
-                                class="fas fa-chevron-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        @section('scripts')
+        <!-- Load Chart.js -->
+        <script src="{{ asset('vendor/chart.js/Chart.min.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Pastikan elemen canvas ada
+                var ctx = document.getElementById("stockChart");
+                if (!ctx) {
+                    console.error("Canvas element not found!");
+                    return;
+                }
+
+                // Pastikan data chart valid
+                var chartData = @json($chartData);
+                if (!chartData || !chartData.labels || !chartData.datasets) {
+                    console.error("Invalid chart data:", chartData);
+                    return;
+                }
+
+                try {
+                    var stockChart = new Chart(ctx, {
+                        type: 'line',
+                        data: chartData,
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            layout: {
+                                padding: {
+                                    left: 10,
+                                    right: 25,
+                                    top: 25,
+                                    bottom: 0
+                                }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    gridLines: {
+                                        display: false,
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        maxTicksLimit: 7
+                                    }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: false,
+                                        padding: 10,
+                                        callback: function(value) {
+                                            return number_format(value);
+                                        }
+                                    },
+                                    gridLines: {
+                                        color: "rgb(234, 236, 244)",
+                                        zeroLineColor: "rgb(234, 236, 244)",
+                                        drawBorder: false,
+                                        borderDash: [2],
+                                        zeroLineBorderDash: [2]
+                                    }
+                                }]
+                            },
+                            tooltips: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: "#858796",
+                                titleMarginBottom: 10,
+                                titleFontColor: '#6e707e',
+                                titleFontSize: 14,
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                intersect: false,
+                                mode: 'index',
+                                caretPadding: 10,
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.yLabel.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error creating chart:", error);
+                }
+            });
+
+            function number_format(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        </script>
+        @endsection
+    @endhasanyrole
 @endsection
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    Chart.defaults.font.family = 'Nunito, -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-    Chart.defaults.color = '#858796';
-
-    var ctx = document.getElementById('monthlyReportChart').getContext('2d');
-
-    var chartData = {
-        labels: {!! json_encode($monthlyLabels) !!},
-        datasets: [
-            {
-                label: 'Penjualan',
-                data: {!! json_encode($monthlyPenjualan) !!},
-                backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                borderColor: 'rgba(78, 115, 223, 1)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true,
-                pointBackgroundColor: 'rgba(78, 115, 223, 1)',
-                pointBorderColor: '#fff'
-            },
-            {
-                label: 'Pembelian',
-                data: {!! json_encode($monthlyPembelian) !!},
-                backgroundColor: 'rgba(28, 200, 138, 0.05)',
-                borderColor: 'rgba(28, 200, 138, 1)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true,
-                pointBackgroundColor: 'rgba(28, 200, 138, 1)',
-                pointBorderColor: '#fff'
-            }
-        ]
-    };
-
-    var chartOptions = {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    usePointStyle: true
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
-                    }
-                }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return 'Rp ' + value.toLocaleString('id-ID');
-                    }
-                }
-            }
-        }
-    };
-
-    var monthlyReportChart = new Chart(ctx, {
-        type: 'line',
-        data: chartData,
-        options: chartOptions
-    });
-
-    window.updateChart = function(type) {
-        if (type === 'penjualan') {
-            monthlyReportChart.data.datasets[0].hidden = false;
-            monthlyReportChart.data.datasets[1].hidden = true;
-        } else if (type === 'pembelian') {
-            monthlyReportChart.data.datasets[0].hidden = true;
-            monthlyReportChart.data.datasets[1].hidden = false;
-        } else {
-            monthlyReportChart.data.datasets[0].hidden = false;
-            monthlyReportChart.data.datasets[1].hidden = false;
-        }
-        monthlyReportChart.update();
-    };
-});
-</script>
-

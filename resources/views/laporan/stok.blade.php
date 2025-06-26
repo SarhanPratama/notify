@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col col-lg-12">
                 <!-- Simple Tables -->
@@ -52,9 +52,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
-
-                    <div class="card-footer d-flex justify-content-center">
                     </div>
                 </div>
             </div>

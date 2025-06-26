@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Cabang;
 use App\Models\mutasi;
 use App\Models\bahanBaku;
@@ -126,15 +127,14 @@ class PenjualanController extends Controller
         ];
 
         $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang'])
-        ->where('nobukti', $nobukti)
-        ->firstOrFail();
+            ->where('nobukti', $nobukti)
+            ->firstOrFail();
 
         $cabang = Cabang::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
 
         return view('penjualan.edit', compact('title', 'breadcrumbs', 'penjualan', 'cabang', 'produk'));
     }
-
 
     public function update(Request $request, $nobukti)
     {
@@ -220,14 +220,14 @@ class PenjualanController extends Controller
                     $mutasi = $mutasiLama[$idBahanBaku];
 
                     // Update stok: rollback lama → kurangi baru
-                    if ($mutasi->status == 1) {
-                        $bahanBaku = BahanBaku::find($idBahanBaku);
-                        if ($bahanBaku) {
-                            $bahanBaku->stok_akhir += $mutasi->quantity; // rollback stok lama
-                            $bahanBaku->stok_akhir -= $quantityBaru;     // kurangi stok baru
-                            $bahanBaku->save();
-                        }
-                    }
+                    // if ($mutasi->status == 1) {
+                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                    //     if ($bahanBaku) {
+                    //         $bahanBaku->stok_akhir += $mutasi->quantity;
+                    //         $bahanBaku->stok_akhir -= $quantityBaru;
+                    //         $bahanBaku->save();
+                    //     }
+                    // }
 
                     // Update mutasi
                     $mutasi->update([
@@ -250,20 +250,19 @@ class PenjualanController extends Controller
                         'updated_at' => now(),
                     ]);
 
-                    if ($mutasiBaru->status == 1) {
-                        $bahanBaku = BahanBaku::find($idBahanBaku);
-                        if ($bahanBaku) {
-                            $bahanBaku->stok_akhir -= $quantityBaru;
-                            $bahanBaku->save();
-                        }
-                    }
+                    // if ($mutasiBaru->status == 1) {
+                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                    //     if ($bahanBaku) {
+                    //         $bahanBaku->stok_akhir -= $quantityBaru;
+                    //         $bahanBaku->save();
+                    //     }
+                    // }
                 }
             }
 
             DB::commit();
             notify()->success('Data Penjualan berhasil diperbarui');
             return redirect()->route('penjualan.index');
-
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal memperbarui data Penjualan: ' . $e->getMessage());
@@ -317,34 +316,49 @@ class PenjualanController extends Controller
     //     return view('penjualan.struk', compact('penjualan'));
     // }
 
-    public function laporanPenjualan(Request $request) {
+    public function laporanPenjualan(Request $request)
+    {
         $title = 'Laporan Penjualan';
         $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Laporan Penjualan', 'url' => route('bahan-baku.index')],
-            ['label' => 'Tabel Data', 'url' => null],
+            ['label' => 'Home', 'url' => route('admin.dashboard')], // Pastikan route 'admin.dashboard' ada
+            // ['label' => 'Laporan Penjualan', 'url' => route('laporan-penjualan')], // Sesuaikan route jika berbeda
+            ['label' => 'Laporan Penjualan', 'url' => null], // Bisa ditambahkan jika ingin lebih spesifik
         ];
 
-        // $laporan_pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
-        // ->where('')
-        // ->get();
-
+        // Mengambil input tanggal dari request
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalSampai = $request->input('tanggal_sampai');
 
-        $laporan_penjualan = Mutasi::with(['bahanBaku.satuan', 'penjualan.cabang'])
-            ->where('jenis_transaksi', 'K')
-            ->where('status', 1);
+        // Inisialisasi koleksi laporan penjualan sebagai koleksi kosong
+        $laporan_penjualan = collect();
+        // Flag untuk menentukan apakah tabel akan ditampilkan atau tidak
+        $showTable = false;
 
+        // Hanya query jika kedua tanggal telah diinput
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
-            $laporan_penjualan->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+            // Format tanggalSampai untuk memastikan mencakup keseluruhan hari tersebut
+            $tanggalSampaiFormatted = Carbon::parse($tanggalSampai)->endOfDay()->toDateTimeString();
+
+            // Query untuk mengambil data mutasi (penjualan)
+            $laporan_penjualan = Mutasi::with(['bahanBaku.satuan', 'penjualan.cabang'])
+                ->where('jenis_transaksi', 'K') // 'K' untuk Keluar (Penjualan)
+                ->where('status', 1) // Asumsi status 1 adalah transaksi yang valid/selesai
+                ->whereBetween('created_at', [$tanggalMulai, $tanggalSampaiFormatted])
+                ->latest() // Mengurutkan berdasarkan data terbaru
+                ->get();
+
+            $showTable = true; // Set flag menjadi true karena data telah diambil (atau percobaan pengambilan data dilakukan)
         }
 
-        $laporan_penjualan = $laporan_penjualan->latest()->get();
-
-        // dd($laporan_penjualan);
-
-        return view('penjualan.laporan-penjualan', compact('title', 'breadcrumbs', 'laporan_penjualan'));
+        // Mengembalikan view dengan data yang diperlukan
+        return view('penjualan.laporan-penjualan', compact(
+            'title',
+            'breadcrumbs',
+            'laporan_penjualan',
+            'showTable',        // Kirim flag ini ke view
+            'tanggalMulai',     // Kirim kembali untuk mengisi ulang form
+            'tanggalSampai'     // Kirim kembali untuk mengisi ulang form
+        ));
     }
 
     public function exportPDF(Request $request)
@@ -363,15 +377,15 @@ class PenjualanController extends Controller
             ->where('jenis_transaksi', 'K')
             ->where('status', 1);
 
-            if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
-                $laporan_penjualan->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
-                $periode = 'Periode: ' .
-                    \Carbon\Carbon::parse($tanggalMulai)->translatedFormat('d M Y') .
-                    ' - ' .
-                    \Carbon\Carbon::parse($tanggalSampai)->translatedFormat('d M Y');
-            } else {
-                $periode = 'Semua Periode';
-            }
+        if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
+            $laporan_penjualan->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+            $periode = 'Periode: ' .
+                \Carbon\Carbon::parse($tanggalMulai)->translatedFormat('d M Y') .
+                ' - ' .
+                \Carbon\Carbon::parse($tanggalSampai)->translatedFormat('d M Y');
+        } else {
+            $periode = 'Semua Periode';
+        }
 
         $laporan_penjualan = $laporan_penjualan->latest()->get();
         // dd($laporan_penjualan);

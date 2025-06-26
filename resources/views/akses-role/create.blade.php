@@ -4,6 +4,7 @@
 <div class="container">
     <form action="{{ route('akses-role.update', $role->id) }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="mb-3">
             <h1>Role : {{ $role->name  }}</h1>
         </div>

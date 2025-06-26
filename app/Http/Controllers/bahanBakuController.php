@@ -6,6 +6,7 @@ use App\Models\Satuan;
 use App\Models\Kategori;
 use App\Models\bahanBaku;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,8 +19,14 @@ class bahanBakuController extends Controller
             ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
+        $bahan_baku = DB::table('bahan_baku')
+        ->leftJoin('satuan', 'satuan.id', '=', 'bahan_baku.id_satuan')
+        ->leftJoin('vsaldoakhir2', 'vsaldoakhir2.id', '=', 'bahan_baku.id')
+        ->leftJoin('kategori', 'kategori.id', '=', 'bahan_baku.id_kategori')
+        ->select('bahan_baku.*', 'satuan.nama as satuan', 'vsaldoakhir2.*', 'kategori.nama as kategori')
+        ->get();
 
-        $bahan_baku = bahanBaku::with('satuan', 'kategori')->leftJoin('vsaldoakhir', 'bahan_baku.id', '=', 'vsaldoakhir.id')->get();
+        // $bahan_baku = bahanBaku::with('satuan', 'kategori')->leftJoin('vsaldoakhir2', 'bahan_baku.id', '=', 'vsaldoakhir2.id')->get();
 
         $satuan = Satuan::pluck('nama', 'id');
         $kategori = Kategori::pluck('nama', 'id');
@@ -35,7 +42,7 @@ class bahanBakuController extends Controller
             // 'stok_akhir' => 'required',
             'stok_minimum' => 'required',
             'harga' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'id_satuan' => 'required',
             'id_kategori' => 'required'
         ]);
@@ -52,7 +59,7 @@ class bahanBakuController extends Controller
                 // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
-                'foto' => $fotoPath,
+                'foto' => $fotoPath ?? ' ',
                 'id_satuan' => $request->id_satuan,
                 'id_kategori' => $request->id_kategori,
             ]);

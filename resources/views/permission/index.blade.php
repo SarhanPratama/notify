@@ -4,7 +4,7 @@
 
 @include('layouts.breadcrumbs')
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
     <div class="col-lg-12 mb-4">
       <!-- Simple Tables -->

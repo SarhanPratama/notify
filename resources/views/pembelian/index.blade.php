@@ -85,7 +85,7 @@
                                             <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                    {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
                                                 </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
@@ -95,7 +95,7 @@
                                                         <i class="fas fa-building"></i>
                                                     </span>
                                                     <strong>
-                                                        {{ $item->supplier->nama }}
+                                                        {{ $item->supplier->nama ?? '-' }}
                                                     </strong>
                                                 </div>
                                             </td>

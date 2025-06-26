@@ -3,7 +3,7 @@
 
 @include('layouts.breadcrumbs')
 
-<div class="container">
+<div class="container-fluid">
     <div class="card shadow">
         <div class="card-header text-white bg-success">
             <a href="{{ route('users.index') }}" class="btn btn-sm btn-outline-light">

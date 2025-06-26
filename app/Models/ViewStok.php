@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class VSaldoAkhir extends Model
+class ViewStok extends Model
 {
     protected $table = 'vsaldoakhir2';
 
@@ -16,4 +16,9 @@ class VSaldoAkhir extends Model
         'keluar',
         'nama_satuan',
     ];
+
+    public function bahanBaku()
+    {
+        return $this->belongsTo(bahanBaku::class, 'id');
+    }
 }

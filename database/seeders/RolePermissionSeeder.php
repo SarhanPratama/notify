@@ -14,45 +14,38 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = Role::create(['name' => 'admin']);
-        $keuangan = Role::create(['name' => 'keuangan']);
-        $gudang = Role::create(['name' => 'gudang']);
-        $karyawan = Role::create(['name' => 'karyawan']);
+        $permissions = [
+            'dashboard.view',
+            'produk.view', 'discount.view',
+            'kas.view', 'kas.manage',
+            'pembelian.view', 'penjualan.view',
+            'supplier.view', 'bahan-baku.view',
+            'laporan.view',
+            'users.view', 'cabang.view',
+            'role.view', 'permission.view', 'akses-role.manage'
+        ];
 
-               // Buat Permission
-               $permissions = [
-                // Admin
-                'manage users',
-                'manage roles',
-                'view reports',
-                'manage products',
-                'manage inventory',
-
-                // Keuangan
-                'view transactions',
-                'manage transactions',
-                'approve payments',
-                'view financial reports',
-
-                // Gudang
-                'view inventory',
-                // 'manage inventory',
-                'request stock',
-
-                // Karyawan
-                'view products',
-                'create orders',
-                'process orders',
-            ];
-
-            foreach ($permissions as $permission) {
-                Permission::create(['name' => $permission]);
-            }
-
-            // Berikan Permission ke Role
-            $admin->givePermissionTo(['manage users', 'manage roles', 'view reports', 'manage products', 'manage inventory']);
-            $keuangan->givePermissionTo(['view transactions', 'manage transactions', 'approve payments', 'view financial reports']);
-            $gudang->givePermissionTo(['view inventory', 'manage inventory', 'request stock']);
-            $karyawan->givePermissionTo(['view products', 'create orders', 'process orders']);
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
+
+        // Roles
+        $owner = Role::firstOrCreate(['name' => 'owner']);
+        $keuangan = Role::firstOrCreate(['name' => 'keuangan']);
+        $gudang = Role::firstOrCreate(['name' => 'gudang']);
+
+        $owner->givePermissionTo(Permission::all());
+
+        $keuangan->givePermissionTo([
+            'dashboard.view', 'kas.view', 'kas.manage',
+            'pembelian.view', 'penjualan.view', 'laporan.view'
+        ]);
+
+        $gudang->givePermissionTo([
+            'dashboard.view',
+            'produk.view', 'bahan-baku.view',
+            'supplier.view', 'pembelian.view',
+            'laporan.view'
+        ]);
     }
+}

@@ -38,7 +38,7 @@
 
     </style>
 
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
         <div class="col col-lg-12">
         <!-- Simple Tables -->

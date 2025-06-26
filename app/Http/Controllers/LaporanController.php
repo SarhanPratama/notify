@@ -19,8 +19,8 @@ class LaporanController extends Controller
         $title = 'Laporan Stok Bahan Baku';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
-            ['label' => 'Tabel Data', 'url' => null],
+            // ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
+            ['label' => 'Stok Bahan Baku', 'url' => null],
         ];
         $laporan_stok = VSaldoAkhir::all();
 
@@ -38,7 +38,7 @@ class LaporanController extends Controller
 
         $laporan_stok = VSaldoAkhir::all();
         // dd($laporan_stok);
-        $pdf = Pdf::loadView('laporan.stok-pdf', compact('title', 'breadcrumbs', 'laporan_stok'))->setPaper('A4');
+        $pdf = Pdf::loadView('laporan.stok-pdf', compact('title', 'breadcrumbs', 'laporan_stok'))->setPaper('A4', 'landscape');
         return $pdf->stream('laporan-stok.pdf');
     }
 

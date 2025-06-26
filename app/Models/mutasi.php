@@ -21,13 +21,14 @@ class mutasi extends Model
         'status'
     ];
 
-    public function pembelian()
-    {
-        return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
-    }
     public function penjualan()
     {
         return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
+    }
+
+    public function pembelian()
+    {
+        return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
     }
 
     public function bahanBaku()

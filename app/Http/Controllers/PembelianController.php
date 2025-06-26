@@ -17,21 +17,6 @@ use Illuminate\Support\Facades\Gate;
 class PembelianController extends Controller
 {
 
-    // private function generateKodePembelian()
-    // {
-    //     $date = Carbon::now()->format('Ymd');
-
-    //     $lastPembelian = Pembelian::where('nobukti', 'like', 'PBL-' . $date . '%')->orderBy('nobukti', 'desc')->first();
-
-    //     if ($lastPembelian) {
-    //         $lastNumber = (int) substr($lastPembelian->nobukti, -3);
-    //         $nextNumber = $lastNumber + 1;
-    //     } else {
-    //         $nextNumber = 1;
-    //     }
-
-    //     return 'PBL-' . $date . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-    // }
 
     public function index(Request $request)
     {
@@ -55,7 +40,7 @@ class PembelianController extends Controller
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalSampai = $request->input('tanggal_sampai');
 
-        $pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user');
+        $pembelian = Pembelian::with('supplier', 'mutasi.bahanBaku.satuan', 'user');
 
         // Tambahkan filter hanya jika kedua tanggal ada
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
@@ -88,7 +73,7 @@ class PembelianController extends Controller
     {
         $request->validate([
             'tanggal' => 'required',
-            'id_supplier' => 'required|exists:supplier,id',
+            'id_supplier' => 'nullable|exists:supplier,id',
             'produk' => 'required|array',
             'produk.*' => 'required|exists:bahan_baku,id',
             'quantity' => 'required|array',
@@ -132,13 +117,13 @@ class PembelianController extends Controller
                     'status' => 1
                 ]);
 
-                if ($mutasi->status == 1) {
-                    $bahanBaku = BahanBaku::find($idBahanBaku);
-                    if ($bahanBaku) {
-                        $bahanBaku->stok_akhir += $request->quantity[$index];
-                        $bahanBaku->save();
-                    }
-                }
+                // if ($mutasi->status == 1) {
+                //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                //     if ($bahanBaku) {
+                //         $bahanBaku->stok_akhir += $request->quantity[$index];
+                //         $bahanBaku->save();
+                //     }
+                // }
             }
 
             DB::commit();
@@ -161,7 +146,7 @@ class PembelianController extends Controller
             ['label' => 'Form Edit', 'url' => null],
         ];
 
-        $pembelian = Pembelian::with(['detailPembelian.bahanBaku.satuan', 'supplier'])
+        $pembelian = Pembelian::with(['mutasi.bahanBaku.satuan', 'supplier'])
         ->where('nobukti', $nobukti)
         ->firstOrFail();
 
@@ -178,7 +163,8 @@ class PembelianController extends Controller
     public function update(Request $request, $nobukti)
     {
         $request->validate([
-            'id_supplier' => 'required|exists:supplier,id',
+            'tanggal' => 'required',
+            'id_supplier' => 'nullable|exists:supplier,id',
             'produk' => 'required|array',
             'produk.*' => 'required|exists:bahan_baku,id',
             'quantity' => 'required|array',
@@ -201,12 +187,14 @@ class PembelianController extends Controller
 
             // Cek apakah data pembelian berubah
             $dataPembelianBaru = [
+                'tanggal' => $request->tanggal,
                 'id_supplier' => $request->id_supplier,
                 'total' => $totalBaru,
                 'catatan' => $request->catatan,
             ];
 
             $dataPembelianLama = [
+                'tanggal' => $pembelian->tanggal,
                 'id_supplier' => $pembelian->id_supplier,
                 'total' => $pembelian->total,
                 'catatan' => $pembelian->catatan,
@@ -254,16 +242,17 @@ class PembelianController extends Controller
                     $mutasi = $mutasiLama[$idBahanBaku];
 
                     // Update stok (rollback lama, masukkan baru)
-                    if ($mutasi->status == 1) {
-                        $bahanBaku = BahanBaku::find($idBahanBaku);
-                        if ($bahanBaku) {
-                            $bahanBaku->stok_akhir -= $mutasi->quantity;
-                            $bahanBaku->stok_akhir += $quantityBaru;
-                            $bahanBaku->save();
-                        }
-                    }
+                    // if ($mutasi->status == 1) {
+                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                    //     if ($bahanBaku) {
+                    //         $bahanBaku->stok_akhir -= $mutasi->quantity;
+                    //         $bahanBaku->stok_akhir += $quantityBaru;
+                    //         $bahanBaku->save();
+                    //     }
+                    // }
 
                     $mutasi->update([
+
                         'quantity' => $quantityBaru,
                         'harga' => $hargaBaru,
                         'sub_total' => $subTotal,
@@ -282,13 +271,13 @@ class PembelianController extends Controller
                         'updated_at' => now(),
                     ]);
 
-                    if ($mutasiBaru->status == 1) {
-                        $bahanBaku = BahanBaku::find($idBahanBaku);
-                        if ($bahanBaku) {
-                            $bahanBaku->stok_akhir += $quantityBaru;
-                            $bahanBaku->save();
-                        }
-                    }
+                    // if ($mutasiBaru->status == 1) {
+                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
+                    //     if ($bahanBaku) {
+                    //         $bahanBaku->stok_akhir += $quantityBaru;
+                    //         $bahanBaku->save();
+                    //     }
+                    // }
                 }
             }
 
@@ -402,35 +391,41 @@ class PembelianController extends Controller
         }
     }
 
-    public function laporanPembelian(Request $request)
+       public function laporanPembelian(Request $request)
     {
         $title = 'Laporan Pembelian';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
-            ['label' => 'Tabel Data', 'url' => null],
+            // ['label' => 'Laporan Pembelian', 'url' => route('laporan-pembelian')],
+            ['label' => 'Laporan Pembelian', 'url' => null],
         ];
-
-        // $laporan_pembelian = Pembelian::with('supplier', 'detailPembelian.bahanBaku.satuan', 'user')
-        // ->where('')
-        // ->get();
 
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalSampai = $request->input('tanggal_sampai');
 
-        $laporan_pembelian = Mutasi::with(['bahanBaku.satuan', 'pembelian.supplier'])
-            ->where('jenis_transaksi', 'M')
-            ->where('status', 1);
+        $laporan_pembelian = collect();
+        $showTable = false;
 
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
-            $laporan_pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
+            $tanggalSampaiFormatted = Carbon::parse($tanggalSampai)->endOfDay()->toDateTimeString();
+
+            $laporan_pembelian = Mutasi::with(['bahanBaku.satuan', 'pembelian.supplier'])
+                ->where('jenis_transaksi', 'M')
+                ->where('status', 1)
+                ->whereBetween('created_at', [$tanggalMulai, $tanggalSampaiFormatted])
+                ->latest()
+                ->get();
+            $showTable = true;
         }
 
-        $laporan_pembelian = $laporan_pembelian->latest()->get();
-
-        // dd($laporan_pembelian);
-
-        return view('pembelian.laporan-pembelian', compact('title', 'breadcrumbs', 'laporan_pembelian'));
+        return view('pembelian.laporan-pembelian', compact(
+            'title',
+            'breadcrumbs',
+            'laporan_pembelian',
+            'showTable',
+            'tanggalMulai',
+            'tanggalSampai'
+        ));
     }
 
     public function exportPDF(Request $request)

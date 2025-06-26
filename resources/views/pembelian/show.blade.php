@@ -27,7 +27,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Nama</small>
-                                        <span class="fw-bold">{{ $item->supplier->nama }}</span>
+                                        <span class="fw-bold">{{ $item->supplier->nama ?? '-' }}</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center mb-3">
@@ -36,7 +36,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Telepon</small>
-                                        <span>{{ $item->supplier->telepon }}</span>
+                                        <span>{{ $item->supplier->telepon ?? '-'}}</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">
@@ -45,7 +45,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Alamat</small>
-                                        <span>{{ $item->supplier->alamat }}</span>
+                                        <span>{{ $item->supplier->alamat ?? '-'}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
 
                     <!-- Product Items -->
                     <div class="products-container">
-                        @foreach($item->detailPembelian as $detail)
+                        @foreach($item->mutasi as $detail)
                         <div class="product-item border-bottom p-3">
                             <!-- Mobile View -->
                             <div class="d-md-none">

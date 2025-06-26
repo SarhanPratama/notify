@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 class cashFlowController extends Controller
 {
     public function index() {
-        $title = 'Kas';
+        $title = 'Arus Kas';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Kas', 'url' => route('kas.index')],
+            ['label' => 'Arus Kas', 'url' => route('kas.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
@@ -21,11 +21,11 @@ class cashFlowController extends Controller
     }
 
     public function create() {
-        $title = 'Kas';
+        $title = 'Arus Kas';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Kas', 'url' => route('kas.index')],
-            ['label' => 'Tabel Data', 'url' => null],
+            ['label' => 'Arus Kas', 'url' => route('kas.index')],
+            ['label' => 'Form Tambah', 'url' => null],
         ];
         return view('kas.create', compact('title', 'breadcrumbs'));
     }

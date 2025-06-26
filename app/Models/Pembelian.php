@@ -21,7 +21,7 @@ class Pembelian extends Model
         'id_user'
     ];
 
-    public function detailPembelian()
+    public function mutasi()
     {
         return $this->hasMany(mutasi::class, 'nobukti', 'nobukti');
     }

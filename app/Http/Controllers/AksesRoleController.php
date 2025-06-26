@@ -50,13 +50,13 @@ class AksesRoleController extends Controller
     //     return view('akses-role.create', compact('permissions', 'role'));
     // }
 
-    public function update(Request $request, Role $role) {
-
+    public function update(Request $request, Role $akses_role)
+    {
         $request->validate([
             'permissions' => 'nullable|array',
         ]);
 
-        $role->syncPermissions($request->permissions);
+        $akses_role->syncPermissions($request->permissions);
 
         return redirect()->route('akses-role.index');
     }

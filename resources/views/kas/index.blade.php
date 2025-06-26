@@ -47,7 +47,7 @@
                                         <td class="align-middle text-nowrap">{{ $item->Keperluan }}</td>
 
                                         <td class="d-flex justify-content-center text-nowrap gap-2">
-                                            <div>
+                                            {{-- <div>
                                                 <a href="{{ route('produk.edit', $item->id) }}"
                                                     class="btn btn-sm btn-outline-warning">
                                                     <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
@@ -64,10 +64,10 @@
                                                     data-target="#DestroyModal{{ $item->id }}">
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                                 </button>
-                                            </div>
+                                            </div> --}}
                                         </td>
                                     </tr>
-                                    <div class="modal fade" id="DestroyModal{{ $item->id }}" tabindex="-1"
+                                    {{-- <div class="modal fade" id="DestroyModal{{ $item->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="DestroyModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -95,7 +95,7 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 @endforeach
                             </tbody>
                         </table>
@@ -106,3 +106,4 @@
             </div>
         </div>
 @endsection
+

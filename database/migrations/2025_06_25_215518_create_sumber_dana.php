@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('satuan', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama')->unique();
+        Schema::create('sumber_dana', function (Blueprint $table) {
+      $table->id();
+            $table->string('nama');
+            $table->decimal('saldo_current', 15, 2)->default(0);
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('satuan');
+        Schema::dropIfExists('sumber_dana');
     }
 };

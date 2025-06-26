@@ -3,7 +3,7 @@
     $title = 'Login';
 @endphp
 
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -23,11 +23,11 @@
 
 <body>
     <main class="main-content">
-        <section class="vh-100" style="background-color: #f8f9fa;">
+        <section class="vh-100">
             <div class="container py-5 h-100">
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <div class="col-12 col-md-8 col-lg-6 col-xl-4">
-                        <div class="card text-light shadow-lg bg-maron">
+                        <div class="card text-light bg-maron">
                             <div class="card-header">
                                 {{-- <img src="..." class="card-img-top" alt="..."> --}}
                                 <img src="{{ asset('assets/img/logo/brand.webp') }}" alt="Logo" width="120"
@@ -35,9 +35,7 @@
                             </div>
                             <div class="card-body px-3">
                                 <div class="text-center">
-
-
-                                    <p class="card-title" style="font-size: 20px; font-weight:bold;">
+                                    <p class="card-title" style="font-size: 25px; font-weight:bold;">
                                         Login
                                     </p>
 
@@ -71,7 +69,7 @@
 
                                     <!-- Submit Button -->
                                     <button type="submit" class="btn btn-sm btn-outline-light w-100 text-center mb-3">
-                                        <strong>
+                                        <strong class="text-maron">
                                             Login
                                         </strong>
                                     </button>

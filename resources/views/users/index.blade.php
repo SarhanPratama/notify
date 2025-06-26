@@ -3,7 +3,7 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <!-- Simple Tables -->
@@ -41,27 +41,19 @@
                                                 {{ $item->telepon ?? '-' }}
                                             </a>
                                         </td>
-                                        {{-- <td class="text-truncate" style="max-width: 200px;"  data-toggle="tooltip" title="{{ $item->alamat }}">
-                        {{ Str::limit($item->alamat, 30, '...') }}
-                    </td> --}}
-
-                                        <td class="d-flex justify-content-center  text-nowrap gap-2">
-                                            <div>
+                                        <td class="text-center align-middle">
+                                            <div class="btn-group btn-group-sm" role="group">
                                                 <a href="{{ route('users.edit', $item->id) }}"
-                                                    class="btn btn-sm btn-outline-warning">
-                                                    <i class="fa fa-pencil fs-6 aria-hidden="true"></i>
+                                                    class="btn btn-outline-warning rounded-left" title="edit">
+                                                    <i class="fa fa-pencil"></i>
                                                 </a>
-                                            </div>
 
-                                            <div>
                                                 <a href="{{ route('users.show', $item->id) }}"
                                                     class="btn btn-sm btn-outline-success">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
-                                            </div>
 
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-danger" data-toggle="modal"
+                                           <button class="btn btn-sm btn-outline-danger rounded-right" data-toggle="modal"
                                                     data-target="#usersDestroyModal{{ $item->id }}">
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                                 </button>

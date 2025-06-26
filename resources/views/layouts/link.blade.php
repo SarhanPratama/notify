@@ -8,3 +8,4 @@
  <link href="{{ url('vendor/select2/dist/css/select2.min.css')}}" rel="stylesheet" type="text/css">
 <link as="image" href="{{ asset('assets/img/logo/icon2.ico') }}" rel="icon" type="image/x-icon">
 <link href="{{ url('vendor/bootstrap-touchspin/css/jquery.bootstrap-touchspin.css') }}" rel="stylesheet" >
+

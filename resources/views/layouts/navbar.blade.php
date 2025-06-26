@@ -1,8 +1,8 @@
 @php
     use App\Models\User;
     $id = auth()->user();
-    $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
-    $unreadCount = DB::table('notifications')->where('is_read', false)->count();
+    // $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
+    // $unreadCount = DB::table('notifications')->where('is_read', false)->count();
     $foto = User::find($id->id);
 @endphp
 
@@ -35,16 +35,16 @@
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
-                @if ($unreadCount > 0)
+                {{-- @if ($unreadCount > 0)
                     <span class="badge badge-primary badge-counter mb-2">{{ $unreadCount }}</span>
-                @endif
+                @endif --}}
             </a>
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">
                     Alerts Center
                 </h6>
-                @foreach ($notifications as $notif)
+                {{-- @foreach ($notifications as $notif)
                     <a class="dropdown-item d-flex align-items-center" href="#">
                         <div class="mr-3">
                             <div class="icon-circle bg-primary">
@@ -57,8 +57,8 @@
                             <span class="font-weight-bold">{{ $notif->message }}</span>
                         </div>
                     </a>
-                @endforeach
-                <a class="dropdown-item text-center small text-gray-500" href="{{ route('notifications.markAsRead') }}">
+                @endforeach --}}
+                <a class="dropdown-item text-center small text-gray-500" href="">
                     Tandai Semua Dibaca
                 </a>
 

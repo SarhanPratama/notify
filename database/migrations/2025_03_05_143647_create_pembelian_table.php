@@ -19,7 +19,6 @@ return new class extends Migration
             // $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->text('catatan')->nullable();
             $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

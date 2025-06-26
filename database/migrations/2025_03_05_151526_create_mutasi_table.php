@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('harga', 15, 2);
             $table->decimal('sub_total', 15, 2);
-            $table->enum('jenis_transaksi', ['masuk', 'keluar']);
+            $table->enum('jenis_transaksi', ['M', 'K']);
             $table->boolean('status');
             $table->timestamps();
         });

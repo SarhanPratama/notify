@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('telepon', 20);
             $table->text('lokasi');
             $table->string('foto')->nullable();
-            $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
+            // $table->foreignId('id_user')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

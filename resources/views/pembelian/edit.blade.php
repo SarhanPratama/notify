@@ -30,8 +30,8 @@
                                         id="tanggal" name="tanggal" value="{{ $pembelian->tanggal}}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Supplier <span class="text-danger">*</span></label>
-                                    <select class="form-select form-select-sm" name="id_supplier" required>
+                                    <label class="form-label fw-bold">Supplier</span></label>
+                                    <select class="form-select form-select-sm" name="id_supplier">
                                         <option value="">Pilih Supplier</option>
                                         @foreach ($suppliers as $id => $nama)
                                             <option value="{{ $id }}" {{ $pembelian->id_supplier == $id ? 'selected' : '' }}>{{ $nama }}</option>
@@ -58,7 +58,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="detail-pembelian">
-                                        @foreach ($pembelian->detailPembelian as $detail)
+                                        @foreach ($pembelian->mutasi as $detail)
                                         <tr class="detail-item">
                                             <td>
                                                 <select class="form-select form-select-sm" name="produk[]"
@@ -107,7 +107,7 @@
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text">Total</span>
                                         <input type="text" class="form-control font-weight-bold" id="total-keseluruhan"
-                                        value="{{ $pembelian->detailPembelian->sum('sub_total') }}"
+                                        value="{{ $pembelian->mutasi->sum('sub_total') }}"
                                             readonly>
                                     </div>
                                 </div>

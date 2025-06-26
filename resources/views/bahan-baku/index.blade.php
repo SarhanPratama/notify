@@ -42,20 +42,20 @@
                                         <td class="align-middle">Rp {{ number_format($item->harga, 2, ',', '.') }}</td>
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
-                                                {{ $item->satuan->nama }}</span></td>
+                                                {{ $item->satuan }}</span></td>
                                         {{-- <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->totalmasuk }}
                                             {{ $item->satuan->nama }}</span></td> --}}
                                         {{-- <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->totalkeluar }}
                                             {{ $item->satuan->nama }}</span></td> --}}
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-warning">{{ $item->saldoakhir }}
-                                                {{ $item->satuan->nama }}</span></td>
+                                                {{ $item->satuan }}</span></td>
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-secondary">{{ $item->stok_minimum }}
-                                                {{ $item->satuan->nama }}</span></td>
+                                                {{ $item->satuan }}</span></td>
                                         <td class="align-middle">
                                             <span class="badge fw-bolder bg-success">
-                                                {{ ucwords($item->kategori->nama) }}</span></td>
+                                                {{ ucwords($item->kategori) }}</span></td>
                                         <td class="d-flex justify-content-center text-nowrap gap-2">
                                             <div>
                                                 <button class="btn btn-sm btn-outline-warning" data-toggle="modal"

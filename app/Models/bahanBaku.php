@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ViewStok;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class bahanBaku extends Model
 {
@@ -28,6 +29,16 @@ class bahanBaku extends Model
 
     public function kategori() {
         return $this->belongsTo(Kategori::class, 'id_kategori');
+    }
+
+        public function mutasi()
+    {
+        return $this->hasMany(mutasi::class);
+    }
+
+        public function stockRecord()
+    {
+        return $this->hasOne(ViewStok::class, 'id');
     }
 
     // public function resep()
