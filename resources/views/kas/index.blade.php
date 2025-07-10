@@ -3,51 +3,52 @@
 @section('content')
     @include('layouts.breadcrumbs')
 
-        <div class="row">
-            <div class="col col-lg-12">
-                <!-- Simple Tables -->
-                <div class="card">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
-                        <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
-                        </h6>
+    <div class="row">
+        <div class="col col-lg-12">
+            <!-- Simple Tables -->
+            <div class="card">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
+                    <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
+                    </h6>
 
-                        <a href="{{ route('kas.create') }}" type="button" class="btn btn-outline-light btn-sm btn-lg">
-                            Tambah
-                        </a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-striped text-sm" id="dataTableHover">
-                            <thead class="thead-light">
-                                <tr class="text-nowrap">
-                                    <th class="text-start">No</th>
-                                    <th>Tanggal</th>
-                                    <th>Keterangan</th>
-                                    <th>Nominal</th>
-                                    <th>Sumber Dana</th>
-                                    <th>Jenis Transaksi</th>
-                                    <th>Keperluan</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($kas as $item)
-                                    <tr>
-                                        <td class="align-middle text-nowrap">{{ $loop->iteration }}</td>
-                                        <td class="align-middle text-nowrap">
-                                            <span class="badge badge-light p-2 text-dark">
-                                                <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
-                                            </span>
-                                        </td>
-                                        <td class="align-middle text-nowrap"> {{ $item->keterangan }}</td>
-                                        <td class="align-middle text-nowrap">Rp.
-                                            {{ number_format($item->nominal, 0, ',', '.') }}</td>
-                                        <td class="align-middle text-nowrap">{{ $item->sumber_dana }}</td>
-                                        <td class="align-middle text-nowrap">{{ $item->jenis_transaksi }}</td>
-                                        <td class="align-middle text-nowrap">{{ $item->Keperluan }}</td>
+                    <a href="{{ route('transaksi.create') }}" type="button" class="btn btn-outline-light btn-sm btn-lg">
+                        Tambah
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped text-sm" id="dataTableHover">
+                        <thead class="thead-light">
+                            <tr class="text-nowrap">
+                                <th class="text-start">No</th>
+                                <th>Tanggal</th>
+                                <th>Sumber Dana</th>
+                                <th>Type</th>
+                                <th>Jumlah</th>
+                                <th>Deskripsi</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($kas as $item)
+                                <tr>
+                                    <td class="align-middle text-nowrap">{{ $loop->iteration }}</td>
+                                    <td class="align-middle text-nowrap">
+                                        <span class="badge badge-light p-2 text-dark">
+                                            <i class="far fa-calendar-alt text-maron mr-1"></i>
+                                            {{ $item->tanggal->format('d M Y') }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-nowrap"> {{ $item->SumberDana->nama }}</td>
+                                    <td class="align-middle text-nowrap"> <span
+                                            class="badge fw-bolder {{ $item->tipe === 'credit' ? 'bg-danger' : 'bg-success' }}">
+                                            {{ ucwords($item->tipe) }}
+                                        </span></td>
+                                    <td class="align-middle text-nowrap">Rp.
+                                        {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                                    <td class="align-middle text-nowrap">{{ $item->deskripsi }}</td>
 
-                                        <td class="d-flex justify-content-center text-nowrap gap-2">
-                                            {{-- <div>
+                                    <td class="d-flex justify-content-center text-nowrap gap-2">
+                                        {{-- <div>
                                                 <a href="{{ route('produk.edit', $item->id) }}"
                                                     class="btn btn-sm btn-outline-warning">
                                                     <i class="fa fa-pencil fs-6" aria-hidden="true"></i>
@@ -65,9 +66,9 @@
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
                                                 </button>
                                             </div> --}}
-                                        </td>
-                                    </tr>
-                                    {{-- <div class="modal fade" id="DestroyModal{{ $item->id }}" tabindex="-1"
+                                    </td>
+                                </tr>
+                                {{-- <div class="modal fade" id="DestroyModal{{ $item->id }}" tabindex="-1"
                                         role="dialog" aria-labelledby="DestroyModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -96,14 +97,13 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer d-flex justify-content-center">
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex justify-content-center">
                 </div>
             </div>
         </div>
+    </div>
 @endsection
-

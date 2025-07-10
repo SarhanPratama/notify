@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Satuan;
 use App\Models\Kategori;
-use App\Models\bahanBaku;
+use App\Models\BahanBaku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Cache\Store;
@@ -19,19 +19,22 @@ class bahanBakuController extends Controller
             ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
-        $bahan_baku = DB::table('bahan_baku')
-        ->leftJoin('satuan', 'satuan.id', '=', 'bahan_baku.id_satuan')
-        ->leftJoin('vsaldoakhir2', 'vsaldoakhir2.id', '=', 'bahan_baku.id')
-        ->leftJoin('kategori', 'kategori.id', '=', 'bahan_baku.id_kategori')
-        ->select('bahan_baku.*', 'satuan.nama as satuan', 'vsaldoakhir2.*', 'kategori.nama as kategori')
-        ->get();
+        // $bahan_baku = DB::table('bahan_baku')
+        // ->leftJoin('satuan', 'satuan.id', '=', 'bahan_baku.id_satuan')
+        // ->leftJoin('vsaldoakhir2', 'vsaldoakhir2.id', '=', 'bahan_baku.id')
+        // ->leftJoin('kategori', 'kategori.id', '=', 'bahan_baku.id_kategori')
+        // ->select('bahan_baku.*', 'satuan.nama as satuan', 'vsaldoakhir2.*', 'kategori.nama as kategori')
+        // ->get();
+
+        $bahanBaku = BahanBaku::with(['satuan', 'kategori', 'ViewStok'])->get();
+
 
         // $bahan_baku = bahanBaku::with('satuan', 'kategori')->leftJoin('vsaldoakhir2', 'bahan_baku.id', '=', 'vsaldoakhir2.id')->get();
 
         $satuan = Satuan::pluck('nama', 'id');
         $kategori = Kategori::pluck('nama', 'id');
 
-        return view('bahan-baku.index', compact('title', 'breadcrumbs', 'bahan_baku', 'satuan', 'kategori'));
+        return view('bahan-baku.index', compact('title', 'breadcrumbs', 'bahanBaku', 'satuan', 'kategori'));
     }
 
     public function store(Request $request) {

@@ -7,7 +7,7 @@
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Apakah Anda yakin ingin menghapus pembayaran dengan kode <strong>{{ $item->nobukti}}</strong>?
+                Apakah Anda yakin ingin menghapus data pembelian dengan kode <strong>{{ $item->nobukti}}</strong>?
             </div>
             <div class="modal-footer">
                 <!-- Tombol Batal -->

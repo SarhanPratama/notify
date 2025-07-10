@@ -14,25 +14,35 @@
                     <div class="card-body bg-white p-4">
                         <form method="GET" action="{{ route('penjualan.index') }}" class="row g-3 align-items-end">
                             <div class="col-md-4">
-                                <label for="tanggal_mulai" class="form-label text-secondary small text-uppercase fw-bold">Tanggal Mulai</label>
+                                <label for="tanggal_mulai"
+                                    class="form-label text-secondary small text-uppercase fw-bold">Tanggal Mulai</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-alt text-maron"></i></span>
-                                    <input class="form-control border-0 bg-light shadow-none" type="date" id="tanggal_mulai" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}" required>
+                                    <span class="input-group-text bg-light border-0"><i
+                                            class="far fa-calendar-alt text-maron"></i></span>
+                                    <input class="form-control border-0 bg-light shadow-none" type="date"
+                                        id="tanggal_mulai" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label for="tanggal_sampai" class="form-label text-secondary small text-uppercase fw-bold">Tanggal Sampai</label>
+                                <label for="tanggal_sampai"
+                                    class="form-label text-secondary small text-uppercase fw-bold">Tanggal Sampai</label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light border-0"><i class="far fa-calendar-alt text-maron"></i></span>
-                                    <input class="form-control border-0 bg-light shadow-none" type="date" id="tanggal_sampai" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" required>
+                                    <span class="input-group-text bg-light border-0"><i
+                                            class="far fa-calendar-alt text-maron"></i></span>
+                                    <input class="form-control border-0 bg-light shadow-none" type="date"
+                                        id="tanggal_sampai" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-outline-primary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-filter"></i> Filter Data
                                     </button>
-                                    <a href="{{ route('penjualan.index') }}" class="btn btn-sm btn-outline-secondary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
+                                    <a href="{{ route('penjualan.index') }}"
+                                        class="btn btn-sm btn-outline-secondary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-undo"></i> Reset
                                     </a>
                                 </div>
@@ -40,33 +50,17 @@
                         </form>
                     </div>
                 </div>
+                <a href="{{ route('penjualan.create') }}" class="btn btn-outline-primary fw-bold mb-3">
+                    Tambah
+                </a>
                 <!-- Card with improved styling -->
                 <div class="card shadow-sm border-0">
-                    <div class="card-header bg-maron text-white d-flex flex-wrap align-items-center justify-content-between py-3">
+                    <div
+                        class="card-header bg-maron text-white d-flex flex-wrap align-items-center justify-content-between py-3">
                         <h6 class="font-weight-bold text-sm">
                             {{-- <i class="fas fa-shopping-cart mr-2"></i> --}}
                             {{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
                         </h6>
-
-                        <div class="d-flex flex-wrap align-items-center">
-                            {{-- <form action="{{ route('penjualan.index') }}" method="GET" class="form-inline mr-3">
-                                <div class="input-group input-group-sm">
-                                    <input type="date" name="tanggal" class="form-control border-0 shadow-sm"
-                                           value="{{ request('tanggal') }}" style="border-radius: 0.25rem 0 0 0.25rem;">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-light border-0 shadow-sm"
-                                                >
-                                            <i class="fas fa-filter text-light"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form> --}}
-
-                            <a href="{{ route('penjualan.create') }}"
-                               class="btn btn-primary btn-sm text-light font-weight-bold">
-                                Tambah
-                            </a>
-                        </div>
                     </div>
 
                     <div class="card-body p-0">
@@ -79,6 +73,7 @@
                                         <th class="text-nowrap">No. Bukti</th>
                                         <th class="text-nowrap">Cabang</th>
                                         <th class="text-nowrap">Total</th>
+                                        <th class="text-nowrap">Status</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -107,20 +102,29 @@
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
+                                            <td class="align-middle">
+                                                @if ($item->metode_pembayaran === 'kasbon')
+                                                    @if ($item->piutang && $item->piutang->status === 'belum_lunas')
+                                                        <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
+                                                    @else
+                                                        <span class="badge bg-success">Kasbon - Lunas</span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-primary">Tunai</span>
+                                                @endif
+                                            </td>
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('penjualan.edit', $item->nobukti)}}"
+                                                    <a href="{{ route('penjualan.edit', $item->nobukti) }}"
                                                         class="btn btn-sm btn-outline-warning rounded-left" title="Edit">
-                                                         <i class="fa fa-pencil"></i>
-                                                     </a>
-                                                    <button class="btn btn-outline-success"
-                                                            data-toggle="modal" data-target="#detailModal{{ $item->id }}"
-                                                            title="Detail">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </a>
+                                                    <a href="{{ route('penjualan.show', $item->nobukti) }}"
+                                                        class="btn btn-outline-success" title="Detail">
                                                         <i class="far fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-danger rounded-right"
-                                                            data-toggle="modal" data-target="#deleteModal{{ $item->id }}"
-                                                            title="Hapus">
+                                                    </a>
+                                                    <button class="btn btn-outline-danger rounded-right" data-toggle="modal"
+                                                        data-target="#deleteModal{{ $item->id }}" title="Hapus">
                                                         <i class="far fa-trash-alt"></i>
                                                     </button>
                                                     {{-- <a href="{{ route('penjualan.struk', $item->id)}}"
@@ -130,7 +134,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        @include('penjualan.show')
+                                        {{-- @include('penjualan.show') --}}
                                         @include('penjualan.destroy')
                                     @endforeach
                                 </tbody>

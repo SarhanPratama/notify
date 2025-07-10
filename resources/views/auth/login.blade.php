@@ -69,9 +69,10 @@
 
                                     <!-- Submit Button -->
                                     <button type="submit" class="btn btn-sm btn-outline-light w-100 text-center mb-3">
-                                        <strong class="text-maron">
+                                        <strong class="">
                                             Login
                                         </strong>
+                                        
                                     </button>
 
                                     <div class="card-footer d-flex justify-content-between">

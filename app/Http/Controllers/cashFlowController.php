@@ -3,56 +3,81 @@
 namespace App\Http\Controllers;
 
 use App\Models\cash_flow;
+use App\Models\Transaksi;
+use App\Models\SumberDana;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class cashFlowController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $title = 'Arus Kas';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Arus Kas', 'url' => route('kas.index')],
+            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $kas = cash_flow::get();
+        $kas = Transaksi::with('SumberDana')->get();
+
 
         return view('kas.index', compact('title', 'breadcrumbs', 'kas'));
     }
 
-    public function create() {
+    public function create()
+    {
         $title = 'Arus Kas';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Arus Kas', 'url' => route('kas.index')],
+            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
             ['label' => 'Form Tambah', 'url' => null],
         ];
-        return view('kas.create', compact('title', 'breadcrumbs'));
+
+        $sumberDana = SumberDana::pluck('nama', 'id');
+        return view('kas.create', compact('title', 'breadcrumbs', 'sumberDana'));
     }
 
-    public function store(Request $request) {
-        // dd($request);
+    public function store(Request $request)
+    {
         $request->validate([
             'tanggal' => 'required|date',
-            'keterangan' => 'required|string|max:255',
-            'nominal' => 'required|numeric|min:0',
-            'jenis_transaksi' => 'required|in:debit,kredit',
-            'sumber_dana' => 'required|in:kas seroo,kas rekening,dana peminjaman,piutang',
-            'keperluan' => 'nullable|string|max:255',
+            'jumlah' => 'required|numeric|min:0',
+            'jenis_transaksi' => 'required|in:debit,credit', // debit = uang masuk, credit = uang keluar
+            'id_sumber_dana' => 'required|exists:sumber_dana,id',
+            'deskripsi' => 'required|string|max:255',
         ]);
 
-        $data = [
-            'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
-            'keperluan' => $request->keperluan,
-            'nominal' => $request->nominal,
-            'sumber_dana' => $request->sumber_dana,
-            'debit' => $request->jenis_transaksi === 'debit' ? $request->nominal : 0,
-            'kredit' => $request->jenis_transaksi === 'kredit' ? $request->nominal : 0,
-        ];
+        DB::beginTransaction();
 
-        cash_flow::create($data);
+        try {
+            // Simpan transaksi manual
+            $transaksi = Transaksi::create([
+                'id_sumber_dana' => $request->id_sumber_dana,
+                'tanggal' => $request->tanggal,
+                'tipe' => $request->tipe,
+                'jumlah' => $request->jumlah,
+                'deskripsi' => $request->deskripsi,
+                // Kosongkan referenceable karena ini transaksi manual
+                'referenceable_type' => null,
+                'referenceable_id' => null,
+            ]);
 
-        return redirect()->route('kas.index');
+            // Update saldo sumber dana
+            $sumberDana = SumberDana::findOrFail($request->id_sumber_dana);
+            if ($request->tipe === 'debit') {
+                $sumberDana->increment('saldo_current', $request->jumlah);
+            } else {
+                $sumberDana->decrement('saldo_current', $request->jumlah);
+            }
+
+            DB::commit();
+            notify()->success('Transaksi berhasil ditambahkan.');
+            return redirect()->route('kas.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal menyimpan transaksi: ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
 }

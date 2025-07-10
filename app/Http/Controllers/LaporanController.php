@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\bahanBaku;
-use App\Models\Pembelian;
+use App\Models\ViewStok;
 use App\Exports\StokExport;
 use App\Models\VSaldoAkhir;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
@@ -22,7 +19,7 @@ class LaporanController extends Controller
             // ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
             ['label' => 'Stok Bahan Baku', 'url' => null],
         ];
-        $laporan_stok = VSaldoAkhir::all();
+        $laporan_stok = ViewStok::all();
 
         return view('laporan.stok', compact('title', 'breadcrumbs', 'laporan_stok'));
     }
@@ -36,7 +33,7 @@ class LaporanController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $laporan_stok = VSaldoAkhir::all();
+        $laporan_stok = ViewStok::all();
         // dd($laporan_stok);
         $pdf = Pdf::loadView('laporan.stok-pdf', compact('title', 'breadcrumbs', 'laporan_stok'))->setPaper('A4', 'landscape');
         return $pdf->stream('laporan-stok.pdf');

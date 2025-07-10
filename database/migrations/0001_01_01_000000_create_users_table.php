@@ -18,11 +18,9 @@ return new class extends Migration
             $table->date('tgl_lahir')->nullable();
             $table->string('telepon')->nullable();
             $table->text('alamat')->nullable();
-            $table->text('foto')->nullable();
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
-            // $table->foreignId('id_cabang')->constrained('cabang')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
 

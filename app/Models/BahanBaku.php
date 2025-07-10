@@ -6,7 +6,7 @@ use App\Models\ViewStok;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class bahanBaku extends Model
+class BahanBaku extends Model
 {
     use HasFactory;
 
@@ -33,12 +33,12 @@ class bahanBaku extends Model
 
         public function mutasi()
     {
-        return $this->hasMany(mutasi::class);
+        return $this->hasMany(mutasi::class, 'id_bahan_baku');
     }
 
-        public function stockRecord()
+        public function ViewStok()
     {
-        return $this->hasOne(ViewStok::class, 'id');
+        return $this->hasOne(ViewStok::class, 'id_bahan_baku');
     }
 
     // public function resep()

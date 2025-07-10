@@ -51,18 +51,18 @@
                     </div>
                 </div>
                 <!-- Card with improved styling -->
+                <div>
+                    <a href="{{ route('pembelian.create') }}"
+                        class="btn btn-outline-primary fw-bold mb-3">
+                        Tambah
+                    </a>
+                </div>
                 <div class="card shadow-sm border-0">
                     <div
                         class="card-header bg-maron text-white d-flex flex-wrap align-items-center justify-content-between py-3">
                         <h6 class="font-weight-bold text-sm">
                             {{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
                         </h6>
-                        <div>
-                            <a href="{{ route('pembelian.create') }}"
-                                class="btn btn-primary btn-sm text-light font-weight-bold d-flex align-items-center gap-1">
-                                Tambah
-                            </a>
-                        </div>
                     </div>
 
                     <div class="card-body p-0">
@@ -75,6 +75,7 @@
                                         <th class="text-nowrap">No. Bukti</th>
                                         <th class="text-nowrap">Supplier</th>
                                         <th class="text-nowrap">Total</th>
+                                        <th class="text-nowrap">Status</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -102,25 +103,67 @@
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
-                                            <td class="text-center align-middle">
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('pembelian.edit', $item->nobukti) }}" class="btn btn-outline-warning rounded-left" title="edit">
-                                                        <i class="fa fa-pencil"></i>
-                                                    </a>
+                                            <td class="align-middle">
+                                                <span
+                                                    class="badge fw-bolder {{ $item->status == 1 ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $item->status == 1 ? 'Success' : 'Cancel' }}
+                                                </span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        @if (is_null($item->deleted_at))
+                                                            <a href="{{ route('pembelian.edit', $item->nobukti) }}"
+                                                                class="btn btn-outline-warning rounded-left" title="edit">
+                                                                <i class="fa fa-pencil"></i>
+                                                            </a>
 
-                                                    <button class="btn btn-outline-success" data-toggle="modal"
-                                                        data-target="#detailModal{{ $item->id }}" title="Detail">
-                                                        <i class="far fa-eye"></i>
-                                                    </button>
+                                                            <a href="{{ route('pembelian.show', $item->nobukti) }}"
+                                                                class="btn btn-outline-success" title="Detail">
+                                                                <i class="far fa-eye"></i>
+                                                            </a>
 
-                                                    <button class="btn btn-outline-danger rounded-right" data-toggle="modal"
-                                                        data-target="#deleteModal{{ $item->id }}" title="Hapus">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </button>
+                                                            <button class="btn btn-outline-danger rounded-right"
+                                                                data-toggle="modal"
+                                                                data-target="#deleteModal{{ $item->id }}"
+                                                                title="Hapus">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="btn-group dropleft ml-auto">
+                                                        <a class="btn btn-sm border-none" data-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v fs-5" aria-hidden="true"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu p-2">
+                                                            <!-- Tambahkan dropdown menu di sini -->
+                                                            @if ($item->status == 0)
+                                                                <form
+                                                                    action="{{ route('pembelian.restore', $item->nobukti) }}"
+                                                                    method="POST">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <button
+                                                                        class="btn btn-sm btn-outline-success w-100 mb-2">Undo</button>
+                                                                </form>
+                                                            @endif
+
+                                                            {{-- <a class="dropdown-item"
+                                                                href="{{ route('pembelian.restore', $item->nobukti) }}">Undo</a> --}}
+                                                            <button class="btn btn-sm btn-outline-danger w-100"
+                                                                data-toggle="modal"
+                                                                data-target="#deletePermanenModal{{ $item->id }}"
+                                                                title="Hapus">
+                                                                Hapus Permanen
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
-                                        @include('pembelian.show')
+                                        @include('pembelian.delete-permanent')
                                         @include('pembelian.destroy')
                                     @endforeach
                                 </tbody>

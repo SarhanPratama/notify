@@ -12,6 +12,7 @@
 
     <!-- Include CSS -->
     @include('layouts.link')
+    @yield('css')
 
     <!-- Custom Styles -->
     <style>
@@ -31,6 +32,7 @@
         .text-maron {
             color: #8e1616;
         }
+
     </style>
 </head>
 
@@ -66,7 +68,7 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
+@yield('scripts')
 @include('layouts.script')
 </body>
 

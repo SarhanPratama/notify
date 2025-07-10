@@ -3,10 +3,13 @@
 namespace Database\Seeders;
 
 
-use App\Models\Merek;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Supplier;
 use Illuminate\Database\Seeder;
 use Database\Seeders\KategoriSeeder;
+use Database\Seeders\SumberDanaSeedeer;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,13 +33,14 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            // CabangSeeder::class,
-            // MerekSeeder::class,
+            CabangSeeder::class,
+            SupplierSeeder::class,
             RolePermissionSeeder::class,
             UserSeeder::class,
             KategoriSeeder::class,
             SatuanSeeder::class,
-
+            SumberDanaSeedeer::class,
+            BahanBakuSeeder::class,
         ]);
 
         // User::factory()->create([

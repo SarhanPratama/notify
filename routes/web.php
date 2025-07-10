@@ -1,25 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
+use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\MitraController;
-use App\Http\Controllers\ResepController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\cashFlowController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
-use App\Http\Controllers\cashFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PermissionController;
-use App\Models\Penjualan;
+use App\Http\Controllers\WhatsAppWebhookController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -70,9 +68,20 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UsersController::class);
     Route::resource('cabang', CabangController::class)->except(['show', 'create', 'edit']);
     Route::resource('supplier', SupplierController::class)->except(['show', 'create', 'edit']);
-    Route::resource('pembelian', PembelianController::class)->except(['show']);
-    Route::resource('penjualan', PenjualanController::class)->except(['show']);
 
+    Route::resource('pembelian', PembelianController::class);
+    // Route::post('/pembelian/{pembelian}/cancel', [PembelianController::class, 'cancel'])->name('pembelian.cancel');
+    Route::put('pembelian/restore/{id}', [PembelianController::class, 'restore'])->name('pembelian.restore');
+    Route::delete('/pembelian/{id}/force', [PembelianController::class, 'forceDelete'])->name('pembelian.forceDelete');
+
+
+    Route::resource('penjualan', PenjualanController::class);
+
+    Route::resource('piutang', PiutangController::class);
+    Route::post('piutang/{id}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar');
+    // Route::post('/api/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);
+    //     Route::get('/webhook', [WhatsAppWebhookController::class, 'verifyWebhook']);
+    // Route::post('/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);
     // Route::resource('akses-role', AksesRoleController::class)->only(['index', 'update']);
 
     // Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
@@ -102,7 +111,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route::put('/produk/{id}', [ProductsController::class, 'update'])->name('produk.update');
     // Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
 
-    Route::post('/merek', [ProductsController::class, 'merekStore'])->name('merek.store');
+    // Route::post('/merek', [ProductsController::class, 'merekStore'])->name('merek.store');
     Route::post('/kategori', [ProductsController::class, 'kategoriStore'])->name('kategori.store');
 
     // Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
@@ -149,9 +158,10 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
     // Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
 
-    Route::get('/kas', [cashFlowController::class, 'index'])->name('kas.index');
-    Route::get('/kas/create', [cashFlowController::class, 'create'])->name('kas.create');
-    Route::post('/kas', [cashFlowController::class, 'store'])->name('kas.store');
+    // Route::get('/transaksi', [cashFlowController::class, 'index'])->name('transaksi.index');
+    // Route::get('/transaksi/create', [cashFlowController::class, 'create'])->name('transaksi.create');
+    // Route::post('/transaksi', [cashFlowController::class, 'store'])->name('transaksi.store');
+    Route::resource('transaksi', cashFlowController::class);
 
     // Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
 

@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    // 'twilio' => [
+    //     'sid' => env('TWILIO_SID'),
+    //     'token' => env('TWILIO_TOKEN'),
+    //     'whatsapp_from' => env('TWILIO_WHATSAPP_FROM'),
+    // ],
+
+    'meta_wa' => [
+    'token' => env('META_WA_ACCESS_TOKEN'),
+    'phone_number_id' => env('META_WA_PHONE_NUMBER_ID'),
+],
+
+
 ];

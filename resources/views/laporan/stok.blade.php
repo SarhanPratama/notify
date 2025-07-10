@@ -42,11 +42,11 @@
                                         <td class="align-middle">{{ ucwords($item->nama) }}</td>
                                         <td class="align-middle"><span class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
                                                 {{ $item->nama_satuan }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->masuk }}
+                                        <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->total_masuk }}
                                             {{ $item->nama_satuan }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->keluar }}
+                                        <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->total_keluar }}
                                             {{ $item->nama_satuan }}</span></td>
-                                        <td class="align-middle"><span class="badge fw-bolder bg-secondary">{{ $item->saldoakhir }}
+                                        <td class="align-middle"><span class="badge fw-bolder bg-secondary">{{ $item->stok_akhir }}
                                             {{ $item->nama_satuan }}</span></td>
                                     </tr>
                                 @endforeach

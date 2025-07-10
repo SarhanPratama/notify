@@ -6,16 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class ViewStok extends Model
 {
-    protected $table = 'vsaldoakhir2';
+    protected $table = 'view_stok';
 
     protected $fillable = [
         'nama',
         'stok_awal',
-        'saldoakhir',
-        'masuk',
-        'keluar',
+        'stok_masuk',
+        'stok_keluar',
+        'saldo_akhir',
         'nama_satuan',
     ];
+
+     public function getStokAkhirAttribute($value)
+    {
+        return ($value == 0 || $value === null) ? $this->stok_awal : $value;
+    }
 
     public function bahanBaku()
     {

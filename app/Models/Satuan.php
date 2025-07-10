@@ -16,8 +16,8 @@ class Satuan extends Model
         'nama',
     ];
 
-    // public function bahanBaku() {
-    //     return $this->hasMany(BahanBaku::class, 'id_satuan');
-    // }
+    public function bahanBaku() {
+        return $this->hasMany(BahanBaku::class, 'id_satuan');
+    }
 
 }

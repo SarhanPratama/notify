@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nobukti')->unique();
             $table->date('tanggal');
             $table->decimal('total', 15, 2);
-            $table->enum('status', ['lunas', 'belum_lunas', 'piutang',])->default('belum_lunas');
+            // $table->enum('status', ['lunas', 'belum_lunas', 'piutang',])->default('lunas');
+            $table->enum('metode_pembayaran', ['tunai', 'kasbon'])->default('tunai');
             $table->text('catatan')->nullable();
             $table->foreignId('id_cabang')->constrained('cabang')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();

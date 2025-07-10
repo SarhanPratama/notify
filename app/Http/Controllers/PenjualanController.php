@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Cabang;
 use App\Models\mutasi;
-use App\Models\bahanBaku;
+use App\Models\BahanBaku;
 use App\Models\Penjualan;
+use App\Models\SumberDana;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\PembelianService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\PenjualanRequest;
+use App\Services\PenjualanService;
 
 class PenjualanController extends Controller
 {
@@ -47,74 +51,39 @@ class PenjualanController extends Controller
             ['label' => 'Form Tambah', 'url' => null],
         ];
         $cabang = Cabang::pluck('nama', 'id');
-        $produk = bahanBaku::with('satuan')->get();
+        $produk = BahanBaku::with('satuan')->get();
+        $sumberDana = SumberDana::pluck('nama', 'id');
 
-        return view('penjualan.create', compact('title', 'breadcrumbs', 'cabang', 'produk'));
+        return view('penjualan.create', compact('title', 'breadcrumbs', 'cabang', 'produk', 'sumberDana'));
     }
 
-    public function store(Request $request)
+    public function store(PenjualanRequest $request, PenjualanService $penjualanService)
     {
-        $request->validate([
-            'tanggal' => 'required',
-            'id_cabang' => 'required|exists:cabang,id',
-            'produk' => 'required|array',
-            'produk.*' => 'required|exists:bahan_baku,id',
-            'quantity' => 'required|array',
-            'quantity.*' => 'required|integer|min:1',
-            'harga' => 'required|array',
-            'harga.*' => 'required|numeric|min:0',
-            'catatan' => 'nullable|string',
-        ]);
-
-        DB::beginTransaction();
-
+        // dd($request);
         try {
-            $nobukti = 'J' . now()->format('YmdHis') . rand(1000, 9999);
-
-            $total = 0;
-            foreach ($request->produk as $index => $idBahanBaku) {
-                $total += $request->quantity[$index] * $request->harga[$index];
-            }
-
-            $penjualan = Penjualan::create([
-                'tanggal' => $request->tanggal,
-                'nobukti' => $nobukti,
-                'total' => $total,
-                'status' => 'pending',
-                'catatan' => $request->catatan,
-                'id_cabang' => $request->id_cabang,
-                // 'id_user' => Auth::id(),
-            ]);
-
-            foreach ($request->produk as $index => $idBahanBaku) {
-                $mutasi = mutasi::create([
-                    'nobukti' => $nobukti,
-                    'id_bahan_baku' => $idBahanBaku,
-                    'quantity' => $request->quantity[$index],
-                    'harga' => $request->harga[$index],
-                    'sub_total' => $request->quantity[$index] * $request->harga[$index],
-                    'jenis_transaksi' => 'K',
-                    'status' => 1
-                ]);
-
-                // if ($mutasi->status == 1) {
-                //     $bahanBaku = BahanBaku::find($idBahanBaku);
-                //     if ($bahanBaku) {
-                //         $bahanBaku->stok_akhir -= $request->quantity[$index];
-                //         $bahanBaku->save();
-                //     }
-                // }
-            }
-
-            DB::commit();
-
-            notify()->success('Data Penjualan berhasil disimpan');
-            return redirect()->route('penjualan.index');
+            $validated = $request->validated();
+            $penjualanService->tambah($validated);
         } catch (\Exception $e) {
-            DB::rollBack();
-            notify()->error('Gagal menyimpan data Penjualan: ' . $e->getMessage());
+            notify()->error('Gagal menyimpan data penjualan: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
+        notify()->success('Data penjualan berhasil disimpan');
+        return redirect()->route('penjualan.index');
+    }
+
+    public function show($nobukti, PenjualanService $penjualanService)
+    {
+
+        $title = 'Detail Penjualan';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Penjualan', 'url' => route('penjualan.index')],
+            ['label' => 'Detail', 'url' => null],
+        ];
+
+        $detailPenjualan = $penjualanService->getPenjualanDetails($nobukti);
+        // dd($detailPembelian);
+        return view('penjualan.show', compact('title', 'breadcrumbs', 'detailPenjualan'));
     }
 
     public function edit($nobukti)
@@ -126,149 +95,163 @@ class PenjualanController extends Controller
             ['label' => 'Form Edit', 'url' => null],
         ];
 
-        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang'])
+        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
-
+        // dd($penjualan);
+        $sumberDana = SumberDana::pluck('nama', 'id');
         $cabang = Cabang::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
 
-        return view('penjualan.edit', compact('title', 'breadcrumbs', 'penjualan', 'cabang', 'produk'));
+        return view('penjualan.edit', compact('title', 'breadcrumbs', 'penjualan', 'cabang', 'produk', 'sumberDana'));
     }
 
-    public function update(Request $request, $nobukti)
+    public function update(PenjualanRequest $request, $nobukti, PenjualanService $penjualanService)
     {
-        // dd($request);
-        $request->validate([
-            'tanggal' => 'required',
-            'id_cabang' => 'required|exists:cabang,id',
-            'produk' => 'required|array',
-            'produk.*' => 'required|exists:bahan_baku,id',
-            'quantity' => 'required|array',
-            'quantity.*' => 'required|integer|min:1',
-            'harga' => 'required|array',
-            'harga.*' => 'required|numeric|min:0',
-            'catatan' => 'nullable|string',
-        ]);
-
-        DB::beginTransaction();
-
+        // dd($nobukti);
         try {
-            $penjualan = Penjualan::where('nobukti', $nobukti)->firstOrFail();
-
-            // Hitung total baru
-            $totalBaru = 0;
-            foreach ($request->produk as $index => $idBahanBaku) {
-                $totalBaru += $request->quantity[$index] * $request->harga[$index];
-            }
-
-            $dataPenjualanBaru = [
-                'tanggal' => $request->tanggal,
-                'id_cabang' => $request->id_cabang,
-                'total' => $totalBaru,
-                'catatan' => $request->catatan,
-            ];
-
-            $dataPenjualanLama = [
-                'tanggal' => $penjualan->tanggal,
-                'id_cabang' => $penjualan->id_cabang,
-                'total' => $penjualan->total,
-                'catatan' => $penjualan->catatan,
-            ];
-
-            // Ambil mutasi lama dan susun datanya untuk perbandingan
-            $mutasiLama = Mutasi::where('nobukti', $nobukti)
-                ->orderBy('id_bahan_baku')
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'id_bahan_baku' => $item->id_bahan_baku,
-                        'quantity' => $item->quantity,
-                        'harga' => $item->harga
-                    ];
-                })->values()->toArray();
-
-            // Susun input produk dari request
-            $produkBaru = collect($request->produk)->map(function ($id, $index) use ($request) {
-                return [
-                    'id_bahan_baku' => $id,
-                    'quantity' => $request->quantity[$index],
-                    'harga' => $request->harga[$index]
-                ];
-            })->sortBy('id_bahan_baku')->values()->toArray();
-
-            // Cek apakah tidak ada data yang berubah
-            if ($dataPenjualanBaru == $dataPenjualanLama && $mutasiLama == $produkBaru) {
-                DB::rollBack();
-                notify()->info('Tidak ada data yang diupdate');
-                return redirect()->back();
-            }
-
-            // Lanjut update penjualan
-            $penjualan->update($dataPenjualanBaru);
-
-            // Ambil mutasi lama untuk update
-            $mutasiLama = Mutasi::where('nobukti', $nobukti)->get()->keyBy('id_bahan_baku');
-
-            foreach ($produkBaru as $item) {
-                $idBahanBaku = $item['id_bahan_baku'];
-                $quantityBaru = $item['quantity'];
-                $hargaBaru = $item['harga'];
-                $subTotal = $quantityBaru * $hargaBaru;
-
-                if ($mutasiLama->has($idBahanBaku)) {
-                    $mutasi = $mutasiLama[$idBahanBaku];
-
-                    // Update stok: rollback lama → kurangi baru
-                    // if ($mutasi->status == 1) {
-                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
-                    //     if ($bahanBaku) {
-                    //         $bahanBaku->stok_akhir += $mutasi->quantity;
-                    //         $bahanBaku->stok_akhir -= $quantityBaru;
-                    //         $bahanBaku->save();
-                    //     }
-                    // }
-
-                    // Update mutasi
-                    $mutasi->update([
-                        'quantity' => $quantityBaru,
-                        'harga' => $hargaBaru,
-                        'sub_total' => $subTotal,
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    // Mutasi belum ada, buat baru
-                    $mutasiBaru = Mutasi::create([
-                        'nobukti' => $nobukti,
-                        'id_bahan_baku' => $idBahanBaku,
-                        'quantity' => $quantityBaru,
-                        'harga' => $hargaBaru,
-                        'sub_total' => $subTotal,
-                        'jenis_transaksi' => 'K',
-                        'status' => 1,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
-                    // if ($mutasiBaru->status == 1) {
-                    //     $bahanBaku = BahanBaku::find($idBahanBaku);
-                    //     if ($bahanBaku) {
-                    //         $bahanBaku->stok_akhir -= $quantityBaru;
-                    //         $bahanBaku->save();
-                    //     }
-                    // }
-                }
-            }
-
-            DB::commit();
-            notify()->success('Data Penjualan berhasil diperbarui');
+            $validated = $request->validated();
+            $penjualanService->updatePenjualan($nobukti, $validated);
+            notify()->success('Pembelian berhasil diperbarui');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
-            DB::rollBack();
-            notify()->error('Gagal memperbarui data Penjualan: ' . $e->getMessage());
+            notify()->error('Gagal memperbarui penjualan: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
+
+    // public function update(PenjualanRequest $request, $nobukti, PenjualanRequest $penjualanService)
+    // {
+
+    //     try {
+    //         // Ambil data pembelian berdasarkan nobukti
+    //         $pembelian = Pembelian::where('nobukti', $nobukti)->firstOrFail();
+
+    //         // Hitung total baru
+    //         $totalBaru = 0;
+    //         foreach ($request->bahanBaku as $index => $idBahanBaku) {
+    //             $totalBaru += $request->quantity[$index] * $request->harga[$index];
+    //         }
+
+    //         $dataPembelianBaru = [
+    //             'tanggal' => $request->tanggal,
+    //             'id_supplier' => $request->id_supplier,
+    //             'total' => $totalBaru,
+    //             'catatan' => $request->catatan,
+    //         ];
+
+    //         $dataPembelianLama = [
+    //             'tanggal' => $pembelian->tanggal,
+    //             'id_supplier' => $pembelian->id_supplier,
+    //             'total' => $pembelian->total,
+    //             'catatan' => $pembelian->catatan,
+    //         ];
+
+    //         // Ambil mutasi lama dan susun datanya untuk perbandingan
+    //         $mutasiLama = $pembelian->mutasi()
+    //             ->orderBy('id_bahan_baku')
+    //             ->get()
+    //             ->map(function ($item) {
+    //                 return [
+    //                     'id_bahan_baku' => $item->id_bahan_baku,
+    //                     'quantity' => $item->quantity,
+    //                     'harga' => $item->harga
+    //                 ];
+    //             })->values()->toArray();
+
+    //         // Susun input produk dari request
+    //         $produkBaru = collect($request->bahanBaku)->map(function ($id, $index) use ($request) {
+    //             return [
+    //                 'id_bahan_baku' => $id,
+    //                 'quantity' => $request->quantity[$index],
+    //                 'harga' => $request->harga[$index]
+    //             ];
+    //         })->sortBy('id_bahan_baku')->values()->toArray();
+
+    //         // Cek apakah tidak ada data yang berubah
+    //         if ($dataPembelianBaru == $dataPembelianLama && $mutasiLama == $produkBaru) {
+    //             DB::rollBack();
+    //             notify()->info('Tidak ada data yang diupdate');
+    //             return redirect()->back();
+    //         }
+
+    //         // Lanjut update pembelian
+    //         $pembelian->update($dataPembelianBaru);
+
+    //         // Ambil mutasi lama untuk update
+    //         $mutasiLama = $pembelian->mutasi()->get()->keyBy('id_bahan_baku');
+
+    //         foreach ($produkBaru as $item) {
+    //             $idBahanBaku = $item['id_bahan_baku'];
+    //             $quantityBaru = $item['quantity'];
+    //             $hargaBaru = $item['harga'];
+    //             $subTotal = $quantityBaru * $hargaBaru;
+
+    //             if ($mutasiLama->has($idBahanBaku)) {
+    //                 $mutasi = $mutasiLama[$idBahanBaku];
+
+    //                 // Update mutasi
+    //                 $mutasi->update([
+    //                     'quantity' => $quantityBaru,
+    //                     'harga' => $hargaBaru,
+    //                     'sub_total' => $subTotal,
+    //                     'updated_at' => now(),
+    //                 ]);
+    //             } else {
+    //                 // Mutasi belum ada, buat baru
+    //                 Mutasi::create([
+    //                     'mutasiable_id' => $pembelian->id,  // Menyimpan ID pembelian
+    //                     'mutasiable_type' => Pembelian::class,  // Menyimpan tipe model pembelian
+    //                     'id_bahan_baku' => $idBahanBaku,
+    //                     'quantity' => $quantityBaru,
+    //                     'harga' => $hargaBaru,
+    //                     'sub_total' => $subTotal,
+    //                     'jenis_transaksi' => 'M',  // Menggunakan transaksi mutasi 'M' untuk pembelian
+    //                     'status' => 1,
+    //                     'created_at' => now(),
+    //                     'updated_at' => now(),
+    //                 ]);
+    //             }
+    //         }
+
+    //         // Hapus transaksi lama jika ada
+    //         $transaksiLama = $pembelian->transaksi()->first();
+    //         if ($transaksiLama) {
+    //             // Kembalikan saldo lama
+    //             $transaksiLama->sumberDana->increment('saldo_current', $transaksiLama->jumlah);
+
+    //             // Update data transaksi
+    //             $transaksiLama->update([
+    //                 'id_sumber_dana' => $request->id_sumber_dana,
+    //                 'tanggal' => $request->tanggal,
+    //                 'tipe' => 'credit',
+    //                 'jumlah' => $totalBaru,
+    //                 'deskripsi' => 'Update pembelian bahan baku #' . $pembelian->nobukti,
+    //             ]);
+    //         } else {
+    //             // Buat transaksi baru jika sebelumnya tidak ada
+    //             $pembelian->transaksi()->create([
+    //                 'id_sumber_dana' => $request->id_sumber_dana,
+    //                 'tanggal' => $request->tanggal,
+    //                 'tipe' => 'credit',
+    //                 'jumlah' => $totalBaru,
+    //                 'deskripsi' => 'Update pembelian bahan baku #' . $pembelian->nobukti,
+    //             ]);
+    //         }
+
+    //         // Kurangi saldo dari sumber dana baru
+    //         SumberDana::find($request->id_sumber_dana)->decrement('saldo_current', $totalBaru);
+
+    //         DB::commit();
+    //         notify()->success('Data Pembelian berhasil diperbarui');
+    //         return redirect()->route('pembelian.index');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         notify()->error('Gagal memperbarui data Pembelian: ' . $e->getMessage());
+    //         return redirect()->back()->withInput();
+    //     }
+    // }
+
 
     public function destroy($id)
     {

@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_sumber_dana')->constrained('sumber_dana')->onDelete('cascade');
-            $table->nullableMorphs('nobukti');
+            $table->morphs('referenceable');
             $table->date('tanggal');
             $table->enum('tipe', ['debit', 'credit']);
             $table->decimal('jumlah', 15, 2);
             $table->text('deskripsi');
+            $table->tinyInteger('status')->default(1);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
