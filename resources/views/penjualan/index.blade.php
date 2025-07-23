@@ -100,7 +100,7 @@
                                                 </div>
                                             </td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
-                                                Rp. {{ number_format($item->total, 0, ',', '.') }}
+                                                Rp. {{ number_format($item->total, 2, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
                                                 @if ($item->metode_pembayaran === 'kasbon')
@@ -110,7 +110,7 @@
                                                         <span class="badge bg-success">Kasbon - Lunas</span>
                                                     @endif
                                                 @else
-                                                    <span class="badge bg-primary">Tunai</span>
+                                                    <span class="badge bg-success">Lunas</span>
                                                 @endif
                                             </td>
                                             <td class="text-center align-middle">

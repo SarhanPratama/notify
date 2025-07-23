@@ -62,10 +62,10 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label font-weight-bold">
                                                 <i class="fas fa-wallet mr-1 text-primary"></i>
-                                                Sumber Dana <span class="text-danger">*</span>
+                                                Kas Masuk <span class="text-danger">*</span>
                                             </label>
                                             <select class="form-control" name="id_sumber_dana" required>
-                                                <option value="">-- Pilih Sumber Dana --</option>
+                                                <option value="">-- Pilih Kas Masuk --</option>
                                                 @foreach ($sumberDana as $id => $nama)
                                                     <option value="{{ $id }}">{{ $nama }}</option>
                                                 @endforeach

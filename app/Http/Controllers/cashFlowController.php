@@ -43,7 +43,7 @@ class cashFlowController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:0',
-            'jenis_transaksi' => 'required|in:debit,credit', // debit = uang masuk, credit = uang keluar
+            'tipe' => 'required|in:debit,kredit', // debit = uang masuk, credit = uang keluar
             'id_sumber_dana' => 'required|exists:sumber_dana,id',
             'deskripsi' => 'required|string|max:255',
         ]);
@@ -57,7 +57,8 @@ class cashFlowController extends Controller
                 'tanggal' => $request->tanggal,
                 'tipe' => $request->tipe,
                 'jumlah' => $request->jumlah,
-                'deskripsi' => $request->deskripsi,
+                'deskripsi' => strip_tags($request->deskripsi, '<b><i>'),
+                'status' => 1,
                 // Kosongkan referenceable karena ini transaksi manual
                 'referenceable_type' => null,
                 'referenceable_id' => null,
@@ -73,11 +74,24 @@ class cashFlowController extends Controller
 
             DB::commit();
             notify()->success('Transaksi berhasil ditambahkan.');
-            return redirect()->route('kas.index');
+            return redirect()->route('transaksi.index');
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal menyimpan transaksi: ' . $e->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function show($id)
+    {
+        $title = 'Arus Kas';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
+            ['label' => 'Detail', 'url' => null],
+        ];
+        $transaksi = Transaksi::with(['sumberDana', 'referenceable'])->findOrFail($id);
+
+        return view('kas.show', compact('title', 'breadcrumbs', 'transaksi'));
     }
 }

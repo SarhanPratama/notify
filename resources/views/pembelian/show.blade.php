@@ -94,7 +94,7 @@
                                 <i class="fas fa-wallet text-info"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Sumber Dana</small>
+                                <small class="text-muted d-block">Kas Keluar</small>
                                 <span>{{ $detailPembelian->transaksi->first()->SumberDana->nama ?? 'Tidak tercatat' }}</span>
                             </div>
                         </div>

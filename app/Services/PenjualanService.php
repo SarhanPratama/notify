@@ -11,7 +11,7 @@ class PenjualanService
 {
     public function getPenjualanDetails($nobukti)
     {
-        return Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi'])
+        return Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi', 'piutang.pembayaran'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
     }
@@ -27,7 +27,7 @@ class PenjualanService
                 'tanggal' => $data['tanggal'],
                 'nobukti' => $nobukti,
                 'total' => $total,
-                'catatan' => $data['catatan'],
+                'catatan' => strip_tags($data['catatan']),
                 'id_cabang' => $data['id_cabang'],
                 'metode_pembayaran' => $data['metode_pembayaran'],
                 // 'status' => $data['metode_pembayaran'] === 'tunai' ? 'lunas' : 'piutang',
@@ -56,7 +56,7 @@ class PenjualanService
             $penjualan->update([
                 'total' => $total,
                 'tanggal' => $data['tanggal'],
-                'catatan' => $data['catatan'] ?? null,
+                'catatan' => strip_tags($data['catatan'] ?? null),
                 'id_cabang' => $data['id_cabang'] ?? null,
                 'metode_pembayaran' => $data['metode_pembayaran'],
                 // 'status' => $data['metode_pembayaran'] === 'tunai' ? 'lunas' : 'piutang',

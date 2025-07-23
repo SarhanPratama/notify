@@ -21,4 +21,10 @@ class Piutang extends Model
     {
         return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
     }
+
+    public function pembayaran()
+{
+    return $this->hasMany(PiutangPembayaran::class, 'id_piutang');
+}
+
 }

@@ -43,9 +43,9 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label fw-bold">Sumber Dana</label>
+                                    <label class="form-label fw-bold">Kas Keluar</label>
                                     <select class="form-select form-select-sm" name="id_sumber_dana">
-                                        <option value="">Pilih Sumber Dana</option>
+                                        <option value="">Pilih Kas Keluar</option>
                                         @foreach ($sumberDana as $id => $nama)
                                             <option value="{{ $id }}">{{ $nama }}</option>
                                         @endforeach

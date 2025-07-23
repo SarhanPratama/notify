@@ -82,7 +82,7 @@ class PenjualanController extends Controller
         ];
 
         $detailPenjualan = $penjualanService->getPenjualanDetails($nobukti);
-        // dd($detailPembelian);
+        // dd($detailPenjualan);
         return view('penjualan.show', compact('title', 'breadcrumbs', 'detailPenjualan'));
     }
 

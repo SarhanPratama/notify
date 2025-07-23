@@ -9,7 +9,7 @@
 
     <div class="container-fluid py-4">
 
-        <a href="{{ route('transaksi.create') }}" type="button" class="btn btn-outline-secondary fw-bold mb-3">
+        <a href="{{ route('transaksi.index') }}" type="button" class="btn btn-outline-secondary fw-bold mb-3">
             <i class="fas fa-arrow-left mr-2"></i>Kembali
         </a>
         <div class="row justify-content-center">
@@ -45,8 +45,7 @@
                                         </label>
                                         <div class="input-group">
                                             <span class="input-group-text">Rp</span>
-                                            <input type="number"
-                                                class="form-control" name="jumlah"
+                                            <input type="number" class="form-control" name="jumlah"
                                                 value="{{ old('jumlah') }}" required>
                                         </div>
                                     </div>
@@ -58,15 +57,12 @@
                                             <i class="fas fa-exchange-alt me-1 text-primary"></i> Jenis Transaksi <span
                                                 class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select @error('jenis_transaksi') is-invalid @enderror"
-                                            name="jenis_transaksi" required>
+                                        <select class="form-select" name="tipe" required>
                                             <option value="" disabled selected>Pilih Jenis</option>
-                                            <option value="debit"
-                                                {{ old('jenis_transaksi') == 'debit' ? 'selected' : '' }}>
+                                            <option value="debit">
                                                 <span class="text-success">Debit (Masuk)</span>
                                             </option>
-                                            <option value="kredit"
-                                                {{ old('jenis_transaksi') == 'kredit' ? 'selected' : '' }}>
+                                            <option value="kredit">
                                                 <span class="text-danger">Kredit (Keluar)</span>
                                             </option>
                                         </select>
@@ -80,7 +76,7 @@
                                                 class="text-danger">*</span>
                                         </label>
                                         <select class="form-select @error('id_sumber_dana') is-invalid @enderror"
-                                            name="sumber_dana" required>
+                                            name="id_sumber_dana" required>
                                             <option value="" disabled selected>Pilih Sumber</option>
                                             @foreach ($sumberDana as $id => $nama)
                                                 <option value="{{ $id }}">{{ $nama }}</option>
@@ -92,12 +88,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-label fw-bold mb-2">
-                                            <i class="fas fa-align-left me-1 text-primary"></i> Keperluan
+                                            <i class="fas fa-align-left me-1 text-primary"></i> Keterangan<span
+                                                class="text-danger"> *</span>
                                         </label>
-                                        <input name="deskripsi" type="hidden" id="deskripsi">
-                                        <trix-editor input="deskripsi" class="form-control"
-                                            style="min-height: 150px;"></trix-editor>
-                                        <small class="text-muted">Silakan masukkan detail keperluan atau informasi
+                                        <input name="deskripsi" type="hidden" id="deskripsi" required>
+                                        <trix-editor input="deskripsi" class="form-control"></trix-editor>
+                                        <small class="text-muted">Silakan masukkan keterangan atau informasi
                                             tambahan</small>
                                     </div>
                                 </div>

@@ -17,7 +17,8 @@ class PiutangController extends Controller
             ['label' => 'kasbon', 'url' => route('piutang.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
-        $piutang = Piutang::with('penjualan')->get();
+        $piutang = Piutang::with('penjualan', 'pembayaran')->get();
+        // dd($piutang);
         $sumberDana = SumberDana::pluck('nama', 'id');
 
         return view('piutang.index', compact('title', 'breadcrumbs', 'piutang', 'sumberDana'));
@@ -25,48 +26,59 @@ class PiutangController extends Controller
 
     public function bayar(Request $request, $nobukti)
     {
-        // dd($nobukti);
+        // dd($request->all());
+
         $request->validate([
             'id_sumber_dana' => 'required|exists:sumber_dana,id',
+            'jumlah' => 'required',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $piutang = Piutang::with('penjualan')->where('nobukti', $nobukti)->firstOrFail();
+            $piutang = Piutang::with('penjualan.transaksi','pembayaran')->where('nobukti', $nobukti)->firstOrFail();
             // dd($piutang);
-            // Pastikan belum lunas
-            if ($piutang->status === 'lunas') {
-                notify()->warning('Piutang sudah lunas');
-                return redirect()->back()->with('warning', 'Piutang sudah dilunasi.');
+            $totalSudahDibayar = $piutang->pembayaran->sum('jumlah');
+            // dd($totalSudahDibayar);
+            $sisaPiutang = $piutang->jumlah_piutang - $totalSudahDibayar;
+            // dd($sisaPiutang);
+            if ($request->jumlah > $sisaPiutang) {
+                notify()->success('Pembayaran melebihi sisa piutang.');
+                return redirect()->back();
             }
 
-            $sumberDana = SumberDana::findOrFail($request->id_sumber_dana);
-            // dd($sumberDana);
+            // Simpan histori cicilan
+            $pembayaran = $piutang->pembayaran()->create([
+                'id_piutang' => $piutang->id,
+                'id_sumber_dana' => $request->id_sumber_dana,
+                'tanggal' => now(),
+                'jumlah' => $request->jumlah,
+                'keterangan' => 'Pembayaran sebagian untuk piutang #' . $piutang->nobukti,
+            ]);
 
-            // Catat transaksi pembayaran piutang (uang masuk)
+            // Catat arus kas masuk
             $piutang->penjualan->transaksi()->create([
-                'id_sumber_dana' => $sumberDana->id,
+                'id_sumber_dana' => $request->id_sumber_dana,
                 'tanggal' => now(),
                 'tipe' => 'debit',
-                'jumlah' => $piutang->jumlah_piutang,
-                'deskripsi' => 'Pelunasan piutang #' . $piutang->nobukti,
+                'jumlah' => $request->jumlah,
+                'deskripsi' => 'Pembayaran piutang #' . $piutang->nobukti,
             ]);
 
-            // Tambah saldo
-            $sumberDana->increment('saldo_current', $piutang->jumlah_piutang);
+            // Update saldo sumber dana
+            SumberDana::findOrFail($request->id_sumber_dana)->increment('saldo_current', $request->jumlah);
 
-            // Ubah status piutang
-            $piutang->update([
-                'status' => 'lunas',
-            ]);
+            // Cek pelunasan
+            if ($request->jumlah + $totalSudahDibayar >= $piutang->jumlah_piutang) {
+                $piutang->update(['status' => 'lunas']);
+            }
 
             DB::commit();
-            notify()->success('Piutang berhasil dibayar.');
+            notify()->success('Pembayaran berhasil dicatat.');
             return redirect()->route('piutang.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            notify()->error('Gagal memperbarui penjualan: ' . $e->getMessage());
+            notify()->error('Gagal menyimpan pembayaran: ' . $e->getMessage());
             return redirect()->back();
         }
     }

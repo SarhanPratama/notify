@@ -78,7 +78,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('penjualan', PenjualanController::class);
 
     Route::resource('piutang', PiutangController::class);
-    Route::post('piutang/{id}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar');
+    Route::post('piutang/{nobukti}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar');
     // Route::post('/api/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);
     //     Route::get('/webhook', [WhatsAppWebhookController::class, 'verifyWebhook']);
     // Route::post('/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);

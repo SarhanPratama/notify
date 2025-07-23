@@ -95,8 +95,8 @@
                                 <i class="fas fa-wallet text-info"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Sumber Dana</small>
-                                <span>{{ $detailPenjualan->transaksi->first()->SumberDana->nama ?? 'Tidak tercatat' }}</span>
+                                <small class="text-muted d-block">Kas Masuk</small>
+                                <span>{{ $detailPenjualan->transaksi->SumberDana->nama ?? 'Tidak tercatat' }}</span>
                             </div>
                         </div>
                         {{-- <div class="d-flex align-items-center">
@@ -192,11 +192,65 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="h5 mb-0 fw-semibold">Total</span>
                             <span class="h5 mb-0 fw-bold text-primary">Rp
-                                {{ number_format($detailPenjualan->total, 0, ',', '.') }}</span>
+                                {{ number_format($detailPenjualan->total, 2, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        @if ($detailPenjualan->metode_pembayaran === 'kasbon' && $detailPenjualan->piutang)
+            @php
+                $piutang = $detailPenjualan->piutang;
+                $totalDibayar = $piutang->pembayaran->sum('jumlah');
+                $sisa = $piutang->jumlah_piutang - $totalDibayar;
+            @endphp
+
+            <div class="card shadow-sm border-light mt-4 mb-3">
+                <div class="card-header bg-success text-white d-flex align-items-center">
+                    <i class="fas fa-wallet me-2"></i> Riwayat Pembayaran Piutang
+                </div>
+                <div class="card-body">
+
+                    <!-- RINGKASAN -->
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted fw-bold">Total Piutang</small>
+                            <div class="fw-bold text-dark">Rp {{ number_format($piutang->jumlah_piutang, 2, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted fw-bold">Sudah Dibayar</small>
+                            <div class="fw-bold text-success">Rp {{ number_format($totalDibayar, 2, ',', '.') }}</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="text-muted fw-bold">Sisa Piutang</small>
+                            <div class="fw-bold text-danger">Rp {{ number_format($sisa, 2, ',', '.') }}</div>
+                        </div>
+                    </div>
+
+                    <!-- RIWAYAT -->
+                    @if ($piutang->pembayaran->isEmpty())
+                        <p class="text-muted mb-0">Belum ada pembayaran tercatat.</p>
+                    @else
+                        <ul class="list-group">
+                            @foreach ($piutang->pembayaran as $pay)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ $pay->tanggal->format('d M Y') }}</strong><br>
+                                        <small class="text-muted">{{ $pay->keterangan }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold d-block">Rp
+                                            {{ number_format($pay->jumlah, 2, ',', '.') }}</span>
+                                        <span class="badge bg-primary mt-1">{{ $pay->sumberDana->nama }}</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
 @endsection

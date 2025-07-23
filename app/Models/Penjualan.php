@@ -56,7 +56,7 @@ class Penjualan extends Model
 
     public function transaksi()
     {
-        return $this->morphMany(Transaksi::class, 'referenceable');
+        return $this->morphOne(Transaksi::class, 'referenceable');
     }
 
     public function cabang()

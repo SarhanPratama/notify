@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_sumber_dana')->constrained('sumber_dana')->onDelete('cascade');
-            $table->morphs('referenceable');
+            $table->nullableMorphs('referenceable');
             $table->date('tanggal');
-            $table->enum('tipe', ['debit', 'credit']);
+            $table->enum('tipe', ['debit', 'kredit']);
             $table->decimal('jumlah', 15, 2);
             $table->text('deskripsi');
             $table->tinyInteger('status')->default(1);
