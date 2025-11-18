@@ -58,7 +58,6 @@
                     <div
                         class="card-header bg-maron text-white d-flex flex-wrap align-items-center justify-content-between py-3">
                         <h6 class="font-weight-bold text-sm">
-                            {{-- <i class="fas fa-shopping-cart mr-2"></i> --}}
                             {{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
                         </h6>
                     </div>
@@ -104,7 +103,7 @@
                                             </td>
                                             <td class="align-middle">
                                                 @if ($item->metode_pembayaran === 'kasbon')
-                                                    @if ($item->piutang && $item->piutang->status === 'belum_lunas')
+                                                    @if ($item->piutang->status === 'belum_lunas')
                                                         <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
                                                     @else
                                                         <span class="badge bg-success">Kasbon - Lunas</span>

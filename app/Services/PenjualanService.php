@@ -149,6 +149,7 @@ class PenjualanService
                 'jumlah_piutang' => $jumlah,
                 'jatuh_tempo' => now()->addDays(2),
                 'status' => 'belum_lunas',
+                'created_at' => $penjualan->tanggal,
             ]);
         }
     }

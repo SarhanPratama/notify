@@ -65,9 +65,6 @@ class PiutangController extends Controller
                 'deskripsi' => 'Pembayaran piutang #' . $piutang->nobukti,
             ]);
 
-            // Update saldo sumber dana
-            SumberDana::findOrFail($request->id_sumber_dana)->increment('saldo_current', $request->jumlah);
-
             // Cek pelunasan
             if ($request->jumlah + $totalSudahDibayar >= $piutang->jumlah_piutang) {
                 $piutang->update(['status' => 'lunas']);

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class cabangFactory extends Factory
+class OutletFactory extends Factory
 {
-    protected $model = \App\Models\Cabang::class;
+    protected $model = \App\Models\Outlet::class;
 
     public function definition(): array
     {
@@ -17,6 +17,7 @@ class cabangFactory extends Factory
             'nama' => $this->faker->company,
             'kode' => 'ms',
             'telepon' => $this->faker->phoneNumber,
+            'penanggung_jawab' => $this->faker->name,
             'alamat' => $this->faker->address,
             'lokasi' => $this->faker->imageUrl(640, 480, 'business', true, 'location'),
         ];

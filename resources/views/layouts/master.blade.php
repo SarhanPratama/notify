@@ -14,26 +14,7 @@
     @include('layouts.link')
     @yield('css')
 
-    <!-- Custom Styles -->
-    <style>
-        .notify {
-            z-index: 9999 !important;
-        }
 
-        .color {
-            background-color: #6777ef;
-        }
-
-        .bg-maron {
-            /* background-color: #8e1616; */
-            background-color: #9c1515;
-        }
-
-        .text-maron {
-            color: #8e1616;
-        }
-
-    </style>
 </head>
 
 <body id="page-top">
@@ -68,7 +49,12 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    <!-- Load Chart.js FIRST before stack scripts -->
+
+
 @yield('scripts')
+@stack('scripts')
 @include('layouts.script')
 </body>
 

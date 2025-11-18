@@ -2,6 +2,9 @@
 
 @section('content')
     @include('layouts.breadcrumbs')
+    @php
+        use Illuminate\Support\Facades\Storage;
+    @endphp
 
     <div class="container-fluid">
         <div class="row">
@@ -23,12 +26,10 @@
                             <thead class="thead-light">
                                 <tr class="text-nowrap">
                                     <th class="text-start">No</th>
+                                    <th>Foto</th>
                                     <th>Bahan Baku </th>
                                     <th>Harga</th>
                                     <th>Stok Awal</th>
-                                    {{-- <th>Stok Masuk</th>
-                                    <th>Stok Keluar</th> --}}
-                                    <th>Stok Akhir</th>
                                     <th>Stok Minimum</th>
                                     <th>Kategori</th>
                                     <th class="text-center">Action</th>
@@ -38,17 +39,25 @@
                                 @foreach ($bahanBaku as $item)
                                     <tr class="text-start text-nowrap ">
                                         <td class="align-middle">{{ $loop->iteration }}</td>
+                                        <td class="align-middle">
+                                            @if($item->foto && Storage::disk('public')->exists($item->foto))
+                                                <img src="{{ Storage::url($item->foto) }}"
+                                                     alt="{{ $item->nama }}"
+                                                     class="img-thumbnail rounded-circle"
+                                                     style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;"
+                                                     onclick="showImageModal('{{ Storage::url($item->foto) }}', '{{ $item->nama }}')"
+                                                     title="Klik untuk memperbesar">
+                                            @else
+                                                <div class="d-flex justify-content-center align-items-center bg-light rounded-circle"
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td class="align-middle">{{ ucwords($item->nama) }}</td>
                                         <td class="align-middle">Rp {{ number_format($item->harga, 2, ',', '.') }}</td>
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
-                                                {{ $item->satuan->nama }}</span></td>
-                                        {{-- <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->totalmasuk }}
-                                            {{ $item->satuan->nama }}</span></td> --}}
-                                        {{-- <td class="align-middle"><span class="badge fw-bolder bg-danger">{{ $item->totalkeluar }}
-                                            {{ $item->satuan->nama }}</span></td> --}}
-                                        <td class="align-middle"><span
-                                                class="badge fw-bolder bg-warning">{{ $item->ViewStok->stok_akhir }}
                                                 {{ $item->satuan->nama }}</span></td>
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-secondary">{{ $item->stok_minimum }}
@@ -71,232 +80,108 @@
                                             </div>
                                         </td>
                                     </tr>
-
-                                    <div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1"
-                                        aria-labelledby="editModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-warning">
-                                                    <h5 class="modal-title text-light font-weight-bold" id="editModalLabel">
-                                                        Form Edit
-                                                    </h5>
-                                                    <button type="button" class="close text-light" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <form action="{{ route('bahan-baku.update', $item->id) }}" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-body text-sm fw-bold">
-                                                        <div class="row">
-                                                            <div class="mb-3">
-                                                                <label for="nama">Bahan Baku <span class="text-danger">*</span></label>
-                                                                <input type="text" id="nama" name="nama"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $item->nama }}"
-                                                                    placeholder="Masukkan nama bahan baku">
-                                                                @error('nama')
-                                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                                @enderror
-                                                            </div>
-                                                            <div class="col-12 mb-3">
-                                                                <label for="harga">Harga <span class="text-danger">*</span></label>
-                                                                <input type="number" id="harga" name="harga"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ (int) $item->harga }}"
-                                                                    placeholder="Masukkan harga">
-                                                            </div>
-                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label for="stok_awal">Stok Awal<span class="text-danger">*</span></label>
-                                                                <input type="number" id="stok_awal" name="stok_awal"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $item->stok_awal }}"
-                                                                    placeholder="Masukkan stok awal">
-                                                            </div>
-                                                            {{-- <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label for="stok">Stok Akhir<span class="text-danger">*</span></label>
-                                                                <input type="number" name="stok_akhir"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $item->stok_akhir }}"
-                                                                    placeholder="Masukkan stok akhir">
-                                                            </div> --}}
-                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12 mb-3">
-                                                                <label for="stok_minimum">Stok Minimum <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="number" id="stok_minimum" name="stok_minimum"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $item->stok_minimum }}"
-                                                                    placeholder="Masukkan stok minimum">
-                                                            </div>
-                                                            <div class="col-6 mb-3">
-                                                                {{-- <div class="d-flex justify-content-between">
-                                                                    <label for="select2Single"
-                                                                        class="form-label fw-bold">Satuan
-                                                                        <span class="text-danger">*</span></label>
-                                                                    <a class="text-danger text-decoration-underline"
-                                                                        href="javascript:void(0);" data-toggle="modal"
-                                                                        data-target="#satuanModal">Tambah Satuan</a>
-                                                                </div> --}}
-                                                                <label for="id_satuan">Satuan <span class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm" id="id_satuan"
-                                                                    name="id_satuan" required>
-                                                                    <option selected disabled>Pilih Satuan</option>
-                                                                    @foreach ($satuan as $id => $nama)
-                                                                        <option value="{{ $id }}"
-                                                                            {{ $item->id_satuan == $id ? 'selected' : '' }}>
-                                                                            {{ $nama }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-6 mb-3">
-                                                                <label for="id_kategori" class="form-label">Kategori <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="id_kategori" name="id_kategori" required>
-                                                                    <option selected disabled>Pilih Kategori</option>
-                                                                    @foreach ($kategori as $id => $nama)
-                                                                        <option value="{{ $id }}"
-                                                                            {{ $item->id_kategori == $id ? 'selected' : '' }}>
-                                                                            {{ $nama }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-12 mb-3">
-                                                                <label for="foto">Foto <span class="text-danger">*</span></label>
-                                                                <input type="file" id="foto" name="foto" class="form-control form-control-sm">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                                            data-dismiss="modal">Close</button>
-                                                        <button type="submit"
-                                                            class="btn btn-outline-warning btn-sm">Update</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="modal fade" id="DestroyModal{{ $item->id }}" tabindex="-1"
-                                        aria-labelledby="DestroyModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger">
-                                                    <h5 class="modal-title font-weight-bold text-light"
-                                                        id="DestroyModalLabel">Konfirmasi Hapus</h5>
-                                                    <button type="button" class="close text-light" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Apakah anda yakin ingin menghapus bahan baku
-                                                        <strong>"{{ $item->nama }}"</strong>?
-                                                    </p>
-                                                </div>
-                                                <form action="{{ route('bahan-baku.destroy', $item->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-primary btn-sm"
-                                                            data-dismiss="modal">Close</button>
-                                                        <button type="submit"
-                                                            class="btn btn-outline-danger btn-sm">Delete</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @include('bahan-baku.modal-edit')
+                                    @include('bahan-baku.modal-konfirmasi-delete')
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="card-footer d-flex justify-content-center">
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    @include('bahan-baku.modal-create')
 
-    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-        <div class="modal-dialog ">
+    <!-- Modal untuk menampilkan gambar besar -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-maron">
-                    <h5 class="modal-title text-light font-weight-bold" id="createModalLabel">Form Tambah</h5>
-                    <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Foto Bahan Baku</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('bahan-baku.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body text-sm fw-bold">
-                        <div class="row">
-                            <div class="mb-3">
-                                <label for="nama">Bahan Baku <span class="text-danger">*</span></label>
-                                <input type="text" id="nama" name="nama" class="form-control form-control-sm"
-                                    placeholder="Masukkan nama bahan baku">
-                                @error('nama')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="harga">Harga <span class="text-danger">*</span></label>
-                                <input type="number" id="harga" name="harga" class="form-control form-control-sm"
-                                    placeholder="Masukkan harga">
-                            </div>
-                            <div class="col-4 mb-3">
-                                <label for="stok_awal">Stok Awal<span class="text-danger">*</span></label>
-                                <input type="number" id="stok_awal" name="stok_awal" class="form-control form-control-sm"
-                                    placeholder="Masukkan stok">
-                            </div>
-                            {{-- <div class="col-4 mb-3">
-                                <label>Stok akhir<span class="text-danger">*</span></label>
-                                <input type="number" name="stok_akhir" class="form-control form-control-sm"
-                                    placeholder="Masukkan stok">
-                            </div> --}}
-                            <div class="col-4 mb-3">
-                                <label for="stok_minimum">Stok Minimum <span class="text-danger">*</span></label>
-                                <input type="number" id="stok_minimum" name="stok_minimum" class="form-control form-control-sm"
-                                    placeholder="Masukkan stok minimum">
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
-                                <label for="id_satuan" class="form-label">Satuan <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="id_satuan" name="id_satuan" required>
-                                    <option selected disabled>Pilih Satuan</option>
-                                    @foreach ($satuan as $id => $nama)
-                                        <option value="{{ $id }}">{{ $nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-6 col-sm-12 col-12 mb-3">
-                                <label for="id_kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-sm" id="id_kategori" name="id_kategori" required>
-                                    <option selected disabled>Pilih Kategori</option>
-                                    @foreach ($kategori as $id => $nama)
-                                        <option value="{{ $id }}">{{ $nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="foto">Foto <span class="text-danger">*</span></label>
-                                <input type="file" id="foto" name="foto" class="form-control form-control-sm">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
-                    </div>
-                </form>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="" class="img-fluid rounded" style="max-height: 500px;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
-    {{-- @include('bahan-baku.createSatuan') --}}
+
+@push('styles')
+<style>
+    .img-thumbnail:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .preview-container {
+        background-color: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    .preview-container:hover {
+        border-color: #007bff;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    function showImageModal(imageSrc, itemName) {
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('modalImage').alt = itemName;
+        document.getElementById('imageModalLabel').textContent = 'Foto ' + itemName;
+
+        var myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        myModal.show();
+    }
+
+    // Preview image for create modal
+    function previewCreateImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('createImagePreview');
+        const previewContainer = document.getElementById('createPreviewContainer');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    }
+
+    // Preview image for edit modal
+    function previewEditImage(event, itemId) {
+        const input = event.target;
+        const preview = document.getElementById('editImagePreview' + itemId);
+        const previewContainer = document.getElementById('editPreviewContainer' + itemId);
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+@endpush
+
 @endsection

@@ -26,7 +26,7 @@ class bahanBakuController extends Controller
         // ->select('bahan_baku.*', 'satuan.nama as satuan', 'vsaldoakhir2.*', 'kategori.nama as kategori')
         // ->get();
 
-        $bahanBaku = BahanBaku::with(['satuan', 'kategori', 'ViewStok'])->get();
+        $bahanBaku = BahanBaku::with(['satuan', 'kategori'])->get();
 
 
         // $bahan_baku = bahanBaku::with('satuan', 'kategori')->leftJoin('vsaldoakhir2', 'bahan_baku.id', '=', 'vsaldoakhir2.id')->get();
@@ -51,6 +51,8 @@ class bahanBakuController extends Controller
         ]);
 
         try {
+            $fotoPath = null;
+            
             if ($request->hasFile('foto')) {
                 $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
                 $fotoPath = $request->file('foto')->storeAs('uploads/bahanbaku', $filename, 'public');
@@ -62,7 +64,7 @@ class bahanBakuController extends Controller
                 // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
-                'foto' => $fotoPath ?? ' ',
+                'foto' => $fotoPath,
                 'id_satuan' => $request->id_satuan,
                 'id_kategori' => $request->id_kategori,
             ]);
@@ -126,13 +128,19 @@ class bahanBakuController extends Controller
 
     public function destroy($id) {
         try {
-            $bahan_baku = bahanBaku::findOrFail($id);
-            $bahan_baku->delete();
-            notify()->success('Berhasil menghapus data');
+            $bahanBaku = bahanBaku::findOrFail($id);
+            
+            // Hapus foto jika ada
+            if ($bahanBaku->foto && Storage::disk('public')->exists($bahanBaku->foto)) {
+                Storage::disk('public')->delete($bahanBaku->foto);
+            }
+            
+            $bahanBaku->delete();
+            notify()->success('Berhasil menghapus data bahan baku');
             return redirect()->back();
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus role');
+            notify()->error('Gagal menghapus data: ' . $e->getMessage());
+            return redirect()->back();
         }
-        return redirect()->back();
     }
 }

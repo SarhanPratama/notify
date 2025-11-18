@@ -141,7 +141,7 @@
                                 <i class="fas fa-boxes me-2"></i>Katalog Bahan Baku
                             </h5>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-4" style="max-height: 600px; overflow-y: auto;">
                             <div class="row">
                                 @foreach($bahanBaku as $item)
                                 <div class="col-lg-3 col-md-6 mb-4">

@@ -16,10 +16,10 @@ class Penjualan extends Model
         'nobukti',
         'total',
         'tanggal',
-        // 'status',
+        'status',
         'metode_pembayaran',
         'catatan',
-        'id_cabang',
+        'id_outlet',
         // 'id_user'
     ];
 
@@ -59,9 +59,9 @@ class Penjualan extends Model
         return $this->morphOne(Transaksi::class, 'referenceable');
     }
 
-    public function cabang()
+    public function outlet()
     {
-        return $this->belongsTo(Cabang::class, 'id_cabang');
+        return $this->belongsTo(Outlet::class, 'id_outlet');
     }
 
     public function piutang()

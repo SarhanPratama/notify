@@ -56,15 +56,16 @@
                     <tr>
                         <th class="text-start">No</th>
                         <th>Kode</th>
-                        <th>Cabang</th>
+                        <th>Nama</th>
                         <th>Telepon</th>
                         <th>Alamat</th>
                         <th>Lokasi</th>
+                        <th class="text-center">QR Code</th>
                         <th class="text-center">Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                        @foreach ($cabang as $item)
+                        @foreach ($outlet as $item)
                         <tr>
                             <td class="align-middle">{{ $loop->iteration }}</td>
                             <td class="text-nowrap align-middle">{{ $item->kode }}</td>
@@ -74,6 +75,28 @@
                                 {{ Str::limit($item->alamat, 30, '...') }}
                             </td>
                             <td class="text-nowrap align-middle"><a class="btn btn-sm btn-outline-info" target="_blank" href="{{ $item->lokasi}}"><i class="fa fa-map-marker fs-5" aria-hidden="true"></i></a></td>
+                            <td class="text-center align-middle">
+                                @if($item->barcode_token)
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{{ route('outlet.barcode', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Kelola QR Code">
+                                            <i class="fa fa-qrcode" aria-hidden="true"></i>
+                                        </a>
+                                        {{-- @if($item->barcode_active)
+                                            <span class="badge bg-success" title="QR Code Aktif">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary" title="QR Code Tidak Aktif">
+                                                <i class="fa fa-pause" aria-hidden="true"></i>
+                                            </span>
+                                        @endif --}}
+                                    </div>
+                                @else
+                                    <a href="{{ route('outlet.barcode', $item->id) }}" class="btn btn-sm btn-outline-secondary" title="Generate QR Code">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> QR
+                                    </a>
+                                @endif
+                            </td>
                             <td class="d-flex justify-content-center text-nowrap gap-2">
                                 <div>
                                     <button class="btn btn-sm btn-outline-warning"
@@ -106,7 +129,7 @@
                                     </div>
 
                                     <!-- Modal Body -->
-                                    <form action="{{ route('cabang.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                                    <form action="{{ route('outlet.update', $item->id) }}" method="POST" enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
                                         <div class="modal-body">
@@ -114,10 +137,10 @@
                                                 <!-- Form Input (Kiri) -->
                                                 <div class="col-lg-8">
                                                     <div class="row g-3 text-sm">
-                                                        <!-- Nama Cabang -->
+                                                        <!-- Nama Outlet -->
                                                         <div class="col-md-6">
-                                                            <label for="nama" class="form-label fw-bold">Nama Cabang <span class="text-danger">*</span></label>
-                                                            <input type="text" name="nama" class="form-control form-control-sm" value="{{ $item->nama }}" placeholder="Masukkan nama cabang" required>
+                                                            <label for="nama" class="form-label fw-bold">Nama Outlet <span class="text-danger">*</span></label>
+                                                            <input type="text" name="nama" class="form-control form-control-sm" value="{{ $item->nama }}" placeholder="Masukkan nama outlet" required>
                                                             @error('nama')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -193,7 +216,7 @@
                                     <div class="modal-body">
                                         <p>Apakah anda yakin ingin menghapus cabang <strong>"{{ $item->nama }}"</strong>?</p>
                                     </div>
-                                    <form action="{{ route('cabang.destroy', $item->id) }}" method="POST">
+                                    <form action="{{ route('outlet.destroy', $item->id) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <div class="modal-footer">
@@ -229,7 +252,7 @@
             </div>
 
             <!-- Modal Body -->
-            <form action="{{ route('cabang.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('outlet.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -238,16 +261,16 @@
                             <div class="row g-3 text-sm">
 
                                 <div class="col-md-6">
-                                    <label for="cabang" class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
-                                    <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan kode cabang" required>
+                                    <label for="outlet" class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
+                                    <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan kode outlet" required>
                                     @error('nama')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <!-- Nama Cabang -->
+                                <!-- Nama Outlet -->
                                 <div class="col-md-6">
-                                    <label for="cabang" class="form-label fw-bold">Nama Cabang <span class="text-danger">*</span></label>
-                                    <input type="text" name="nama" class="form-control form-control-sm" placeholder="Masukkan nama cabang" required>
+                                    <label for="outlet" class="form-label fw-bold">Nama Outlet <span class="text-danger">*</span></label>
+                                    <input type="text" name="nama" class="form-control form-control-sm" placeholder="Masukkan nama outlet" required>
                                     @error('nama')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

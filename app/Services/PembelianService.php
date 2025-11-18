@@ -37,7 +37,6 @@ class PembelianService
                 'catatan' => $data['catatan'] ?? null,
                 'id_supplier' => $data['id_supplier'] ?? null,
             ]);
-
             // \Log::info('Pembelian berhasil dibuat', $pembelian->toArray());
 
             foreach ($data['bahanBaku'] as $index => $idBahanBaku) {
@@ -58,12 +57,12 @@ class PembelianService
             $pembelian->Transaksi()->create([
                 'id_sumber_dana' => $sumberDana->id,
                 'tanggal' => $pembelian->tanggal,
-                'tipe' => 'credit',
+                'tipe' => 'kredit',
                 'jumlah' => $total,
                 'deskripsi' => 'Pembelian bahan baku #' . $pembelian->nobukti,
             ]);
 
-            $sumberDana->decrement('saldo_current', $total);
+            // $sumberDana->decrement('saldo_current', $total);
 
             DB::commit();
         } catch (\Exception $e) {

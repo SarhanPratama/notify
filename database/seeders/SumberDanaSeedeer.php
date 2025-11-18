@@ -17,7 +17,7 @@ class SumberDanaSeedeer extends Seeder
            foreach ($sumberDana as $item) {
             SumberDana::factory()->create([
                 'nama' => $item,
-                'saldo_current' => rand(1000000, 5000000),
+                'saldo_awal' => rand(1000000, 5000000),
             ]);
         }
     }

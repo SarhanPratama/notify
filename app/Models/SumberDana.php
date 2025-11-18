@@ -14,7 +14,7 @@ class SumberDana extends Model
 
     protected $fillable = [
         'nama',
-        'saldo_current'
+        'saldo_awal'
     ];
 
         public function Transaksi()

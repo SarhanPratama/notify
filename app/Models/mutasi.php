@@ -19,7 +19,6 @@ class mutasi extends Model
         'quantity',
         'harga',
         'sub_total',
-        'nobukti',
         'jenis_transaksi',
         'status',
         'mutasiable_id',

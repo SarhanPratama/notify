@@ -9,11 +9,12 @@ class ViewStok extends Model
     protected $table = 'view_stok';
 
     protected $fillable = [
+        'id_bahan_baku',
         'nama',
         'stok_awal',
         'stok_masuk',
         'stok_keluar',
-        'saldo_akhir',
+        'stok_akhir',
         'nama_satuan',
     ];
 
@@ -24,6 +25,6 @@ class ViewStok extends Model
 
     public function bahanBaku()
     {
-        return $this->belongsTo(bahanBaku::class, 'id');
+        return $this->belongsTo(bahanBaku::class, 'id_bahan_baku');
     }
 }

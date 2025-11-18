@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sumber_dana', function (Blueprint $table) {
       $table->id();
             $table->string('nama');
-            $table->decimal('saldo_current', 15, 2)->default(0);
+            $table->decimal('saldo_awal', 15, 2)->default(0);
             $table->timestamps();
         });
     }

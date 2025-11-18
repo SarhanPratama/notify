@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\ArusKasChart;
+use App\Charts\SaldoKasChart;
 use Carbon\Carbon;
 use App\Models\Cabang;
 use App\Models\mutasi;
@@ -11,6 +13,10 @@ use App\Models\bahanBaku;
 use App\Models\cash_flow;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
+use App\Models\Piutang;
+use App\Models\ViewStok;
+use App\Models\Transaksi;
+use App\Models\SumberDana;
 use App\Models\VSaldoAkhir;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +41,7 @@ class DashboardController extends Controller
         ];
         // Data Ringkasan Stok
         $totalBahanBaku = BahanBaku::count();
-        $bahanBakuMinimumCount = VSaldoAkhir::whereHas('bahanBaku', function ($query) {
+        $bahanBakuMinimumCount = ViewStok::whereHas('bahanBaku', function ($query) {
             $query->whereColumn('vsaldoakhir2.saldoakhir', '<=', 'bahan_baku.stok_minimum');
         })->count();
         // dd($bahanBakuMinimum);
@@ -230,81 +236,92 @@ class DashboardController extends Controller
         ));
     }
 
-    public function owner()
+    public function owner(SaldoKasChart $SaldoKasChart, ArusKasChart $ArusKasChart)
     {
         $title = 'Dashboard';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Dashboard', 'url' => null],
         ];
-        // KPI Utama
-        $totalPendapatanBulanIni = Penjualan::whereMonth('tanggal', Carbon::now()->month)
-            ->sum('total');
 
-        $totalPendapatanBulanLalu = Penjualan::whereMonth('tanggal', Carbon::now()->subMonth()->month)
-            ->sum('total');
+        // Pemasukan Bulan Ini: SUM(jumlah) dari transaksi tipe='pemasukan' bulan berjalan
+        $pemasukanBulanIni = Transaksi::where('tipe', 'debit')
+            ->whereMonth('tanggal', Carbon::now()->month)
+            ->whereYear('tanggal', Carbon::now()->year)
+            ->sum('jumlah');
 
-        $pertumbuhanPenjualan = $totalPendapatanBulanLalu > 0 ?
-            (($totalPendapatanBulanIni - $totalPendapatanBulanLalu) / $totalPendapatanBulanLalu) * 100 : 0;
+        // Pengeluaran Bulan Ini: SUM(jumlah) dari transaksi tipe='pengeluaran' bulan berjalan
+        $pengeluaranBulanIni = Transaksi::where('tipe', 'kredit')
+            ->whereMonth('tanggal', Carbon::now()->month)
+            ->whereYear('tanggal', Carbon::now()->year)
+            ->sum('jumlah');
 
-        // $rataTransaksiPerOutlet = Cabang::withCount(['penjualan as total_transaksi' => function ($query) {
-        //     $query->whereMonth('tanggal', Carbon::now()->month);
-        // }])
-        //     ->withSum(['penjualan as total_pendapatan' => function ($query) {
-        //         $query->whereMonth('tanggal', Carbon::now()->month);
-        //     }], 'total')
-        //     ->get()
-        //     ->map(function ($cabang) {
-        //         $cabang->rata_transaksi = $cabang->total_transaksi > 0 ?
-        //             $cabang->total_pendapatan / $cabang->total_transaksi : 0;
-        //         return $cabang;
-        //     });
+        // Total Piutang Beredar: SUM(jumlah_piutang) dari piutang status != 'lunas'
+        $totalPiutangBeredar = Piutang::where('status', '!=', 'lunas')
+            ->sum('jumlah_piutang');
 
-        // Peta Outlet
-        // $outletPerformance = Cabang::withCount(['penjualan as total_transaksi' => function ($query) {
-        //     $query->whereMonth('tanggal', Carbon::now()->month);
-        // }])
-        //     ->withSum(['penjualan as total_pendapatan' => function ($query) {
-        //         $query->whereMonth('tanggal', Carbon::now()->month);
-        //     }], 'total')
-        //     ->get();
+        // Item Stok Kritis: COUNT(*) dari view_stok stok_akhir <= stok_minimum
+        $itemStokKritis = ViewStok::join('bahan_baku', 'bahan_baku.id', '=', 'view_stok.id_bahan_baku')
+            ->whereColumn('view_stok.stok_akhir', '<=', 'bahan_baku.stok_minimum')
+            ->count();
 
-        // Analisis Produk
-        // $kontribusiProduk = products::withSum('mutasi as total_penjualan', 'sub_total')
-        //     ->orderBy('total_penjualan', 'desc')
-        //     ->get();
+        // Query: SELECT nama, stok_akhir, nama_satuan FROM view_stok WHERE stok_akhir <= stok_minimum ORDER BY stok_akhir ASC LIMIT 5
+        $barangSegeraHabis = DB::table('view_stok')
+            ->join('bahan_baku', 'bahan_baku.nama', '=', 'view_stok.nama')
+            ->select('view_stok.nama', 'view_stok.stok_akhir', 'view_stok.nama_satuan', 'bahan_baku.stok_minimum')
+            ->whereColumn('view_stok.stok_akhir', '<=', 'bahan_baku.stok_minimum')
+            ->orderBy('view_stok.stok_akhir', 'ASC')
+            ->limit(5)
+            ->get();
 
-        // $marginProduk = products::selectRaw('nama, harga_jual, harga_modal, (harga_jual - harga_modal) as margin')
-        //     ->orderBy('margin', 'desc')
-        //     ->get();
+        // Query: SELECT dari piutang JOIN penjualan JOIN cabang WHERE status != 'lunas' AND jatuh_tempo <= NOW() ORDER BY jatuh_tempo ASC LIMIT 5
+        $piutangJatuhTempo = DB::table('piutang')
+            ->join('penjualan', 'piutang.nobukti', '=', 'penjualan.nobukti')
+            ->join('outlet', 'penjualan.id_outlet', '=', 'outlet.id')
+            ->select('outlet.nama as nama_mitra', 'piutang.jumlah_piutang', 'piutang.jatuh_tempo',
+                    DB::raw('DATEDIFF(NOW(), piutang.jatuh_tempo) as hari_telat'))
+            ->where('piutang.status', '!=', 'lunas')
+            ->where('piutang.jatuh_tempo', '<=', Carbon::now())
+            ->orderBy('piutang.jatuh_tempo', 'ASC')
+            ->limit(5)
+            ->get();
 
-        // Alert Strategis
-        // $outletUnderperforming = $outletPerformance->filter(function ($cabang) use ($outletPerformance) {
-        //     $rataPendapatan = $outletPerformance->avg('total_pendapatan');
-        //     return $cabang->total_pendapatan < ($rataPendapatan * 0.7); // 30% di bawah rata-rata
-        // });
+        // Query: SUM(jumlah) dari transaksi WHERE tipe = 'debit' AND tanggal = HARI_INI
+        $pemasukanHariIni = Transaksi::where('tipe', 'debit')
+            ->whereDate('tanggal', Carbon::today())
+            ->sum('jumlah');
 
-        // $bahanNaikHarga = BahanBaku::join('pembelian', 'bahan_baku.id', '=', 'pembelian.id_bahan_baku')
-        //     ->selectRaw('bahan_baku.nama,
-        //                                       MAX(pembelian.harga) as harga_terakhir,
-        //                                       (MAX(pembelian.harga) - MIN(pembelian.harga)) as kenaikan')
-        //     ->groupBy('bahan_baku.id', 'bahan_baku.nama')
-        //     ->having('kenaikan', '>', 0)
-        //     ->orderBy('kenaikan', 'desc')
-        //     ->take(5)
-        //     ->get();
+        // Query: SUM(jumlah) dari transaksi WHERE tipe = 'kredit' AND tanggal = HARI_INI
+        $pengeluaranHariIni = Transaksi::where('tipe', 'kredit')
+            ->whereDate('tanggal', Carbon::today())
+            ->sum('jumlah');
+
+        // Query: COUNT(id) dari penjualan + pembelian WHERE tanggal = HARI_INI
+        $penjualanHariIni = Penjualan::whereDate('tanggal', Carbon::today())
+            ->count();
+
+        $pembelianHariIni = Pembelian::whereDate('tanggal', Carbon::today())
+            ->count();
+
+        $transaksiBaruHariIni = $penjualanHariIni + $pembelianHariIni;
+
+        $SaldoKasChart = $SaldoKasChart->build();
+        $ArusKasChart = $ArusKasChart->build();
 
         return view('dashboard.owner', compact(
             'title',
             'breadcrumbs',
-            'totalPendapatanBulanIni',
-            'pertumbuhanPenjualan',
-            // 'rataTransaksiPerOutlet',
-            // 'outletPerformance',
-            // 'kontribusiProduk',
-            // 'marginProduk',
-            // 'outletUnderperforming',
-            // 'bahanNaikHarga'
+            'pemasukanBulanIni',
+            'pengeluaranBulanIni',
+            'totalPiutangBeredar',
+            'itemStokKritis',
+            'barangSegeraHabis',
+            'piutangJatuhTempo',
+            'pemasukanHariIni',
+            'pengeluaranHariIni',
+            'transaksiBaruHariIni',
+            'SaldoKasChart',
+            'ArusKasChart'
         ));
     }
 

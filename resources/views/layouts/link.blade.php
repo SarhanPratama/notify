@@ -9,3 +9,23 @@
 <link as="image" href="{{ asset('assets/img/logo/icon2.ico') }}" rel="icon" type="image/x-icon">
 <link href="{{ url('vendor/bootstrap-touchspin/css/jquery.bootstrap-touchspin.css') }}" rel="stylesheet" >
 
+    <!-- Custom Styles -->
+    <style>
+        .notify {
+            z-index: 9999 !important;
+        }
+
+        .color {
+            background-color: #6777ef;
+        }
+
+        .bg-maron {
+            /* background-color: #8e1616; */
+            background-color: #9c1515;
+        }
+
+        .text-maron {
+            color: #8e1616;
+        }
+
+    </style>

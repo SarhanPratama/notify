@@ -4,12 +4,13 @@ use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
-use App\Http\Controllers\CabangController;
+use App\Http\Controllers\OutletController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\cashFlowController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
 use App\Http\Controllers\bahanBakuController;
@@ -17,7 +18,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\SumberDanaController;
 use App\Http\Controllers\WhatsAppWebhookController;
+use App\Http\Controllers\OutletOrderController;
+use App\Http\Controllers\AdminOrderController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -66,7 +70,16 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('permission', PermissionController::class)->except(['show', 'create', 'edit']);
     Route::resource('bahan-baku', bahanBakuController::class)->except(['show', 'create', 'edit']);
     Route::resource('users', UsersController::class);
-    Route::resource('cabang', CabangController::class)->except(['show', 'create', 'edit']);
+    Route::resource('sumber-dana', SumberDanaController::class);
+    Route::resource('outlet', OutletController::class)->except(['create', 'edit']);
+
+    // Barcode routes for outlet
+    Route::get('/outlet/{id}/barcode', [OutletController::class, 'showBarcode'])->name('outlet.barcode');
+    Route::post('/outlet/{id}/barcode/generate', [OutletController::class, 'generateBarcode'])->name('outlet.barcode.generate');
+    Route::get('/outlet/{id}/barcode/download', [OutletController::class, 'downloadBarcode'])->name('outlet.barcode.download');
+    Route::post('/cabang/{id}/barcode/regenerate', [OutletController::class, 'regenerateBarcode'])->name('outlet.barcode.regenerate');
+    Route::post('/cabang/{id}/barcode/toggle', [OutletController::class, 'toggleBarcodeStatus'])->name('outlet.barcode.toggle');
+
     Route::resource('supplier', SupplierController::class)->except(['show', 'create', 'edit']);
 
     Route::resource('pembelian', PembelianController::class);
@@ -76,6 +89,12 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
 
     Route::resource('penjualan', PenjualanController::class);
+
+    // Admin order review for outlet orders
+    Route::get('pesanan-admin', [AdminOrderController::class, 'index'])->name('admin.pesanan.index');
+    Route::get('pesanan-admin/{id}', [AdminOrderController::class, 'show'])->name('admin.pesanan.show');
+    Route::post('pesanan-admin/{id}/approve', [AdminOrderController::class, 'approve'])->name('admin.pesanan.approve');
+    Route::post('pesanan-admin/{id}/reject', [AdminOrderController::class, 'reject'])->name('admin.pesanan.reject');
 
     Route::resource('piutang', PiutangController::class);
     Route::post('piutang/{nobukti}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar');
@@ -112,7 +131,8 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
 
     // Route::post('/merek', [ProductsController::class, 'merekStore'])->name('merek.store');
-    Route::post('/kategori', [ProductsController::class, 'kategoriStore'])->name('kategori.store');
+    // Kategori CRUD
+    Route::resource('kategori', KategoriController::class)->except(['show']);
 
     // Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
     // Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
@@ -167,9 +187,16 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
 
-    Route::get('laporan-stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok');
+    Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok');
     Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf');
     Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel');
+    Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok');
+    Route::get('/laporan/rekap-transaksi', [LaporanController::class, 'laporanRekapTransaksi'])
+         ->name('laporan.rekap-transaksi');
+    Route::get('/laporan/buku-besar', [LaporanController::class, 'laporanBukuBesar'])
+         ->name('laporan.buku-besar');
+    Route::get('/laporan/saldo-kas', [LaporanController::class, 'laporanSaldoKas'])
+        ->name('laporan.saldo-kas');
 
     Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
 
@@ -177,11 +204,25 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     //     DB::table('notifications')->update(['is_read' => true]);
     //     return redirect()->back();
     // })->name('notifications.markAsRead');
+
+    // Route::get('cabang/barcode/{id}', [CabangController::class, 'generateBarcode'])->name('cabang.barcode');
 });
 
 // Route::get('/absen/', [MitraController::class, 'index'])->name('absen.index');
 
-Route::get('/form-penjualan/', [PenjualanController::class, 'formPenjualan'])->name('form-penjualan');
+Route::get('/form-penjualan', [PenjualanController::class, 'formPenjualan'])->name('form-penjualan');
+
+
+
+// Outlet Routes (No Login Required)
+Route::group(['prefix' => 'outlet'], function () {
+    Route::get('/{token}/order', [OutletOrderController::class, 'belanja'])->name('outlet.belanja');
+    Route::post('/{token}/order', [OutletOrderController::class, 'storeOrder'])->name('outlet.order.store');
+    Route::get('/{token}/pesanan/', [OutletOrderController::class, 'pesanan'])->name('outlet.pesanan');
+    Route::get('/{token}/kasbon/', [OutletOrderController::class, 'kasbon'])->name('outlet.kasbon');
+    Route::get('/{token}/kasbon/{piutang}', [OutletOrderController::class, 'kasbonDetail'])->name('outlet.kasbon.detail');
+    Route::get('/{token}/pesanan/{orderId}', [OutletOrderController::class, 'detailPesanan'])->name('outlet.pesanan.detail');
+});
 
 // Route::get('/mitra/create', [MitraController::class, 'create'])->name('mitra.create');
 // Route::post('/mitra/', [MitraController::class, 'store'])->name('mitra.store');

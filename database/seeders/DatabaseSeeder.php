@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            CabangSeeder::class,
+            OutletSeeder::class,
             SupplierSeeder::class,
             RolePermissionSeeder::class,
             UserSeeder::class,

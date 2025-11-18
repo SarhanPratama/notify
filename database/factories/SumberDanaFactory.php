@@ -17,7 +17,7 @@ class SumberDanaFactory extends Factory
     {
         return [
             'nama' => $this->faker->word,
-            'saldo_current' => $this->faker->numberBetween(100000, 10000000),
+            'saldo_awal' => $this->faker->numberBetween(100000, 10000000),
         ];
     }
 }

@@ -181,7 +181,7 @@
                             @csrf
                             @method('PUT')
                             <div class="row">
-                                <div class="col-md-7 col-lg-8">
+                                <div class="col-md-7 col-lg-12">
                                     <h5 class="mb-3 text-maron-heading">Informasi Pribadi</h5>
                                     <div class="form-row">
                                         <div class="form-group col-lg-6">
@@ -238,7 +238,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-5 col-lg-4">
+                                {{-- <div class="col-md-5 col-lg-4">
                                     <div class="sticky-top" style="top: 20px;">
                                         <h5 class="mb-3 text-center text-maron-heading">Foto Karyawan</h5>
                                         <div class="preview-container mb-3">
@@ -256,7 +256,7 @@
                                         </div>
                                         <small class="form-text text-muted d-block text-center mt-1">Max. 2MB (JPG, JPEG, PNG)</small>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="row mt-4 pt-3 border-top">

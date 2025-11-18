@@ -30,7 +30,7 @@ class PenjualanController extends Controller
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalSampai = $request->input('tanggal_sampai');
 
-        $penjualan = penjualan::with('cabang', 'mutasi.bahanBaku.satuan');
+        $penjualan = penjualan::with('cabang', 'piutang');
 
         // Tambahkan filter hanya jika kedua tanggal ada
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
@@ -95,7 +95,7 @@ class PenjualanController extends Controller
             ['label' => 'Form Edit', 'url' => null],
         ];
 
-        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi'])
+        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi', 'piutang'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
         // dd($penjualan);
@@ -389,8 +389,8 @@ class PenjualanController extends Controller
 
         // Get all available bahan baku with stock > 0
         $bahanBaku = bahanBaku::with('satuan', 'kategori')
-            ->leftJoin('vsaldoakhir2', 'bahan_baku.id', '=', 'vsaldoakhir2.id')
-            ->where('vsaldoakhir2.saldoakhir', '>', 0)
+            ->leftJoin('view_stok', 'bahan_baku.id', '=', 'view_stok.id_bahan_baku')
+            ->where('view_stok.stok_akhir', '>', 0)
             ->get();
 
         return view('penjualan.form-penjualan', [
