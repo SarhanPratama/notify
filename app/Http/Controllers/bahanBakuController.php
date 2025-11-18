@@ -52,7 +52,7 @@ class bahanBakuController extends Controller
 
         try {
             $fotoPath = null;
-            
+
             if ($request->hasFile('foto')) {
                 $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
                 $fotoPath = $request->file('foto')->storeAs('uploads/bahanbaku', $filename, 'public');
@@ -129,12 +129,12 @@ class bahanBakuController extends Controller
     public function destroy($id) {
         try {
             $bahanBaku = bahanBaku::findOrFail($id);
-            
+
             // Hapus foto jika ada
             if ($bahanBaku->foto && Storage::disk('public')->exists($bahanBaku->foto)) {
                 Storage::disk('public')->delete($bahanBaku->foto);
             }
-            
+
             $bahanBaku->delete();
             notify()->success('Berhasil menghapus data bahan baku');
             return redirect()->back();

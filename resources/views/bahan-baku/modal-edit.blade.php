@@ -67,36 +67,36 @@
 
                         <div class="col-12 mb-3">
                             <label for="foto{{ $item->id }}">Foto Bahan Baku</label>
-                            
+
                             <!-- Tampilkan gambar yang sudah ada -->
                             @if($item->foto && Storage::disk('public')->exists($item->foto))
                                 <div class="mb-2">
                                     <label class="form-label">Foto Saat Ini:</label>
                                     <div class="text-center">
-                                        <img src="{{ Storage::url($item->foto) }}" 
-                                             alt="{{ $item->nama }}" 
-                                             class="img-thumbnail" 
+                                        <img src="{{ Storage::url($item->foto) }}"
+                                             alt="{{ $item->nama }}"
+                                             class="img-thumbnail"
                                              style="max-width: 150px; max-height: 150px; object-fit: cover;">
                                     </div>
                                 </div>
                             @endif
-                            
-                            <input type="file" 
-                                   id="foto{{ $item->id }}" 
-                                   name="foto" 
-                                   class="form-control form-control-sm" 
+
+                            <input type="file"
+                                   id="foto{{ $item->id }}"
+                                   name="foto"
+                                   class="form-control form-control-sm"
                                    accept="image/*"
                                    onchange="previewEditImage(event, '{{ $item->id }}')">
                             <small class="text-muted">Format yang didukung: JPG, JPEG, PNG, GIF. Maksimal 2MB. Kosongkan jika tidak ingin mengubah foto.</small>
-                            
+
                             <!-- Preview Container -->
                             <div id="editPreviewContainer{{ $item->id }}" class="mt-3" style="display: none;">
                                 <label class="form-label">Preview Foto Baru:</label>
                                 <div class="text-center">
-                                    <img id="editImagePreview{{ $item->id }}" 
-                                         src="" 
-                                         alt="Preview" 
-                                         class="img-thumbnail" 
+                                    <img id="editImagePreview{{ $item->id }}"
+                                         src=""
+                                         alt="Preview"
+                                         class="img-thumbnail"
                                          style="max-width: 200px; max-height: 200px; object-fit: cover;">
                                 </div>
                             </div>
