@@ -29,63 +29,56 @@ class ProfileController extends Controller
         return view('profile.index', compact('title', 'breadcrumbs', 'user'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+    // public function update(Request $request, $id)
+    // {
+    //     $user = User::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'tgl_lahir' => 'required|date',
-            'telepon' => 'nullable|string|max:15',
-            'alamat' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email,' . $user->id,
+    //     ]);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->tgl_lahir = $request->tgl_lahir;
-        $user->telepon = $request->telepon;
-        $user->alamat = $request->alamat;
+    //     $user->name = $request->name;
+    //     $user->email = $request->email;
 
-        $user->save();
+    //     $user->save();
 
-        notify()->success('Profile berhasil diupdate');
-        return redirect()->route('profile.index');
-    }
+    //     notify()->success('Profile berhasil diupdate');
+    //     return redirect()->route('profile.index');
+    // }
 
 
-    public function updateFoto(Request $request, $id) {
-        // dd($id);
-        $user = User::findOrFail($id);
+    // public function updateFoto(Request $request, $id) {
+    //     // dd($id);
+    //     $user = User::findOrFail($id);
 
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'foto.required' => 'Silakan pilih gambar untuk diunggah.',
-            'foto.image' => 'File harus berupa gambar.',
-            'foto.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
-            'foto.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
-        ]);
+    //     $request->validate([
+    //         'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ], [
+    //         'foto.required' => 'Silakan pilih gambar untuk diunggah.',
+    //         'foto.image' => 'File harus berupa gambar.',
+    //         'foto.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
+    //         'foto.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+    //     ]);
 
-        if (!$user) {
-            notify()->error('Karyawan tidak ditemukan!');
-            return redirect()->back();
-        }
+    //     if (!$user) {
+    //         notify()->error('Karyawan tidak ditemukan!');
+    //         return redirect()->back();
+    //     }
 
-        if ($user->foto && Storage::exists('public/' . $user->foto)) {
-            Storage::delete('public/' . $user->foto);
-        }
+    //     if ($user->foto && Storage::exists('public/' . $user->foto)) {
+    //         Storage::delete('public/' . $user->foto);
+    //     }
 
-        $foto = $request->file('foto');
-        $fotoName = time() . '_' . $foto->getClientOriginalName();
-        $fotoPath = $foto->storeAs('uploads/users', $fotoName, 'public');
+    //     $foto = $request->file('foto');
+    //     $fotoName = time() . '_' . $foto->getClientOriginalName();
+    //     $fotoPath = $foto->storeAs('uploads/users', $fotoName, 'public');
 
-        $user->update(['foto' => $fotoPath]);
+    //     $user->update(['foto' => $fotoPath]);
 
-        notify()->success('Foto berhasil diupdate!');
-        return redirect()->back();
-    }
+    //     notify()->success('Foto berhasil diupdate!');
+    //     return redirect()->back();
+    // }
 
     public function destroy(Request $request, $id) {
 
@@ -103,9 +96,9 @@ class ProfileController extends Controller
         $user->roles()->detach();
         $user->permissions()->detach();
 
-        if ($user->foto && Storage::exists('public/' . $user->foto)) {
-            Storage::delete('public/' . $user->foto);
-        }
+        // if ($user->foto && Storage::exists('public/' . $user->foto)) {
+        //     Storage::delete('public/' . $user->foto);
+        // }
 
         $user->delete();
 

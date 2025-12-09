@@ -50,7 +50,7 @@ return new class extends Migration
 
             FROM
                 bahan_baku
-            LEFT JOIN mutasi ON mutasi.id_bahan_baku = bahan_baku.id
+            LEFT JOIN mutasi ON mutasi.id_bahan_baku = bahan_baku.id AND mutasi.status = 1
             LEFT JOIN satuan ON bahan_baku.id_satuan = satuan.id
 
             GROUP BY

@@ -16,39 +16,18 @@ class SaldoKasChart
 
     public function build()
     {
-        // Ambil data dari database
-        $saldoData = ViewSaldo::select('nama', 'saldo_current')->get();
+        // Ambil data saldo kas global
+        $saldoData = ViewSaldo::first();
 
-        $labels = [];
-        $data = [];
-
-        if ($saldoData->count() > 0) {
-            foreach ($saldoData as $item) {
-                $labels[] = $item->nama;
-                $data[] = abs($item->saldo_current);
-            }
-        } else {
-            $labels = ['Tidak ada data'];
-            $data = [1];
-        }
+        $labels = ['Saldo Kas'];
+        $data = [$saldoData->saldo_current ?? 0];
 
         return $this->chart->pieChart()
-            ->setTitle('Komposisi Saldo Akhir')
-            ->setSubtitle('Distribusi saldo kas per dompet')
+            ->setTitle('Saldo Kas')
+            ->setSubtitle('Total saldo kas')
             ->addData($data)
             ->setLabels($labels)
             ->setHeight(413)
-            ->setColors([
-                '#4e73df',
-                '#1cc88a',
-                '#36b9cc',
-                '#f6c23e',
-                '#e74a3b',
-                '#858796',
-                '#6f42c1',
-                '#20c997',
-                '#fd7e14',
-                '#e83e8c'
-            ]);
+            ->setColors(['#4e73df']);
     }
 }

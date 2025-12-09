@@ -9,6 +9,7 @@ use App\Models\mutasi;
 use App\Models\Outlet;
 use App\Models\Piutang;
 use App\Models\PiutangPembayaran;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -18,7 +19,7 @@ class OutletOrderController extends Controller
     /**
      * Show order form for outlet via barcode scan
      */
-    public function belanja($token)
+    public function belanja(Request $request, $token)
     {
         try {
             // Validasi token dan ambil data outlet
@@ -26,13 +27,36 @@ class OutletOrderController extends Controller
                 ->where('barcode_active', true)
                 ->firstOrFail();
 
-            // Ambil data bahan baku yang tersedia
-            $bahanBaku = BahanBaku::with(['satuan', 'kategori', 'ViewStok'])
-                ->get();
+            // Ambil parameter filter
+            $search = $request->get('search', '');
+            $categoryId = $request->get('category', '');
+
+            // Query bahan baku dengan filter
+            $bahanBakuQuery = BahanBaku::with(['satuan', 'kategori', 'ViewStok' => function($query) {
+                $query->select('id_bahan_baku', 'stok_akhir');
+            }])
+                ->whereHas('ViewStok', function($query) {
+                    $query->where('stok_akhir', '>', 0);
+                });
+
+            // Filter berdasarkan search
+            if (!empty($search)) {
+                $bahanBakuQuery->where('nama', 'like', '%' . $search . '%');
+            }
+
+            // Filter berdasarkan kategori
+            if (!empty($categoryId)) {
+                $bahanBakuQuery->where('id_kategori', $categoryId);
+            }
+
+            $bahanBaku = $bahanBakuQuery->get();
+
+            // Ambil data kategori untuk filter (selalu tampilkan semua kategori)
+            $kategoris = Kategori::orderBy('nama')->get();
 
             $title = 'Pesanan Bahan Baku - ' . $outlet->nama;
 
-            return view('outlet.belanja', compact('outlet', 'bahanBaku', 'token', 'title'));
+            return view('outlet.belanja', compact('outlet', 'bahanBaku', 'kategoris', 'token', 'title', 'search', 'categoryId'));
         } catch (\Exception $e) {
             return view('outlet.error', [
                 'type' => 'invalid_token',
@@ -51,6 +75,7 @@ class OutletOrderController extends Controller
 
             // Ambil riwayat pesanan outlet ini
             $orders = Penjualan::where('id_outlet', $outlet->id)
+                ->with('piutang')
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
@@ -66,8 +91,6 @@ class OutletOrderController extends Controller
         }
     }
 
-
-
     /**
      * Store outlet order
      */
@@ -75,7 +98,7 @@ class OutletOrderController extends Controller
     {
         try {
             // Validasi token
-            $outlet = Cabang::where('barcode_token', $token)
+            $outlet = Outlet::where('barcode_token', $token)
                 ->where('barcode_active', true)
                 ->firstOrFail();
 
@@ -97,10 +120,18 @@ class OutletOrderController extends Controller
                 ], 400);
             }
 
-            // Server-side stock validation
+            // Server-side stock validation - batch query untuk menghindari N+1
+            $itemIds = collect($items)->pluck('id')->unique()->values()->all();
+            $bahanBakuStok = BahanBaku::with(['ViewStok' => function($query) {
+                $query->select('id_bahan_baku', 'stok_akhir');
+            }])
+                ->whereIn('id', $itemIds)
+                ->get()
+                ->keyBy('id');
+
             $stockProblems = [];
             foreach ($items as $item) {
-                $bahanBaku = BahanBaku::with('ViewStok')->find($item['id']);
+                $bahanBaku = $bahanBakuStok->get($item['id']);
                 $available = 0;
                 if ($bahanBaku) {
                     // Prefer viewStok->stok_akhir, fallback to viewStok->saldo or stok_awal
@@ -139,7 +170,7 @@ class OutletOrderController extends Controller
             // Buat pesanan dengan status pending
             $pesanan = Penjualan::create([
                 'nobukti' => $this->generateNoBukti(),
-                'id_cabang' => $outlet->id,
+                'id_outlet' => $outlet->id,
                 'tanggal' => now(),
                 'total' => $total,
                 'catatan' => $request->notes,
@@ -148,13 +179,12 @@ class OutletOrderController extends Controller
                 'tanggal_pengiriman' => $request->delivery_date
             ]);
 
-            // Simpan detail items via mutasi (polymorphic: mutasiable)
+            // Simpan detail items via mutasi (polymorphic: mutasiable) - gunakan data yang sudah ada
             foreach ($items as $item) {
-                $bahanBaku = BahanBaku::find($item['id']);
+                $bahanBaku = $bahanBakuStok->get($item['id']);
                 if ($bahanBaku) {
                     mutasi::create([
-                        'mutasiable_id' => $pesanan->id,
-                        'mutasiable_type' => Penjualan::class,
+                        'nobukti' => $pesanan->nobukti,
                         'id_bahan_baku' => $item['id'],
                         'quantity' => $item['quantity'],
                         'harga' => $item['harga'],
@@ -189,35 +219,6 @@ class OutletOrderController extends Controller
     }
 
     /**
-     * Show order history for outlet
-     */
-    public function orderHistory($token)
-    {
-        try {
-            $outlet = Outlet::where('barcode_token', $token)
-                ->where('barcode_active', true)
-                ->firstOrFail();
-
-            // Ambil riwayat pesanan outlet ini
-            $orders = Penjualan::where('id_cabang', $outlet->id)
-                ->where('order_via', 'barcode_scan')
-                ->with(['mutasi.bahanBaku'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
-
-            $title = 'Riwayat Pesanan - ' . $outlet->nama;
-
-            return view('outlet.order-history', compact('outlet', 'orders', 'token', 'title'));
-        } catch (\Exception $e) {
-            return view('outlet.error', [
-                'type' => 'invalid_token',
-                'message' => 'Token tidak valid atau outlet tidak aktif',
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-    /**
      * Show order detail
      */
     public function detailPesanan($token, $orderId)
@@ -229,7 +230,7 @@ class OutletOrderController extends Controller
 
             $order = Penjualan::where('id', $orderId)
                 ->where('id_outlet', $outlet->id)
-                ->with(['mutasi.bahanBaku.satuan'])
+                ->with(['mutasi.bahanBaku.satuan', 'piutang'])
                 ->firstOrFail();
 
             $title = 'Detail Pesanan - ' . $order->nobukti;
@@ -270,8 +271,7 @@ class OutletOrderController extends Controller
 
             // Ambil semua piutang untuk outlet ini (tanpa filter/search), urutkan by jatuh tempo
             $piutangs = Piutang::with([
-                'penjualan.mutasi.bahanBaku.satuan',
-                'pembayaran.sumberDana'
+                'penjualan.mutasi'
             ])->whereHas('penjualan', function ($q) use ($outlet) {
                 $q->where('id_outlet', $outlet->id);
             })
@@ -286,7 +286,7 @@ class OutletOrderController extends Controller
 
             $belumDibayar = Piutang::whereHas('penjualan', function ($query) use ($outlet) {
                 $query->where('id_outlet', $outlet->id);
-            })->where('status', 'belum_lunas')->sum('jumlah_piutang');
+            })->where('status', 'belum_lunas')->sum('sisa_piutang');
 
             $sudahDibayar = Piutang::whereHas('penjualan', function ($query) use ($outlet) {
                 $query->where('id_outlet', $outlet->id);
@@ -298,7 +298,7 @@ class OutletOrderController extends Controller
             })
                 ->where('status', 'belum_lunas')
                 ->where('jatuh_tempo', '<', now())
-                ->sum('jumlah_piutang');
+                ->sum('sisa_piutang');
 
             // Hitung total yang sudah dibayar dari semua pembayaran
             $totalDibayar = PiutangPembayaran::whereHas('piutang.penjualan', function ($query) use ($outlet) {
@@ -347,7 +347,7 @@ class OutletOrderController extends Controller
             })->findOrFail($piutangId);
 
             $totalBayar = $piutang->pembayaran->sum('jumlah');
-            $sisaPiutang = $piutang->jumlah_piutang - $totalBayar;
+            $sisaPiutang = $piutang->sisa_piutang;
             $persenBayar = $piutang->jumlah_piutang > 0 ? ($totalBayar / $piutang->jumlah_piutang) * 100 : 0;
             $isJatuhTempo = $piutang->jatuh_tempo < now() && $piutang->status != 'lunas';
 

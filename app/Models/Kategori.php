@@ -15,7 +15,7 @@ class Kategori extends Model
         'nama',
     ];
 
-    // public function bahanBaku() {
-    //     return $this->hasMany(BahanBaku::class, 'id_kategori');
-    // }
+    public function bahanBaku() {
+        return $this->hasMany(BahanBaku::class, 'id_kategori');
+    }
 }

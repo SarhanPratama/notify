@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bahan_baku', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->decimal('harga', 10, 2);
+            $table->decimal('harga', 10, 0);
             $table->integer('stok_awal');
             $table->integer('stok_minimum');
             $table->string('foto')->nullable();

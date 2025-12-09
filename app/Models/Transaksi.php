@@ -13,6 +13,8 @@ class Transaksi extends Model
     protected $table = 'transaksi';
 
     protected $fillable = [
+        'nobukti',
+        // 'id_bahan_baku',
         'id_sumber_dana',
         'tanggal',
         'tipe',
@@ -29,8 +31,19 @@ class Transaksi extends Model
     {
         return $this->belongsTo(SumberDana::class, 'id_sumber_dana');
     }
-        public function referenceable()
+
+    public function pembelian()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
+    }
+
+    public function penjualan()
+    {
+        return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
+    }
+
+    public function piutang()
+    {
+        return $this->belongsTo(Piutang::class, 'nobukti', 'nobukti');
     }
 }

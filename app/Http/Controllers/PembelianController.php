@@ -36,7 +36,8 @@ class PembelianController extends Controller
             $pembelian = $pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
         }
 
-        $pembelian = $pembelian->latest()->withTrashed()->get();
+        $pembelian = $pembelian->latest()->get();
+
         // dd($pembelian);
 
         return view('pembelian.index', compact('title', 'breadcrumbs', 'pembelian'));
@@ -57,18 +58,70 @@ class PembelianController extends Controller
         return view('pembelian.create', compact('title', 'breadcrumbs', 'suppliers', 'sumberDana', 'bahanBaku'));
     }
 
-    public function store(StorePembelianRequest $request, PembelianService $pembelianService)
+    public function store(Request $request)
     {
+        $request->validate([
+            'id_supplier' => 'nullable|exists:supplier,id',
+            'bahanBaku'   => 'required|array',
+            'bahanBaku.*' => 'required|exists:bahan_baku,id',
+            'quantity'    => 'required|array',
+            'quantity.*'  => 'required|integer|min:1',
+            'harga'       => 'required|array',
+            'harga.*'     => 'required|numeric|min:0',
+            'catatan'     => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+
         try {
-            $validated = $request->validated();
-            $pembelianService->tambah($validated);
+            // Buat items agar bisa dipakai di total & foreach
+            $items = [];
+            foreach ($request->bahanBaku as $index => $idBahan) {
+                $items[] = [
+                    'id_bahan_baku' => $idBahan,
+                    'quantity'      => $request->quantity[$index],
+                    'harga'         => $request->harga[$index],
+                ];
+            }
+
+            $nobukti = 'PB-' . now()->format('Ymd-His') . '-' . rand(1000, 9999);
+
+            // Hitung total
+            $total = collect($items)->sum(
+                fn($item) =>
+                $item['quantity'] * $item['harga']
+            );
+
+            $pembelian = Pembelian::create([
+                'nobukti'     => $nobukti,
+                'total'       => $total,
+                'tanggal'     => now(),
+                'status'      => 'pending',
+                'catatan'     => $request->catatan,
+                'id_supplier' => $request->id_supplier,
+            ]);
+
+            foreach ($items as $item) {
+                $pembelian->mutasi()->create([
+                    'id_bahan_baku'   => $item['id_bahan_baku'],
+                    'quantity'        => $item['quantity'],
+                    'harga'           => $item['harga'],
+                    'sub_total'       => $item['quantity'] * $item['harga'],
+                    'jenis_transaksi' => 'M',
+                    'nobukti'         => $nobukti,
+                ]);
+            }
+
+            DB::commit();
+            notify()->success('Pembelian berhasil disimpan');
+            return redirect()->route('pembelian.index');
         } catch (\Exception $e) {
+            DB::rollBack();
             notify()->error('Gagal menyimpan pembelian: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
-        notify()->success('Pembelian berhasil disimpan');
-        return redirect()->route('pembelian.index');
     }
+
 
     public function show($nobukti, PembelianService $pembelianService)
     {
@@ -125,36 +178,51 @@ class PembelianController extends Controller
         DB::beginTransaction();
 
         try {
-            $pembelian = Pembelian::with('mutasi', 'transaksi.SumberDana')->findOrFail($id);
-            $transaksi = $pembelian->transaksi->first();
-
-            if ($transaksi && $transaksi->sumberDana) {
-                $sumberDana = $transaksi->sumberDana;
-                $sumberDana->saldo_current += $transaksi->jumlah;
-                $sumberDana->save();
-            }
+            $pembelian = Pembelian::with('mutasi')->findOrFail($id);
+            // $transaksi = $pembelian->transaksi->first();
 
             foreach ($pembelian->mutasi as $mutasi) {
-                if ($mutasi->status == 1) {
+
                     $mutasi->delete();
-                }
+
             }
 
-            $transaksi = $pembelian->transaksi->first();
-            $transaksi->status = 0;
-            $transaksi->delete();
+            // if ($pembelian->transaksi->isNotEmpty()) {
+            //     if (is_null($transaksi->deleted_at)) {
 
-            $pembelian->status = 0;
-            $pembelian->save();
+            //         $transaksi = $pembelian->transaksi->first();
+            //         $transaksi->status = 0;
+            //         $transaksi->delete();
+            //     }
+            // }
+            // $pembelian->save();
             $pembelian->delete();
 
             DB::commit();
 
-            notify()->success('Data pembelian berhasil dihapus sementara.');
+            notify()->success('Transaksi pembelian berhasil dibatalkan.');
             return redirect()->route('pembelian.index');
         } catch (\Exception $e) {
             DB::rollBack();
             notify()->error('Gagal menghapus pembelian: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function cancel($nobukti)
+    {
+        DB::beginTransaction();
+
+        try {
+            $pembelian = Pembelian::where('nobukti', $nobukti)->firstOrFail();
+            $pembelian->status = 'cancelled';
+            $pembelian->save();
+            DB::commit();
+            notify()->success('Transaksi pembelian berhasil dibatalkan.');
+            return redirect()->route('pembelian.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal membatalkan pembelian: ' . $e->getMessage());
             return redirect()->back();
         }
     }
@@ -167,12 +235,12 @@ class PembelianController extends Controller
             $pembelian = Pembelian::withTrashed()
                 ->with([
                     'mutasi' => fn($q) => $q->withTrashed(),
-                    'transaksi' => fn($q) => $q->withTrashed()->with('sumberDana')
+                    'transaksi' => fn($q) => $q->withTrashed()
                 ])
                 ->where('nobukti', $id)
                 ->firstOrFail();
 
-            $pembelian->status = 1;
+            $pembelian->status = 'pending';
             $pembelian->restore();
 
             // Restore mutasi
@@ -182,17 +250,12 @@ class PembelianController extends Controller
 
             $transaksi = $pembelian->transaksi->first();
             if ($transaksi) {
-                $transaksi->status = 1;
+                $transaksi->status = 0;
                 $transaksi->restore();
-                if ($transaksi->sumberDana) {
-                    $sumberDana = $transaksi->sumberDana;
-                    $sumberDana->saldo_current -= $transaksi->jumlah;
-                    $sumberDana->save();
-                }
             }
 
             DB::commit();
-            notify()->success('Data pembelian berhasil dipulihkan dan saldo diperbarui.');
+            notify()->success('Transaksi pembelian berhasil dipulihkan');
             return redirect()->route('pembelian.index');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -201,49 +264,49 @@ class PembelianController extends Controller
         }
     }
 
-    public function forceDelete($id)
-    {
-        DB::beginTransaction();
+    // public function forceDelete($id)
+    // {
+    //     DB::beginTransaction();
 
-        try {
-            $pembelian = Pembelian::withTrashed()
-                ->with([
-                    'mutasi' => fn($q) => $q->withTrashed(),
-                    'transaksi' => fn($q) => $q->withTrashed()->with('sumberDana')
-                ])
-                ->findOrFail($id);
+    //     try {
+    //         $pembelian = Pembelian::withTrashed()
+    //             ->with([
+    //                 'mutasi' => fn($q) => $q->withTrashed(),
+    //                 'transaksi' => fn($q) => $q->withTrashed()->with('sumberDana')
+    //             ])
+    //             ->findOrFail($id);
 
-            $transaksi = $pembelian->transaksi->first();
+    //         $transaksi = $pembelian->transaksi->first();
 
-            if ($transaksi && $transaksi->sumberDana) {
-                $sumberDana = $transaksi->sumberDana;
+    //         if ($transaksi && $transaksi->sumberDana) {
+    //             $sumberDana = $transaksi->sumberDana;
 
-                if (is_null($transaksi->deleted_at)) {
-                    $sumberDana->saldo_current += $transaksi->jumlah;
-                    $sumberDana->save();
-                }
-            }
+    //             if (is_null($transaksi->deleted_at)) {
+    //                 $sumberDana->saldo_current += $transaksi->jumlah;
+    //                 $sumberDana->save();
+    //             }
+    //         }
 
-            foreach ($pembelian->mutasi as $mutasi) {
-                $mutasi->forceDelete();
-            }
+    //         foreach ($pembelian->mutasi as $mutasi) {
+    //             $mutasi->forceDelete();
+    //         }
 
-            if ($transaksi) {
-                $transaksi->forceDelete();
-            }
+    //         if ($transaksi) {
+    //             $transaksi->forceDelete();
+    //         }
 
-            $pembelian->forceDelete();
+    //         $pembelian->forceDelete();
 
-            DB::commit();
+    //         DB::commit();
 
-            notify()->success('Data pembelian berhasil dihapus permanen.');
-            return redirect()->route('pembelian.index');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            notify()->error('Gagal menghapus permanen: ' . $e->getMessage());
-            return redirect()->back();
-        }
-    }
+    //         notify()->success('Data pembelian berhasil dihapus permanen.');
+    //         return redirect()->route('pembelian.index');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         notify()->error('Gagal menghapus permanen: ' . $e->getMessage());
+    //         return redirect()->back();
+    //     }
+    // }
 
 
 

@@ -26,7 +26,7 @@
                             <thead class="thead-light">
                                 <tr class="text-nowrap">
                                     <th class="text-start">No</th>
-                                    <th>Foto</th>
+                                    {{-- <th>Foto</th> --}}
                                     <th>Bahan Baku </th>
                                     <th>Harga</th>
                                     <th>Stok Awal</th>
@@ -39,7 +39,7 @@
                                 @foreach ($bahanBaku as $item)
                                     <tr class="text-start text-nowrap ">
                                         <td class="align-middle">{{ $loop->iteration }}</td>
-                                        <td class="align-middle">
+                                        {{-- <td class="align-middle">
                                             @if($item->foto && Storage::disk('public')->exists($item->foto))
                                                 <img src="{{ Storage::url($item->foto) }}"
                                                      alt="{{ $item->nama }}"
@@ -53,9 +53,9 @@
                                                     <i class="fas fa-image text-muted"></i>
                                                 </div>
                                             @endif
-                                        </td>
+                                        </td> --}}
                                         <td class="align-middle">{{ ucwords($item->nama) }}</td>
-                                        <td class="align-middle">Rp {{ number_format($item->harga, 2, ',', '.') }}</td>
+                                        <td class="align-middle">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
                                         <td class="align-middle"><span
                                                 class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
                                                 {{ $item->satuan->nama }}</span></td>

@@ -151,15 +151,6 @@
                     </div>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="fw-bold mb-3"><i class="fas fa-question-circle me-2"></i>Bantuan</h6>
-                    <p class="text-muted small mb-2">Untuk melakukan pembayaran, silakan hubungi admin gudang atau bagian
-                        keuangan.</p>
-                    <button class="btn btn-outline-primary w-100" onclick="hubungiAdmin()"><i
-                            class="fas fa-headset me-2"></i>Hubungi Admin</button>
-                </div>
-            </div>
         </div>
     </div>
 

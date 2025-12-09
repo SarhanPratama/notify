@@ -11,7 +11,7 @@ class PiutangPembayaran extends Model
 
     protected $table = 'piutang_pembayaran';
 
-    protected $fillable = ['id_piutang', 'id_sumber_dana','tanggal', 'jumlah', 'keterangan'];
+    protected $fillable = ['nobukti', 'id_sumber_dana','tanggal', 'jumlah', 'keterangan'];
 
     protected $casts = [
         'tanggal' => 'date',
@@ -19,7 +19,7 @@ class PiutangPembayaran extends Model
 
     public function piutang()
     {
-        return $this->belongsTo(Piutang::class, 'id_piutang');
+        return $this->belongsTo(Piutang::class, 'nobukti', 'nobukti');
     }
 
     public function sumberDana()

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h1 class="h3 mb-4 text-gray-800">Dashboard Admin Gudang</h1>
+        <h1 class="h3 mb-4 text-gray-800">Dashboard Gudang</h1>
 
         <!-- Ringkasan Stok -->
         <div class="row">
@@ -39,24 +39,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Pengeluaran Bulan Ini</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                    {{ number_format($totalPengeluaranBulanIni, 0, ',', '.') }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
 
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card h-100">
@@ -95,50 +77,6 @@
                 </div>
             </div>
 
-            {{-- <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Persentase Pembelian</div>
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col-auto">
-                                        <div class="h5 mb-0 ml-2 mr-3 font-weight-bold text-gray-800">
-                                            {{ number_format($persentasePembelian, 2) }}%</div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="progress progress-sm mr-2">
-                                            <div class="progress-bar bg-{{ $persentasePembelian >= 0 ? 'info' : 'danger' }}"
-                                                role="progressbar" style="width: {{ abs($persentasePembelian) }}%"
-                                                aria-valuenow="{{ abs($persentasePembelian) }}" aria-valuemin="0"
-                                                aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-clipboard-list fa-2x text-info"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
-
-            <!-- Grafik Tren Stok -->
-            <div class="row">
-                {{-- <div class="col-xl-8 col-lg-7">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Tren Stok 30 Hari Terakhir</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-area">
-                                <canvas id="stokTrendChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
 
                  <!-- Distribusi ke Outlet -->
             <div class="row">
@@ -161,11 +99,10 @@
                                     <tbody>
                                         @foreach ($distribusiHariIni as $distribusi)
                                             <tr>
-                                                <td>{{ $distribusi->penjualan->tanggal }}</td>
-                                                <td>{{ $distribusi->penjualan->cabang->nama }}</td>
+                                                <td>{{ $distribusi->penjualan->tanggal ?? '-' }}</td>
+                                                <td>{{ $distribusi->penjualan->outlet->nama ?? '-' }}</td>
                                                 <td>{{ $distribusi->bahanBaku->nama }}</td>
-                                                <td>{{ $distribusi->quantity }}
-                                                    {{ $distribusi->bahanBaku->satuan->nama ?? '' }}</td>
+                                                <td>{{ $distribusi->quantity }} {{ $distribusi->bahanBaku->satuan->nama ?? '' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -209,29 +146,35 @@
                 </div>
             </div>
 
-
-
                 <!-- Outlet dengan Permintaan Terbanyak -->
-                <div class="col-xl-4 col-lg-5">
+                {{-- <div class="col-xl-4 col-lg-5">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                             <h6 class="m-0 font-weight-bold text-primary">Outlet dengan Permintaan Terbanyak</h6>
+                            <small class="text-muted">3 bulan terakhir</small>
                         </div>
                         <div class="card-body">
-                            @foreach ($outletPermintaan as $outlet)
-                                <h4 class="small font-weight-bold">{{ $outlet->cabang }} <span
-                                        class="float-right">{{ $outlet->total_permintaan }}</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-{{ $loop->index % 2 == 0 ? 'info' : 'success' }}"
-                                        role="progressbar"
-                                        style="width: {{ ($outlet->total_permintaan / ($outletPermintaan->first()->total_permintaan ?: 1)) * 100 }}%"
-                                        aria-valuenow="{{ $outlet->total_permintaan }}" aria-valuemin="0"
-                                        aria-valuemax="{{ $outletPermintaan->first()->total_permintaan }}"></div>
+                            @if($outletPermintaan->count() > 0)
+                                @foreach ($outletPermintaan as $outlet)
+                                    <h4 class="small font-weight-bold">{{ $outlet->outlet_nama }} <span
+                                            class="float-right">{{ $outlet->total_permintaan }} item{{ $outlet->total_permintaan > 1 ? 's' : '' }}</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-{{ $loop->index % 2 == 0 ? 'info' : 'success' }}"
+                                            role="progressbar"
+                                            style="width: {{ ($outlet->total_permintaan / ($outletPermintaan->first()->total_permintaan ?: 1)) * 100 }}%"
+                                            aria-valuenow="{{ $outlet->total_permintaan }}" aria-valuemin="0"
+                                            aria-valuemax="{{ $outletPermintaan->first()->total_permintaan }}"></div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-chart-bar fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted small">Belum ada data permintaan outlet</p>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Bahan Baku Perlu Restock -->

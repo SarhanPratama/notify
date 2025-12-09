@@ -9,19 +9,16 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\cashFlowController;
-use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AksesRoleController;
-use App\Http\Controllers\bahanBakuController;
+use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\SumberDanaController;
-use App\Http\Controllers\WhatsAppWebhookController;
 use App\Http\Controllers\OutletOrderController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\UpprovePembelianController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -50,179 +47,81 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.admin-gudang')
         ->middleware('role:gudang');
 
-    Route::get('/dashboard/manajer-keuangan', [DashboardController::class, 'manajerKeuangan'])
+    Route::get('/dashboard/manajer-keuangan', [DashboardController::class, 'stafKeuangan'])
         ->name('dashboard.manajer-keuangan')
-        ->middleware('role:manajer-keuangan');
-
-    Route::get('/dashboard/kasir-outlet', [DashboardController::class, 'kasirOutlet'])
-        ->name('dashboard.kasir-outlet')
-        ->middleware('role:kasir');
+        ->middleware('role:keuangan');
 
     Route::get('/dashboard/owner', [DashboardController::class, 'owner'])
         ->name('dashboard.owner')
         ->middleware('role:owner');
 
-    // Route::get('/role', [RoleController::class, 'index'])->name('role.index')->middleware('role:owner');
-    // Route::post('/role', [RoleController::class, 'store'])->name('role.store');
-    // Route::put('/role/{id}', [RoleController::class, 'update'])->name('role.update');
-    // Route::delete('/role/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
-    Route::resource('role', RoleController::class)->except(['show', 'create', 'edit']);
-    Route::resource('permission', PermissionController::class)->except(['show', 'create', 'edit']);
-    Route::resource('bahan-baku', bahanBakuController::class)->except(['show', 'create', 'edit']);
-    Route::resource('users', UsersController::class);
-    Route::resource('sumber-dana', SumberDanaController::class);
-    Route::resource('outlet', OutletController::class)->except(['create', 'edit']);
+    // pengaturan user dan role
+    Route::resource('users', UsersController::class)->middleware('permission:users');
+    Route::get('akses-role', [AksesRoleController::class, 'index'])->name('akses-role.index')->middleware('permission:akses-role');
+    Route::post('akses-role/{akses_role}', [AksesRoleController::class, 'update'])->name('akses-role.update')->middleware('permission:akses-role');
 
-    // Barcode routes for outlet
-    Route::get('/outlet/{id}/barcode', [OutletController::class, 'showBarcode'])->name('outlet.barcode');
-    Route::post('/outlet/{id}/barcode/generate', [OutletController::class, 'generateBarcode'])->name('outlet.barcode.generate');
-    Route::get('/outlet/{id}/barcode/download', [OutletController::class, 'downloadBarcode'])->name('outlet.barcode.download');
-    Route::post('/cabang/{id}/barcode/regenerate', [OutletController::class, 'regenerateBarcode'])->name('outlet.barcode.regenerate');
-    Route::post('/cabang/{id}/barcode/toggle', [OutletController::class, 'toggleBarcodeStatus'])->name('outlet.barcode.toggle');
+    // route data master
+    Route::resource('kategori', KategoriController::class)->except(['show', 'edit', 'create'])->middleware('permission:kategori');
+    Route::resource('bahan-baku', BahanBakuController::class)->except(['show', 'create', 'edit'])->middleware('permission:bahan-baku');
+    Route::resource('supplier', SupplierController::class)->except(['show', 'create', 'edit'])->middleware('permission:supplier');
+    Route::resource('outlet', OutletController::class)->except(['create', 'edit'])->middleware('permission:outlet');
+    Route::post('/outlet/{id}/barcode/generate', [OutletController::class, 'generateBarcode'])->name('outlet.barcode.generate')->middleware('permission:outlet');
+    Route::get('/outlet/{id}/barcode/download', [OutletController::class, 'downloadBarcode'])->name('outlet.barcode.download')->middleware('permission:outlet');
+    Route::post('/outlet/{id}/barcode/regenerate', [OutletController::class, 'regenerateBarcode'])->name('outlet.barcode.regenerate')->middleware('permission:outlet');
+    Route::post('/outlet/{id}/barcode/toggle', [OutletController::class, 'toggleBarcodeStatus'])->name('outlet.barcode.toggle')->middleware('permission:outlet');
 
-    Route::resource('supplier', SupplierController::class)->except(['show', 'create', 'edit']);
+    //route gudang
+    Route::resource('pembelian', PembelianController::class)->middleware('permission:pembelian');
+    Route::delete('pembelian/{nobukti}/cancel', [PembelianController::class, 'cancel'])->name('pembelian.cancel')->middleware('permission:pembelian');
+    Route::put('pembelian/restore/{id}', [PembelianController::class, 'restore'])->name('pembelian.restore')->middleware('permission:pembelian');
+    // Route::delete('/pembelian/{id}/force', [PembelianController::class, 'forceDelete'])->name('pembelian.forceDelete')->middleware('permission:pembelian');
+    Route::resource('penjualan', PenjualanController::class)->middleware('permission:penjualan');
+    Route::put('penjualan/restore/{nobukti}', [PenjualanController::class, 'restore'])->name('penjualan.restore')->middleware('permission:penjualan');
+    // Route::delete('/penjualan/{id}/force', [PenjualanController::class, 'forceDelete'])->name('penjualan.forceDelete')->middleware('permission:penjualan');
+    Route::get('pesanan-admin', [AdminOrderController::class, 'index'])->name('admin.pesanan.index')->middleware('role:gudang|keuangan|owner');
+    Route::get('pesanan-admin/{id}', [AdminOrderController::class, 'show'])->name('admin.pesanan.show')->middleware('role:gudang|keuangan|owner');
+    Route::post('pesanan-admin/{id}/approve', [AdminOrderController::class, 'approve'])->name('admin.pesanan.approve')->middleware('role:gudang|keuangan|owner');
+    Route::post('pesanan-admin/{id}/reject', [AdminOrderController::class, 'reject'])->name('admin.pesanan.reject')->middleware('role:gudang|keuangan|owner');
 
-    Route::resource('pembelian', PembelianController::class);
-    // Route::post('/pembelian/{pembelian}/cancel', [PembelianController::class, 'cancel'])->name('pembelian.cancel');
-    Route::put('pembelian/restore/{id}', [PembelianController::class, 'restore'])->name('pembelian.restore');
-    Route::delete('/pembelian/{id}/force', [PembelianController::class, 'forceDelete'])->name('pembelian.forceDelete');
+    // route keuangan
+    Route::resource('approval-pembelian', UpprovePembelianController::class)->middleware('permission:kas');
+    // Route::resource('pengeluaran-kas',)
+    Route::resource('piutang', PiutangController::class)->middleware('permission:piutang');
+    Route::post('piutang/{nobukti}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar')->middleware('permission:piutang');
+    Route::get('piutang/{nobukti}/print', [PiutangController::class, 'printInvoice'])->name('piutang.print')->middleware('permission:piutang');
+    Route::resource('transaksi', cashFlowController::class)->middleware('permission:kas');
 
 
-    Route::resource('penjualan', PenjualanController::class);
+    // Route::post('/satuan', [RoleController::class, 'store'])->name('satuan.store');
 
-    // Admin order review for outlet orders
-    Route::get('pesanan-admin', [AdminOrderController::class, 'index'])->name('admin.pesanan.index');
-    Route::get('pesanan-admin/{id}', [AdminOrderController::class, 'show'])->name('admin.pesanan.show');
-    Route::post('pesanan-admin/{id}/approve', [AdminOrderController::class, 'approve'])->name('admin.pesanan.approve');
-    Route::post('pesanan-admin/{id}/reject', [AdminOrderController::class, 'reject'])->name('admin.pesanan.reject');
 
-    Route::resource('piutang', PiutangController::class);
-    Route::post('piutang/{nobukti}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar');
-    // Route::post('/api/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);
-    //     Route::get('/webhook', [WhatsAppWebhookController::class, 'verifyWebhook']);
-    // Route::post('/whatsapp-webhook', [WhatsAppWebhookController::class, 'handleIncoming']);
-    // Route::resource('akses-role', AksesRoleController::class)->only(['index', 'update']);
 
-    // Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index');
-    // Route::post('/permission', [PermissionController::class, 'store'])->name('permission.store');
-    // Route::put('/permission/{id}', [PermissionController::class, 'update'])->name('permission.update');
-    // Route::delete('/permission/{id}', [PermissionController::class, 'destroy'])->name('permission.destroy');
-
-    Route::get('akses-role', [AksesRoleController::class, 'index'])->name('akses-role.index');
-    Route::post('akses-role/{akses_role}', [AksesRoleController::class, 'update'])->name('akses-role.update');
-
-    // Route::post('akses-role', [AksesRoleController::class, 'update'])->name('akses-role.update');
-    // Route::get('akses-role/{id}/edit', [AksesRoleController::class, 'edit'])->name('akses-role.edit');
-
-    // Route::get('bahan-baku', [bahanBakuController::class, 'index'])->name('bahan-baku.index');
-    // Route::post('bahan-baku', [bahanBakuController::class, 'store'])->name('bahan-baku.store');
-    // Route::get('bahan-baku/{id}/edit', [bahanBakuController::class, 'edit'])->name('bahan-baku.edit');
-    // Route::put('bahan-baku/{id}', [bahanBakuController::class, 'update'])->name('bahan-baku.update');
-    // Route::delete('bahan-baku/{id}', [bahanBakuController::class, 'destroy'])->name('bahan-baku.destroy');
-
-    Route::post('/satuan', [RoleController::class, 'store'])->name('satuan.store');
-
-    // Route::get('/produk', [ProductsController::class, 'index'])->name('produk.index');
-    // Route::get('/produk/create', [ProductsController::class, 'create'])->name('produk.create');
-    // Route::post('/produk', [ProductsController::class, 'store'])->name('produk.store');
-    // Route::get('/produk/{id}', [ProductsController::class, 'show'])->name('produk.show');
-    // Route::get('/produk/{id}/edit', [ProductsController::class, 'edit'])->name('produk.edit');
-    // Route::put('/produk/{id}', [ProductsController::class, 'update'])->name('produk.update');
-    // Route::delete('/produk/{id}', [ProductsController::class, 'destroy'])->name('produk.destroy');
-
-    // Route::post('/merek', [ProductsController::class, 'merekStore'])->name('merek.store');
-    // Kategori CRUD
-    Route::resource('kategori', KategoriController::class)->except(['show']);
-
-    // Route::get('/resep', [ResepController::class, 'index'])->name('resep.index');
-    // Route::post('/resep', [ResepController::class, 'store'])->name('resep.store');
-    // Route::put('/resep/{id}', [ResepController::class, 'update'])->name('resep.update');
-    // Route::delete('/resep/{id}', [ResepController::class, 'destroy'])->name('resep.destroy');
-
-    // Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-    // Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');
-    // Route::post('/users', [UsersController::class, 'store'])->name('users.store');
-    // Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
-    // Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
-    // Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
-    // Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
-
-    // Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
-    // Route::POST('/cabang', [CabangController::class, 'store'])->name('cabang.store');
-    // Route::get('/cabang/{id}/edit', [CabangController::class, 'edit'])->name('cabang.edit');
-    // Route::put('/cabang/{id}', [CabangController::class, 'update'])->name('cabang.update');
-    // Route::delete('/cabang/{id}', [CabangController::class, 'destroy'])->name('cabang.destroy');
-
-    // Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier.index');
-    // Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
-    // Route::put('/supplier/{id}', [SupplierController::class, 'update'])->name('supplier.update');
-    // Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
-
-    // Route::get('pembelian', [PembelianController::class, 'index'])->name('pembelian.index');
-    // Route::get('pembelian/create', [PembelianController::class, 'create'])->name('pembelian.create');
-    // Route::post('pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
-    // Route::get('pembelian/{nobukti}/edit', [PembelianController::class, 'edit'])->name('pembelian.edit');
-    // Route::put('pembelian/{id}', [PembelianController::class, 'update'])->name('pembelian.update');
-    // Route::delete('pembelian/{id}', [PembelianController::class, 'destroy'])->name('pembelian.destroy');
-    // Route::put('pembelian/status/{kode}', [PembelianController::class, 'updateStatus'])->name('pembelian.updateStatus');
     Route::get('laporan-pembelian', [PembelianController::class, 'laporanPembelian'])->name('laporan-pembelian');
     Route::get('/laporan-pembelian/pdf', [PembelianController::class, 'exportPDF'])->name('laporan-pembelian.pdf');
 
-    // Route::get('penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
-    // Route::get('penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
-    // Route::post('penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
-    // Route::get('penjualan/{nobukti}/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
-    // Route::put('penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
-    // Route::delete('penjualan/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
     Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
     Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
-    // Route::get('/penjualan/{id}/struk',  [PenjualanController::class, 'showStruk'])->name('penjualan.struk');
-
-    // Route::get('/transaksi', [cashFlowController::class, 'index'])->name('transaksi.index');
-    // Route::get('/transaksi/create', [cashFlowController::class, 'create'])->name('transaksi.create');
-    // Route::post('/transaksi', [cashFlowController::class, 'store'])->name('transaksi.store');
-    Route::resource('transaksi', cashFlowController::class);
-
-    // Route::get('/discount', [DiscountController::class, 'index'])->name('discount.index');
-
-    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
-
-    Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok');
-    Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf');
-    Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel');
-    Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok');
-    Route::get('/laporan/rekap-transaksi', [LaporanController::class, 'laporanRekapTransaksi'])
-         ->name('laporan.rekap-transaksi');
+    Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok')->middleware('permission:laporan');
+    Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf')->middleware('permission:laporan');
+    Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel')->middleware('permission:laporan');
+    Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok')->middleware('permission:laporan');
+    Route::get('/laporan/kartu-stok/export', [LaporanController::class, 'exportKartuStok'])->name('laporan.kartu-stok.export')->middleware('permission:laporan');
+    // Route::get('/laporan/rekap-transaksi', [LaporanController::class, 'laporanRekapTransaksi'])
+    //     ->name('laporan.rekap-transaksi')->middleware('permission:laporan');
     Route::get('/laporan/buku-besar', [LaporanController::class, 'laporanBukuBesar'])
-         ->name('laporan.buku-besar');
-    Route::get('/laporan/saldo-kas', [LaporanController::class, 'laporanSaldoKas'])
-        ->name('laporan.saldo-kas');
+        ->name('laporan.buku-besar')->middleware('permission:laporan');
+    Route::get('/laporan/buku-besar/export', [LaporanController::class, 'exportBukuBesar'])
+        ->name('laporan.buku-besar.export')->middleware('permission:laporan');
 
     Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
-
-    // Route::get('/notifications/mark-as-read', function () {
-    //     DB::table('notifications')->update(['is_read' => true]);
-    //     return redirect()->back();
-    // })->name('notifications.markAsRead');
-
-    // Route::get('cabang/barcode/{id}', [CabangController::class, 'generateBarcode'])->name('cabang.barcode');
 });
-
-// Route::get('/absen/', [MitraController::class, 'index'])->name('absen.index');
-
-Route::get('/form-penjualan', [PenjualanController::class, 'formPenjualan'])->name('form-penjualan');
-
-
 
 // Outlet Routes (No Login Required)
 Route::group(['prefix' => 'outlet'], function () {
-    Route::get('/{token}/order', [OutletOrderController::class, 'belanja'])->name('outlet.belanja');
-    Route::post('/{token}/order', [OutletOrderController::class, 'storeOrder'])->name('outlet.order.store');
+    Route::get('/{token}/belanja', [OutletOrderController::class, 'belanja'])->name('outlet.belanja');
+    Route::post('/{token}/belanja', [OutletOrderController::class, 'storeOrder'])->name('outlet.order.store');
     Route::get('/{token}/pesanan/', [OutletOrderController::class, 'pesanan'])->name('outlet.pesanan');
     Route::get('/{token}/kasbon/', [OutletOrderController::class, 'kasbon'])->name('outlet.kasbon');
     Route::get('/{token}/kasbon/{piutang}', [OutletOrderController::class, 'kasbonDetail'])->name('outlet.kasbon.detail');
     Route::get('/{token}/pesanan/{orderId}', [OutletOrderController::class, 'detailPesanan'])->name('outlet.pesanan.detail');
 });
-
-// Route::get('/mitra/create', [MitraController::class, 'create'])->name('mitra.create');
-// Route::post('/mitra/', [MitraController::class, 'store'])->name('mitra.store');

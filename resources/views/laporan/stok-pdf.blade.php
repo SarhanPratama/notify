@@ -262,7 +262,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td class="text-left">{{ $d->nama }}</td> {{-- Added text-left class --}}
-                    <td>{{ $d->nama_satuan }}</td>
+                    <td class="text-left">{{ $d->nama_satuan }}</td>
                     <td class="text-right">{{ number_format($d->stok_awal, 0, ',', '.') }}</td> {{-- Added text-right class --}}
                     <td class="text-right">{{ number_format($d->masuk, 0, ',', '.') }}</td> {{-- Added text-right class --}}
                     <td class="text-right">{{ number_format($d->keluar, 0, ',', '.') }}</td> {{-- Added text-right class --}}

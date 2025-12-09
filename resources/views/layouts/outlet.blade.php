@@ -96,7 +96,7 @@
 
     .cart-floating {
         position: fixed;
-        bottom: 20px;
+        bottom: 50px;
         right: 20px;
         z-index: 1000;
     }
@@ -159,13 +159,15 @@
                     <img src="{{ asset('assets/img/logo/brand.png') }}" width="100" alt="Seroo Logo" class="img-fluid m-auto">
                 </div>
                 <div class="col-md-8 text-center">
+                    {{-- <small class="d-block text-white-50">Outlet</small> --}}
                     <div class="outlet-name">{{ strtoupper($outlet->nama) }}</div>
                 </div>
                 <div class="col-md-2 text-center text-md-end">
-                    <div class="text-white">
-                        <small class="d-block text-white-50">Total Piutang</small>
+                    {{-- <div class="text-white">
                         <h6 class="mb-0">Rp 5.250.000</h6>
-                    </div>
+                    </div> --}}
+                    {{-- <small class="d-block text-white-50"></small> --}}
+                     <h5>{{ strtoupper($outlet->penanggung_jawab) }}</h5>
                 </div>
             </div>
         </div>
@@ -250,10 +252,6 @@
                         Kawasan Logistik, Jakarta 11740<br>
                         Indonesia
                     </p>
-                    <div class="small text-muted">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        Koordinat: -6.2000, 106.8166
-                    </div>
                 </div>
                 <div class="col-md-3 text-center">
                     <h6 class="fw-bold mb-3">Jam Operasional</h6>
@@ -267,19 +265,11 @@
                     <h6 class="fw-bold mb-3"><i class="fas fa-headset me-2"></i>Hubungi Admin</h6>
                     <p class="small text-muted mb-2">Butuh bantuan terkait pesanan atau kasbon?</p>
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="hubungiAdmin()">
+                        <a href="" type="button" class="btn btn-outline-primary btn-sm" >
                             <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                        </button>
+                        </a>
                     </div>
                 </div>
-                {{-- <div class="col-md-2">
-                    <h6 class="fw-bold mb-3">Informasi</h6>
-                    <ul class="list-unstyled small mb-0">
-                        <li><i class="fas fa-shield-alt me-1"></i>Data aman</li>
-                        <li><i class="fas fa-sync-alt me-1"></i>Realtime update</li>
-                        <li><i class="fas fa-qrcode me-1"></i>Pemesanan via QR</li>
-                    </ul>
-                </div> --}}
             </div>
             <hr class="mt-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center py-3 small">
@@ -585,21 +575,6 @@
                         text: error.message
                     });
                 });
-        }
-
-        // Hubungi Admin (global footer action)
-        function hubungiAdmin() {
-            Swal.fire({
-                icon: 'info',
-                title: 'Hubungi Admin',
-                html: `<div class='text-start small'>
-                        <p class='mb-2'><strong>WhatsApp:</strong> +62 812-3456-7890</p>
-                        <p class='mb-2'><strong>Email:</strong> support@seroo.example</p>
-                        <p class='mb-0 text-muted'>Jam tanggapan: 08:00 - 17:00 WIB</p>
-                       </div>`,
-                confirmButtonColor: '#9c1515',
-                confirmButtonText: 'Tutup'
-            });
         }
     </script>
 </body>

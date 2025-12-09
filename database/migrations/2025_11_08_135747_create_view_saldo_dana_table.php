@@ -14,43 +14,34 @@ return new class extends Migration
         DB::statement("
             CREATE OR REPLACE VIEW view_saldo_dana AS
             SELECT
-                sumber_dana.id AS id_sumber_dana,
-                sumber_dana.nama,
-                sumber_dana.saldo_awal,
-
-                -- Total Pemasukan
+                -- Total Pemasukan (hanya transaksi aktif dan belum dihapus)
                 COALESCE(SUM(CASE
-                    WHEN transaksi.tipe = 'debit'
-                    THEN transaksi.jumlah
+                    WHEN tipe = 'debit' AND status = 1 AND deleted_at IS NULL
+                    THEN jumlah
                     ELSE 0
                 END), 0) AS total_pemasukan,
 
-                -- Total Pengeluaran
+                -- Total Pengeluaran (hanya transaksi aktif dan belum dihapus)
                 COALESCE(SUM(CASE
-                    WHEN transaksi.tipe = 'kredit'
-                    THEN transaksi.jumlah
+                    WHEN tipe = 'kredit' AND status = 1 AND deleted_at IS NULL
+                    THEN jumlah
                     ELSE 0
                 END), 0) AS total_pengeluaran,
 
                 -- Saldo Akhir (Current Saldo)
-                (sumber_dana.saldo_awal
-                + COALESCE(SUM(CASE
-                    WHEN transaksi.tipe = 'debit'
-                    THEN transaksi.jumlah
+                (COALESCE(SUM(CASE
+                    WHEN tipe = 'debit' AND status = 1 AND deleted_at IS NULL
+                    THEN jumlah
                     ELSE 0
                 END), 0)
                 - COALESCE(SUM(CASE
-                    WHEN transaksi.tipe = 'kredit'
-                    THEN transaksi.jumlah
+                    WHEN tipe = 'kredit' AND status = 1 AND deleted_at IS NULL
+                    THEN jumlah
                     ELSE 0
                 END), 0)) AS saldo_current
 
-            FROM
-                sumber_dana AS sumber_dana
-            LEFT JOIN
-                transaksi AS transaksi ON transaksi.id_sumber_dana = sumber_dana.id
-            GROUP BY
-                sumber_dana.id, sumber_dana.nama, sumber_dana.saldo_awal;
+            FROM transaksi
+            WHERE deleted_at IS NULL AND status = 1;
         ");
     }
 

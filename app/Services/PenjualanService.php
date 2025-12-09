@@ -11,7 +11,7 @@ class PenjualanService
 {
     public function getPenjualanDetails($nobukti)
     {
-        return Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi', 'piutang.pembayaran'])
+        return Penjualan::with(['mutasi.bahanBaku.satuan', 'outlet', 'transaksi.sumberDana', 'piutang.pembayaran'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
     }

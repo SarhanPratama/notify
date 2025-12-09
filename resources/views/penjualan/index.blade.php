@@ -70,7 +70,7 @@
                                         <th class="text-nowrap">No</th>
                                         <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">No. Bukti</th>
-                                        <th class="text-nowrap">Cabang</th>
+                                        <th class="text-nowrap">Outlet</th>
                                         <th class="text-nowrap">Total</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-center">Aksi</th>
@@ -94,24 +94,62 @@
                                                     </span>
                                                     <strong>
 
-                                                        {{ $item->cabang->nama }}
+                                                        {{ $item->outlet->nama }}
                                                     </strong>
                                                 </div>
                                             </td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
-                                                Rp. {{ number_format($item->total, 2, ',', '.') }}
+                                                Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-                                                @if ($item->metode_pembayaran === 'kasbon')
-                                                    @if ($item->piutang->status === 'belum_lunas')
-                                                        <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
-                                                    @else
-                                                        <span class="badge bg-success">Kasbon - Lunas</span>
-                                                    @endif
-                                                @else
-                                                    <span class="badge bg-success">Lunas</span>
+
+                                                @php
+                                                    $metode = $item->metode_pembayaran;
+                                                    $statusTransaksi = $item->status; // pending, approved, rejected, completed
+                                                    $statusPiutang = $item->piutang->status ?? null; // lunas, belum_lunas (hanya kasbon)
+                                                @endphp
+
+                                                {{-- CASE 1: PEMBAYARAN TUNAI --}}
+                                                @if ($metode === 'tunai')
+                                                    @switch($statusTransaksi)
+                                                        @case('pending')
+                                                            <span class="badge bg-warning text-dark">Pending</span>
+                                                        @break
+
+                                                        @case('approved')
+                                                            <span class="badge bg-info text-dark">Approved</span>
+                                                        @break
+
+                                                        @case('rejected')
+                                                            <span class="badge bg-danger">Rejected</span>
+                                                        @break
+
+                                                        @case('completed')
+                                                            <span class="badge bg-success">Lunas</span>
+                                                        @break
+
+                                                        @default
+                                                            <span class="badge bg-secondary">Unknown</span>
+                                                    @endswitch
+
+                                                    {{-- CASE 2: PEMBAYARAN KASBON --}}
+                                                @elseif ($metode === 'kasbon')
+                                                    @switch($statusPiutang)
+                                                        @case('belum_lunas')
+                                                            <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
+                                                        @break
+
+                                                        @case('lunas')
+                                                            <span class="badge bg-success">Kasbon - Lunas</span>
+                                                        @break
+
+                                                        @default
+                                                            <span class="badge bg-secondary">Kasbon - Tidak Diketahui</span>
+                                                    @endswitch
                                                 @endif
+
                                             </td>
+
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <a href="{{ route('penjualan.edit', $item->nobukti) }}"

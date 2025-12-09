@@ -12,9 +12,6 @@
                         <a href="{{ route('laporan-stok.exportExcel') }}" target="_blank" class="btn btn-outline-success btn-sm btn-lg">
                             Export Excel
                         </a>
-                        <a href="{{ route('laporan-stok.exportPdf') }}" target="_blank" class="btn btn-outline-danger btn-sm btn-lg">
-                            Export PDF
-                        </a>
                     </div>
                 </div>
                 <div class="card">
@@ -39,7 +36,11 @@
                                 @foreach ($laporan_stok as $item)
                                     <tr class="text-start text-nowrap ">
                                         <td class="align-middle">{{ $loop->iteration }}</td>
-                                        <td class="align-middle">{{ ucwords($item->nama) }}</td>
+                                        <td class="align-middle">
+                                        <a href="{{ route('laporan.kartu-stok', ['id_bahan_baku' => $item->id_bahan_baku]) }}" class="text-decoration-none">
+                                            {{ ucwords($item->nama) }}
+                                        </a>
+                                    </td>
                                         <td class="align-middle"><span class="badge fw-bolder bg-primary">{{ $item->stok_awal }}
                                                 {{ $item->nama_satuan }}</span></td>
                                         <td class="align-middle"><span class="badge fw-bolder bg-success">{{ $item->total_masuk }}

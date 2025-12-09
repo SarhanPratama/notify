@@ -2,8 +2,6 @@
 
 @section('content')
 
-    @include('layouts.breadcrumbs')
-
     <style>
         .preview-img {
             width: 200px;
@@ -39,6 +37,7 @@
     </style>
 
   <div class="container-fluid">
+        @include('layouts.breadcrumbs')
     <div class="row">
         <div class="col col-lg-12">
         <!-- Simple Tables -->
@@ -56,9 +55,9 @@
                     <tr>
                         <th class="text-start">No</th>
                         <th>Kode</th>
-                        <th>Nama</th>
+                        <th>Outlet</th>
+                        <th>Penanggung Jawab</th>
                         <th>Telepon</th>
-                        <th>Alamat</th>
                         <th>Lokasi</th>
                         <th class="text-center">QR Code</th>
                         <th class="text-center">Action</th>
@@ -70,29 +69,18 @@
                             <td class="align-middle">{{ $loop->iteration }}</td>
                             <td class="text-nowrap align-middle">{{ $item->kode }}</td>
                             <td class="text-nowrap align-middle"> {{ ucwords($item->nama) }}</td>
+                            <td class="text-nowrap align-middle">{{ $item->penanggung_jawab }}</td>
                             <td class="text-nowrap align-middle">{{ $item->telepon }}</td>
-                            <td class="text-nowrap align-middle"  data-toggle="tooltip" title="{{ $item->alamat }}">
-                                {{ Str::limit($item->alamat, 30, '...') }}
-                            </td>
                             <td class="text-nowrap align-middle"><a class="btn btn-sm btn-outline-info" target="_blank" href="{{ $item->lokasi}}"><i class="fa fa-map-marker fs-5" aria-hidden="true"></i></a></td>
                             <td class="text-center align-middle">
                                 @if($item->barcode_token)
                                     <div class="d-flex justify-content-center gap-1">
-                                        <a href="{{ route('outlet.barcode', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Kelola QR Code">
+                                        <a href="{{ route('outlet.show', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Kelola QR Code">
                                             <i class="fa fa-qrcode" aria-hidden="true"></i>
                                         </a>
-                                        {{-- @if($item->barcode_active)
-                                            <span class="badge bg-success" title="QR Code Aktif">
-                                                <i class="fa fa-check" aria-hidden="true"></i>
-                                            </span>
-                                        @else
-                                            <span class="badge bg-secondary" title="QR Code Tidak Aktif">
-                                                <i class="fa fa-pause" aria-hidden="true"></i>
-                                            </span>
-                                        @endif --}}
                                     </div>
                                 @else
-                                    <a href="{{ route('outlet.barcode', $item->id) }}" class="btn btn-sm btn-outline-secondary" title="Generate QR Code">
+                                    <a href="{{ route('outlet.show', $item->id) }}" class="btn btn-sm btn-outline-secondary" title="Generate QR Code">
                                         <i class="fa fa-plus" aria-hidden="true"></i> QR
                                     </a>
                                 @endif
@@ -117,92 +105,7 @@
                             </td>
                         </tr>
 
-                        <div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <!-- Modal Header -->
-                                    <div class="modal-header bg-warning text-white">
-                                        <h6 class="modal-title font-weight-bold" id="editModalLabel">Form Edit</h6>
-                                        <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Modal Body -->
-                                    <form action="{{ route('outlet.update', $item->id) }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <!-- Form Input (Kiri) -->
-                                                <div class="col-lg-8">
-                                                    <div class="row g-3 text-sm">
-                                                        <!-- Nama Outlet -->
-                                                        <div class="col-md-6">
-                                                            <label for="nama" class="form-label fw-bold">Nama Outlet <span class="text-danger">*</span></label>
-                                                            <input type="text" name="nama" class="form-control form-control-sm" value="{{ $item->nama }}" placeholder="Masukkan nama outlet" required>
-                                                            @error('nama')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <!-- Telepon -->
-                                                        <div class="col-md-6">
-                                                            <label for="telepon" class="form-label fw-bold">Telepon <span class="text-danger">*</span></label>
-                                                            <input type="text" name="telepon" class="form-control form-control-sm" value="{{ $item->telepon }}" placeholder="Masukkan telepon" required>
-                                                        </div>
-
-
-                                                        <!-- Alamat -->
-                                                        <div class="col-12">
-                                                            <label for="alamat" class="form-label fw-bold">Alamat <span class="text-danger">*</span></label>
-                                                            <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="3" placeholder="Masukkan alamat" required>{{ $item->alamat }}</textarea>
-                                                        </div>
-
-                                                        <div class="col-12">
-                                                            <label for="lokasi" class="form-label fw-bold">Url Lokasi<span class="text-danger"> *</span></label>
-                                                            <input type="text" name="lokasi" id="lokasi" class="form-control form-control-sm" value="{{ $item->lokasi}}" placeholder="Masukkan url lokasi" required>
-                                                        </div>
-
-                                                        <!-- Upload Foto -->
-                                                        <div class="mb-3">
-                                                            <label for="foto" class="form-label fw-bold">Upload Foto</label>
-                                                            <div class="input-group input-group-sm">
-                                                                <input type="file" name="foto" class="form-control">
-                                                                <label class="input-group-text">Pilih File</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Foto (Kanan) -->
-                                                <div class="col-lg-4">
-                                                    <div class="sticky-top" style="top: 20px;">
-                                                        <!-- Preview Foto -->
-                                                        <div class="text-center">
-                                                            <label class="form-label fw-bold">Preview Foto</label>
-                                                            <div class="preview-container">
-                                                                @if ($item->foto)
-                                                                    <img id="fotoPreview{{ $item->id }}" src="{{ asset('storage/' . $item->foto) }}" class="img-thumbnail preview-img m-auto">
-                                                                @else
-                                                                    <img id="fotoPreview{{ $item->id }}" src="" class="img-thumbnail preview-img m-auto">
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Modal Footer -->
-                                        <div class="modal-footer d-flex justify-content-between">
-                                            <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-outline-warning btn-sm">Update</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        @include('outlet.admin.edit')
 
                         <div class="modal fade" id="cabangDestroyModal{{ $item->id }}" tabindex="-1" aria-labelledby="cabangDestroyModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -239,96 +142,7 @@
     </div>
   </div>
 
-
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header bg-maron text-white">
-                <h6 class="modal-title font-weight-bold" id="exampleModalLabel">Form Tambah</h6>
-                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <form action="{{ route('outlet.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Form Input (Kiri) -->
-                        <div class="col-lg-8">
-                            <div class="row g-3 text-sm">
-
-                                <div class="col-md-6">
-                                    <label for="outlet" class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
-                                    <input type="text" name="kode" class="form-control form-control-sm" placeholder="Masukkan kode outlet" required>
-                                    @error('nama')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <!-- Nama Outlet -->
-                                <div class="col-md-6">
-                                    <label for="outlet" class="form-label fw-bold">Nama Outlet <span class="text-danger">*</span></label>
-                                    <input type="text" name="nama" class="form-control form-control-sm" placeholder="Masukkan nama outlet" required>
-                                    @error('nama')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <!-- Telepon -->
-                                <div class="col-md-12">
-                                    <label for="telepon" class="form-label fw-bold">Telepon <span class="text-danger">*</span></label>
-                                    <input type="text" name="telepon" class="form-control form-control-sm" placeholder="Masukkan telepon" required>
-                                </div>
-
-                                <!-- Alamat -->
-                                <div class="col-12">
-                                    <label for="alamat" class="form-label fw-bold">Alamat <span class="text-danger">*</span></label>
-                                    <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="3" placeholder="Masukkan alamat" required></textarea>
-                                </div>
-
-                                <div class="col-12">
-                                    <label for="lokasi" class="form-label fw-bold">Url Lokasi<span class="text-danger"> *</span></label>
-                                    <input type="text" name="lokasi" id="lokasi" class="form-control form-control-sm" placeholder="Masukkan " required>
-                                </div>
-
-                                <!-- Upload Foto -->
-                                <div class="mb-3">
-                                    <label for="foto" class="form-label fw-bold">Upload Foto</label>
-                                    <div class="input-group input-group-sm">
-                                        <input type="file" name="foto" class="form-control" id="fotoInput" onchange="previewImage(event)">
-                                        <label class="input-group-text">Pilih File</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Foto (Kanan) -->
-                        <div class="col-lg-4">
-                            <div class="sticky-top" style="top: 20px;">
-                                <!-- Preview Foto -->
-                                <div class="text-center">
-                                    <label class="form-label fw-bold">Preview Foto</label>
-                                    <div class="preview-container">
-                                        <img id="fotoPreview" src="" class="img-thumbnail preview-img m-auto">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close</button>
-                    <button type="reset" class="btn btn-outline-warning btn-sm me-2">Reset</button>
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    @include('outlet.admin.create')
 
 
 <script>

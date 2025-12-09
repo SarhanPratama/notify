@@ -43,7 +43,7 @@ class cashFlowController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:0',
-            'tipe' => 'required|in:debit,kredit', // debit = uang masuk, credit = uang keluar
+            'tipe' => 'required|in:debit,kredit',
             'id_sumber_dana' => 'required|exists:sumber_dana,id',
             'deskripsi' => 'required|string|max:255',
         ]);
@@ -53,24 +53,14 @@ class cashFlowController extends Controller
         try {
             // Simpan transaksi manual
             $transaksi = Transaksi::create([
+                'nobukti' => 'CF' . date('YmdHis'),
                 'id_sumber_dana' => $request->id_sumber_dana,
                 'tanggal' => $request->tanggal,
                 'tipe' => $request->tipe,
                 'jumlah' => $request->jumlah,
                 'deskripsi' => strip_tags($request->deskripsi, '<b><i>'),
                 'status' => 1,
-                // Kosongkan referenceable karena ini transaksi manual
-                'referenceable_type' => null,
-                'referenceable_id' => null,
             ]);
-
-            // Update saldo sumber dana
-            $sumberDana = SumberDana::findOrFail($request->id_sumber_dana);
-            if ($request->tipe === 'debit') {
-                $sumberDana->increment('saldo_current', $request->jumlah);
-            } else {
-                $sumberDana->decrement('saldo_current', $request->jumlah);
-            }
 
             DB::commit();
             notify()->success('Transaksi berhasil ditambahkan.');

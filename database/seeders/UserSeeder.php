@@ -20,19 +20,18 @@ class UserSeeder extends Seeder
         $admin = User::create([
             'name' => 'Sarhan Pratama',
             'email' => 'admin@gmail.com',
-            // 'tgl_lahir' => '2004-04-27',
-            // 'telepon' => '0895368765',
-            // 'alamat' => 'JL Kubang Raya - Panam, Tarai Bangun, Kec. Tambang, Kabupaten Kampar, Riau 28293',
             'id_role' => $role->id,
             'password' => Hash::make('admin123'),
+            'email_verified_at' => now(),
         ]);
         $admin->assignRole('owner');
 
-        // $karyawan = User::create([
-        //     'name' => 'Karyawan',
-        //     'email' => 'karyawan@example.com',
-        //     'password' => Hash::make('karyawan123'),
-        // ]);
-        // $karyawan->assignRole('karyawan');
+        $gudang = User::create([
+            'name' => 'Gudang',
+            'email' => 'gudang@gmail.com',
+            'password' => Hash::make('gudang123'),
+            'email_verified_at' => now(),
+        ]);
+        $gudang->assignRole('gudang');
     }
 }

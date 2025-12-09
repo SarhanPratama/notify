@@ -11,7 +11,7 @@ class Piutang extends Model
 
     protected $table = 'piutang';
 
-    protected $fillable = ['nobukti', 'jumlah_piutang', 'jatuh_tempo', 'status'];
+    protected $fillable = ['nobukti', 'jumlah_piutang', 'sisa_piutang', 'jatuh_tempo', 'status'];
 
     protected $casts = [
         'jatuh_tempo' => 'date',
@@ -24,7 +24,20 @@ class Piutang extends Model
 
     public function pembayaran()
 {
-    return $this->hasMany(PiutangPembayaran::class, 'id_piutang');
+    return $this->hasMany(PiutangPembayaran::class, 'nobukti', 'nobukti');
 }
+
+    // Accessor untuk menghitung sisa piutang
+    // public function getSisaPiutangAttribute()
+    // {
+    //     $totalDibayar = $this->pembayaran()->sum('jumlah');
+    //     return $this->jumlah_piutang - $totalDibayar;
+    // }
+
+    // // Method untuk cek apakah piutang sudah lunas
+    // public function isLunas()
+    // {
+    //     return $this->sisa_piutang <= 0;
+    // }
 
 }

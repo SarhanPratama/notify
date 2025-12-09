@@ -8,14 +8,14 @@
     @include('layouts.breadcrumbs')
 
     <div class="container-fluid">
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary mb-3 fw-bold">
-                <i class="fa fa-arrow-left me-2"></i>Kembali
-            </a>
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary mb-3 fw-bold">
+            <i class="fa fa-arrow-left me-2"></i>Kembali
+        </a>
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-primary py-3 text-center">
-                        <h5 class="my-0 text-light fs-5 fw-bolder">Form Pembelian</h5>
+                    <div class="card-header bg-maron py-3 text-center">
+                        <h5 class="my-0 text-light fs-5 fw-bolder">Form Pembelian Stok</h5>
                     </div>
 
                     <div class="card-body">
@@ -27,22 +27,22 @@
                                     <label for="">Karyawan</label>
                                     <input type="text" class="form-control form-control-sm" name="id_user" value="{{ Auth::user()->name}}" readonly>
                                 </div> --}}
-                                <div class="col-md-4 mb-3">
+                                {{-- <div class="col-md-4 mb-3">
                                     <label class="form-label fw-bold" for="tanggal">Tanggal <span
                                             class="text-danger">*</span></label>
                                     <input class="form-control form-control-sm border-0 bg-light shadow-none" type="date"
                                         id="tanggal" name="tanggal" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label fw-bold">Supplier</label>
-                                    <select class="form-select form-select-sm" name="id_supplier">
+                                </div> --}}
+                                <div class="col-12 col-sm-12 col-md-12 mb-3">
+                                    <label class="form-label fw-bold">Supplier <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm select-single" name="id_supplier" required>
                                         <option value="">Pilih Supplier</option>
                                         @foreach ($suppliers as $id => $nama)
                                             <option value="{{ $id }}">{{ $nama }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                {{-- <div class="col-md-4 mb-3">
                                     <label class="form-label fw-bold">Kas Keluar</label>
                                     <select class="form-select form-select-sm" name="id_sumber_dana">
                                         <option value="">Pilih Kas Keluar</option>
@@ -50,14 +50,15 @@
                                             <option value="{{ $id }}">{{ $nama }}</option>
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
 
                             </div>
 
                             <!-- Product Table -->
                             <div class="table-responsive mb-4">
                                 <div class="mb-3">
-                                    <button type="button" id="tambah-detail" class="btn btn-outline-primary btn-sm fw-bold">
+                                    <button type="button" id="tambah-detail"
+                                        class="btn btn-outline-primary btn-sm fw-bold">
                                         Tambah Baris
                                     </button>
                                 </div>

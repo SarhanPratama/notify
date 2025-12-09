@@ -23,9 +23,8 @@ class StorePembelianRequest extends FormRequest
     {
         // \Log::info('StorePembelianRequest rules() dipanggil');
         return [
-            'tanggal' => 'required|date',
+            // 'tanggal' => 'required|date',
             'id_supplier' => 'nullable|exists:supplier,id',
-            'id_sumber_dana' => 'required|exists:sumber_dana,id',
             'bahanBaku' => 'required|array',
             'bahanBaku.*' => 'required|exists:bahan_baku,id',
             'quantity' => 'required|array',

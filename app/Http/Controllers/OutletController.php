@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Outlet;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use chillerlan\QRCode\QRCode;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use chillerlan\QRCode\QROptions;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Storage;
 
 class OutletController extends Controller
 {
@@ -32,7 +35,7 @@ class OutletController extends Controller
         $title = 'Outlet';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Cabang', 'url' => route('outlet.index')],
+            ['label' => 'Outlet', 'url' => route('outlet.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
@@ -45,10 +48,11 @@ class OutletController extends Controller
         // dd($request);
         $request->validate([
             'kode' => 'required',
-            'nama' => 'required',
+            'nama' => 'required|string',
+            'penanggung_jawab' => 'required|string',
             'telepon' => 'required|string',
-            'alamat' => 'required',
-            'lokasi' => 'required',
+            'alamat' => 'required|string',
+            'lokasi' => 'required|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -56,12 +60,13 @@ class OutletController extends Controller
         if ($request->hasFile('foto')) {
             $foto = $request->file('foto');
             $fotoName = time() . '_' . $foto->getClientOriginalName();
-            $fotoPath = $foto->storeAs('uploads/cabang', $fotoName, 'public');
+            $fotoPath = $foto->storeAs('uploads/outlet', $fotoName, 'public');
         }
 
         Outlet::create([
             'kode' => $request->kode,
             'nama' => $request->nama,
+            'penanggung_jawab' => $request->penanggung_jawab,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
             'lokasi' => $request->lokasi,
@@ -70,6 +75,40 @@ class OutletController extends Controller
         notify()->success('Data berhasil di input');
         return redirect()->back();
     }
+     public function show($id)
+    {
+        $outlet = Outlet::findOrFail($id);
+
+        // Generate QR Code if token exists
+        $qrCode = '';
+        if ($outlet->barcode_token) {
+            $options = new QROptions([
+                'version'    => 7,
+                'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+                'eccLevel'   => QRCode::ECC_M,
+            ]);
+
+            $qrcode = new QRCode($options);
+            $imageData = $qrcode->render($outlet->barcode_url);
+            $qrCode = 'data:image/png;base64,' . base64_encode($imageData);
+            // Check if it's base64 encoded and decode it
+            if (base64_decode($imageData, true) !== false && base64_encode(base64_decode($imageData)) === $imageData) {
+                $qrCode = base64_decode($imageData);
+            } else {
+                $qrCode = $imageData;
+            }
+        }
+
+        $title = 'QR Code Outlet - ' . $outlet->nama;
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Outlet', 'url' => route('outlet.index')],
+            ['label' => 'QR Code', 'url' => null],
+        ];
+
+        return view('outlet.admin.show', compact('outlet', 'qrCode', 'title', 'breadcrumbs'));
+    }
+
 
     public function edit($id)
     {
@@ -88,22 +127,23 @@ class OutletController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request);
-
         $request->validate([
+            'kode' => 'required',
             'nama' => 'required|string|max:255',
+            'penanggung_jawab' => 'required|string|max:255',
             'telepon' => 'required|string',
-            'alamat' => 'required',
-            'lokasi' => 'required',
+            'alamat' => 'required|string',
+            'lokasi' => 'required|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $cabang = Outlet::findOrFail($id);
+        $outlet = Outlet::findOrFail($id);
 
 
-        $fotoPath = $cabang->foto;
+        $fotoPath = $outlet->foto;
         if ($request->hasFile('foto')) {
-            if ($cabang->foto && file_exists(storage_path('app/public/' . $cabang->foto))) {
-                unlink(storage_path('app/public/' . $cabang->foto));
+            if ($outlet->foto && file_exists(storage_path('app/public/' . $outlet->foto))) {
+                unlink(storage_path('app/public/' . $outlet->foto));
             }
 
             $foto = $request->file('foto');
@@ -111,8 +151,10 @@ class OutletController extends Controller
             $fotoPath = $foto->storeAs('uploads/cabang', $fotoName, 'public');
         }
 
-        $cabang->update([
+        $outlet->update([
+            'kode' => $request->kode,
             'nama' => $request->nama,
+            'penanggung_jawab' => $request->penanggung_jawab,
             'telepon' => $request->telepon,
             'alamat' => $request->alamat,
             'lokasi' => $request->lokasi,
@@ -142,7 +184,6 @@ class OutletController extends Controller
 
             notify()->success('Cabang berhasil dihapus!');
             return redirect()->route('outlet.index');
-
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
                 notify()->error('Cabang tidak bisa dihapus karena masih ada data terkait.');
@@ -152,52 +193,14 @@ class OutletController extends Controller
             return redirect()->route('outlet.index');
         }
     }
-
-    /**
-     * Show barcode management page
-     */
-    public function showBarcode($id)
-    {
-        $cabang = Outlet::findOrFail($id);
-
-        // Generate QR Code if token exists
-        $qrCode = '';
-        if ($cabang->barcode_token) {
-            $options = new QROptions([
-                'version'    => 7,
-                'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-                'eccLevel'   => QRCode::ECC_M,
-            ]);
-
-            $qrcode = new QRCode($options);
-            $imageData = $qrcode->render($cabang->barcode_url);
-            $qrCode = 'data:image/png;base64,' . base64_encode($imageData);
-            // Check if it's base64 encoded and decode it
-            if (base64_decode($imageData, true) !== false && base64_encode(base64_decode($imageData)) === $imageData) {
-                $qrCode = base64_decode($imageData);
-            } else {
-                $qrCode = $imageData;
-            }
-        }
-
-        $title = 'QR Code Outlet - ' . $cabang->nama;
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Outlet', 'url' => route('outlet.index')],
-            ['label' => 'QR Code', 'url' => null],
-        ];
-
-        return view('outlet.admin.barcode', compact('cabang', 'qrCode', 'title', 'breadcrumbs'));
-    }
-
     /**
      * Generate new barcode token
      */
     public function generateBarcode($id)
     {
         try {
-            $cabang = Outlet::findOrFail($id);
-            $cabang->generateBarcodeToken();
+            $outlet = Outlet::findOrFail($id);
+            $outlet->generateBarcodeToken();
 
             notify()->success('QR Code berhasil dibuat!');
             return redirect()->back();
@@ -212,29 +215,82 @@ class OutletController extends Controller
      */
     public function downloadBarcode($id)
     {
-        $cabang = Outlet::findOrFail($id);
+        // Ambil outlet
+        $outlet = Outlet::findOrFail($id);
 
-        if (!$cabang->barcode_token) {
-            $cabang->generateBarcodeToken();
+        // Pastikan ada token
+        if (empty($outlet->barcode_token)) {
+            $outlet->barcode_token = Str::random(40);
+            $outlet->save();
         }
 
-        // Generate QR Code as PNG
+        // --------------- Konfigurasi posisi & ukuran ---------------
+        $canvasW = 1748;
+        $canvasH = 2480;
+
+        $qrSize = 800;                  // px
+        $qrX = intval(($canvasW - $qrSize) / 2); // 424
+        $qrY = 848;                     // atas QR; sesuaikan jika perlu
+
+        $namaY = $qrY + $qrSize + 342;   // 1508 - posisi nama outlet di bawah QR
+        $namaFontSize = 80;
+        // ----------------------------------------------------------
+
+        // URL yang diencode (sesuaikan route)
+        $qrUrl = route('outlet.belanja', ['token' => $outlet->barcode_token]);
+
+        // 1) generate QR raw PNG (chillerlan)
         $options = new QROptions([
-            'version'    => 5,
+            'version'    => QRCode::VERSION_AUTO, // Auto-detect version based on content length
             'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-            'eccLevel'   => QRCode::ECC_L,
+            'eccLevel'   => QRCode::ECC_H, // H supaya aman jika mau overlay logo
             'scale'      => 8,
             'imageBase64' => false,
         ]);
-
         $qrcode = new QRCode($options);
-        $qrCodePng = $qrcode->render($cabang->barcode_url);
+        $qrPng = $qrcode->render($qrUrl);
 
-        $filename = 'qrcode-outlet-' . $cabang->kode . '.png';
+        // 2) load template canvas
+        $templatePath = public_path('assets/img/template-qr.png');
+        if (!file_exists($templatePath)) {
+            abort(500, 'Template not found: ' . $templatePath);
+        }
+        $manager = new ImageManager(Driver::class);
+        $canvas = $manager->read($templatePath);
 
-        return response($qrCodePng)
-            ->header('Content-Type', 'image/png')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        // 3) load QR sebagai image Intervention lalu resize ke qrSize
+        $qrImg = $manager->read($qrPng)->resize($qrSize, $qrSize);
+
+        // 4) optional: insert small brand logo ke tengah QR (jika mau)
+        // Uncomment jika ingin menaruh logo di tengah QR
+        $brandPath = public_path('assets/img/logo/icon2.png');
+        if (file_exists($brandPath)) {
+            $logo = $manager->read($brandPath)->resize(140, 140, function($constraint){
+                $constraint->aspectRatio();
+            });
+            $qrImg->place($logo, 'center');
+        }
+
+
+        // 5) insert QR ke canvas di posisi (qrX, qrY)
+        $canvas->place($qrImg, 'top-left', $qrX, $qrY);
+
+        // 6) tulis Nama Outlet (dynamic) — uppercase untuk konsistensi
+        $outletName = strtoupper($outlet->nama ?? 'OUTLET');
+        $canvas->text($outletName, $canvasW / 2, $namaY, function ($font) use ($namaFontSize) {
+            $font->file(public_path('assets/font/Poppins-Bold.ttf'));
+            $font->size($namaFontSize);
+            $font->color('#FFFFFF');
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        // 7) Simpan & download
+        $filename = 'qrcode_seroo_' . Str::slug($outlet->kode ?? $outlet->id) . '.png';
+        $savePath = storage_path('app/public/' . $filename);
+        $canvas->save($savePath, 90);
+
+        return response()->download($savePath)->deleteFileAfterSend(true);
     }
 
     /**
@@ -246,40 +302,40 @@ class OutletController extends Controller
             $cabang = Outlet::findOrFail($id);
             $cabang->regenerateBarcodeToken();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'QR Code berhasil di-regenerate!'
-            ]);
+            notify()->success('QR Code berhasil diregenerasi!');
+            return redirect()->back();
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal regenerate QR Code: ' . $e->getMessage()
-            ], 500);
+            notify()->error('Gagal regenerate QR Code: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 
     /**
      * Toggle barcode status
      */
-    public function toggleBarcodeStatus($id)
+    public function toggleBarcodeStatus(Request $request, $id)
     {
         try {
             $cabang = Outlet::findOrFail($id);
+
+            // Toggle status
             $cabang->barcode_active = !$cabang->barcode_active;
             $cabang->save();
 
             $status = $cabang->barcode_active ? 'diaktifkan' : 'dinonaktifkan';
+            $message = "Barcode berhasil {$status} untuk outlet {$cabang->nama}";
 
-            return response()->json([
-                'success' => true,
-                'message' => "QR Code berhasil {$status}!",
-                'status' => $cabang->barcode_active
-            ]);
+            // Jika ada alasan, bisa disimpan ke log atau field lain jika diperlukan
+            if ($request->filled('alasan')) {
+                // Log alasan jika diperlukan
+                // Log::info("Barcode status changed for outlet {$cabang->nama}: {$request->alasan}");
+            }
+
+            notify()->success($message);
+            return redirect()->back();
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengubah status QR Code: ' . $e->getMessage()
-            ], 500);
+            notify()->error('Gagal mengubah status barcode: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 }

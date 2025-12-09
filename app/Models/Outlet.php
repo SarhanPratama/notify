@@ -63,7 +63,7 @@ class Outlet extends Model
         if (!$this->barcode_token) {
             return null;
         }
-        return url('/outlet/' . $this->barcode_token . '/order');
+        return url('/outlet/' . $this->barcode_token . '/belanja');
     }
 
     /**

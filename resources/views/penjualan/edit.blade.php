@@ -51,12 +51,12 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label font-weight-bold">
                                                 <i class="fas fa-building mr-1 text-primary"></i>
-                                                Cabang <span class="text-danger">*</span>
+                                                Outlet <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-control" name="id_cabang" required>
-                                                <option value="">-- Pilih Cabang --</option>
-                                                @foreach ($cabang as $id => $nama)
-                                                    <option value="{{ $id }}" {{ $penjualan->id_cabang == $id ? 'selected' : '' }}>
+                                            <select class="form-control" name="id_outlet" required>
+                                                <option value="">-- Pilih Outlet --</option>
+                                                @foreach ($outlet as $id => $nama)
+                                                    <option value="{{ $id }}" {{ $penjualan->id_outlet == $id ? 'selected' : '' }}>
                                                         {{ $nama }}
                                                     </option>
                                                 @endforeach
@@ -71,7 +71,7 @@
                                                 <option value="">-- Pilih Sumber Dana --</option>
                                                 @foreach ($sumberDana as $id => $nama)
                                                     <option value="{{ $id }}"
-                                                        {{ optional($penjualan->transaksi->first())->id_sumber_dana == $id ? 'selected' : '' }}>
+                                                        {{ $penjualan->transaksi?->id == $id ? 'selected' : '' }}>
                                                         {{ $nama }}
                                                     </option>
                                                 @endforeach

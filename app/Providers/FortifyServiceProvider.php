@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Responses\CustomEmailVerificationNotificationSentResponse;
 use Laravel\Fortify\Contracts\EmailVerificationNotificationSentResponse;
+use App\Responses\CustomVerifyEmailResponse;
+use Laravel\Fortify\Contracts\VerifyEmailResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,7 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(EmailVerificationNotificationSentResponse::class, CustomEmailVerificationNotificationSentResponse::class);
+        $this->app->bind(VerifyEmailResponse::class, CustomVerifyEmailResponse::class);
     }
 
     /**

@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('piutang_pembayaran', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_piutang')
-                ->constrained('piutang')
-                ->onDelete('cascade');
+            $table->string('nobukti');
             $table->foreignId('id_sumber_dana')->constrained('sumber_dana');
             $table->date('tanggal');
-            $table->decimal('jumlah', 16, 2);
+            $table->decimal('jumlah', 15, 0);
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

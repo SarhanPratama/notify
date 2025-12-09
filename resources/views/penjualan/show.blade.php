@@ -26,31 +26,18 @@
                         <h6 class="mb-0 fw-bold">Informasi Outlet</h6>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-user text-warning"></i>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <small class="d-block">Nama Outlet</small>
+                                <span class="fw-bold">{{ $detailPenjualan->outlet->nama ?? '-' }}</span>
                             </div>
-                            <div>
-                                <small class="text-muted d-block">Nama Outlet</small>
-                                <span class="fw-bold">{{ $detailPenjualan->cabang->nama ?? '-' }}</span>
+                            <div class="col-md-4 mb-3">
+                                <small class="d-block">Telepon</small>
+                                <span>{{ $detailPenjualan->outlet->telepon ?? '-' }}</span>
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-phone text-warning"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Telepon</small>
-                                <span>{{ $detailPenjualan->cabang->telepon ?? '-' }}</span>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="bg-warning bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-map-marker-alt text-warning"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Alamat</small>
-                                <span>{{ $detailPenjualan->cabang->alamat ?? '-' }}</span>
+                            <div class="col-md-4 mb-3">
+                                <small class="d-block">Alamat</small>
+                                <span>{{ $detailPenjualan->outlet->alamat ?? '-' }}</span>
                             </div>
                         </div>
                     </div>
@@ -60,54 +47,70 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-header bg-success py-3 border-0 d-flex align-items-center text-light">
                         <i class="fas fa-info-circle me-2"></i>
-                        <h6 class="mb-0 fw-bold">Informasi Pembelian</h6>
+                        <h6 class="mb-0 fw-bold">Informasi Penjualan</h6>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-calendar-alt text-info"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Tanggal</small>
+                        <div class="row">
+                            <div class="col-lg-3 mb-3">
+                                <small class="d-block">Tanggal</small>
                                 <span>{{ \Carbon\Carbon::parse($detailPenjualan->tanggal)->format('d F Y') }}</span>
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-tag text-info"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Kode</small>
+                            <div class="col-lg-3 mb-3">
+                                <small class="d-block">Kode</small>
                                 <span class="fw-bold">{{ $detailPenjualan->nobukti }}</span>
                             </div>
-                        </div>
-                        {{-- <div class="d-flex align-items-center mb-3">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-user-edit text-info"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Dibuat Oleh</small>
-                                <span>{{ $detailPenjualan->user->name ?? '-' }}</span>
-                            </div>
-                        </div> --}}
-                        <div class="d-flex align-items-center">
-                            <div class="bg-info bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-wallet text-info"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Kas Masuk</small>
+                            <div class="col-lg-3 mb-3">
+                                <small class="d-block">Kas Masuk</small>
                                 <span>{{ $detailPenjualan->transaksi->SumberDana->nama ?? 'Tidak tercatat' }}</span>
                             </div>
+                            <div class="col-lg-3 mb-3">
+                                @php
+                                    $metode = $detailPenjualan->metode_pembayaran;
+                                    $statusTransaksi = $detailPenjualan->status;
+                                    $statusPiutang = $detailPenjualan->piutang->status ?? null;
+                                @endphp
+
+                                <small class="d-block">Status Transaksi</small>
+
+                                @if ($metode === 'tunai')
+                                    @switch($statusTransaksi)
+                                        @case('pending')
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        @break
+
+                                        @case('approved')
+                                            <span class="badge bg-info text-dark">Approved</span>
+                                        @break
+
+                                        @case('rejected')
+                                            <span class="badge bg-danger">Rejected</span>
+                                        @break
+
+                                        @case('completed')
+                                            <span class="badge bg-success">Lunas</span>
+                                        @break
+
+                                        @default
+                                            <span class="badge bg-secondary">Unknown</span>
+                                    @endswitch
+
+                                    {{-- CASE 2: PEMBAYARAN KASBON --}}
+                                @elseif ($metode === 'kasbon')
+                                    @switch($statusPiutang)
+                                        @case('belum_lunas')
+                                            <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
+                                        @break
+
+                                        @case('lunas')
+                                            <span class="badge bg-success">Kasbon - Lunas</span>
+                                        @break
+
+                                        @default
+                                            <span class="badge bg-secondary">Kasbon - Tidak Diketahui</span>
+                                    @endswitch
+                                @endif
+                            </div>
                         </div>
-                        {{-- <div class="d-flex align-items-center">
-                            <div class="bg-success bg-opacity-10 p-2 rounded me-3">
-                                <i class="fas fa-wallet text-success"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Sumber Dana</small>
-                                <span>{{ $detailPenjualan->transaksi->first()->SumberDana->nama ?? 'Tidak tercatat' }}</span>
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -179,20 +182,10 @@
             <div class="col-lg-5">
                 <div class="card shadow-sm rounded-3 border-light">
                     <div class="card-body p-4">
-                        {{-- Anda bisa menambahkan item lain seperti diskon atau pajak di sini --}}
-                        {{-- <div class="d-flex justify-content-between text-muted mb-2">
-                            <span>Subtotal</span>
-                            <span>Rp 1.000.000</span>
-                        </div>
-                        <div class="d-flex justify-content-between text-muted mb-2">
-                            <span>Pajak (11%)</span>
-                            <span>Rp 110.000</span>
-                        </div>
-                        <hr> --}}
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="h5 mb-0 fw-semibold">Total</span>
                             <span class="h5 mb-0 fw-bold text-primary">Rp
-                                {{ number_format($detailPenjualan->total, 2, ',', '.') }}</span>
+                                {{ number_format($detailPenjualan->total, 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -216,16 +209,16 @@
                     <div class="row mb-3">
                         <div class="col-md-4 text-center">
                             <small class="text-muted fw-bold">Total Piutang</small>
-                            <div class="fw-bold text-dark">Rp {{ number_format($piutang->jumlah_piutang, 2, ',', '.') }}
+                            <div class="fw-bold text-dark">Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}
                             </div>
                         </div>
                         <div class="col-md-4 text-center">
                             <small class="text-muted fw-bold">Sudah Dibayar</small>
-                            <div class="fw-bold text-success">Rp {{ number_format($totalDibayar, 2, ',', '.') }}</div>
+                            <div class="fw-bold text-success">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</div>
                         </div>
                         <div class="col-md-4 text-center">
                             <small class="text-muted fw-bold">Sisa Piutang</small>
-                            <div class="fw-bold text-danger">Rp {{ number_format($sisa, 2, ',', '.') }}</div>
+                            <div class="fw-bold text-danger">Rp {{ number_format($sisa, 0, ',', '.') }}</div>
                         </div>
                     </div>
 
@@ -238,14 +231,15 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>{{ $pay->tanggal->format('d M Y') }}</strong><br>
-                                        <small class="text-muted">{{ $pay->keterangan }}</small>
+                                        {{-- <small class="text-muted">{{ $pay->keterangan }}</small> --}}
                                     </div>
                                     <div class="text-end">
                                         <span class="fw-bold d-block">Rp
-                                            {{ number_format($pay->jumlah, 2, ',', '.') }}</span>
+                                            {{ number_format($pay->jumlah, 0, ',', '.') }}</span>
                                         <span class="badge bg-primary mt-1">{{ $pay->sumberDana->nama }}</span>
                                     </div>
                                 </li>
+                                <hr>
                             @endforeach
                         </ul>
                     @endif

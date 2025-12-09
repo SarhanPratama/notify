@@ -20,7 +20,6 @@ class Pembelian extends Model
         'status',
         'catatan',
         'id_supplier',
-        // 'id_user'
     ];
 
       protected function catatan(): Attribute
@@ -29,14 +28,15 @@ class Pembelian extends Model
             get: fn ($value) => $value ?? 'Tidak ada catatan',
         );
     }
+    
     public function mutasi()
     {
-        return $this->morphMany(mutasi::class, 'mutasiable');
+        return $this->hasMany(mutasi::class, 'nobukti', 'nobukti');
     }
 
     public function transaksi()
     {
-        return $this->morphMany(Transaksi::class, 'referenceable');
+        return $this->hasMany(Transaksi::class, 'nobukti', 'nobukti');
     }
 
     public function supplier()

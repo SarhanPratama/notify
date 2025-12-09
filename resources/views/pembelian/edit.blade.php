@@ -13,8 +13,8 @@
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="card shadow-lg">
-                    <div class="card-header bg-warning py-3 text-center">
-                        <h1 class="mb-0 fs-5 fw-bolder text-light">Form Edit Pembelian</h1>
+                    <div class="card-header bg-maron py-3 text-center">
+                        <h1 class="mb-0 fs-5 fw-bolder text-light">Form Edit Pembelian Stok</h1>
                     </div>
 
                     <div class="card-body">
@@ -22,36 +22,15 @@
                             @csrf
                             @method('PUT')
                             <div class="row mb-4">
-                                {{-- <div class="col-lg-6 col-md 6 col-sm-12 col-12">
-                                    <label for="">Karyawan</label>
-                                    <input type="text" class="form-control form-control-sm" name="id_user" value="{{ Auth::user()->name }}" readonly>
-                                </div> --}}
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label fw-bold" for="tanggal">Tanggal <span
-                                            class="text-danger">*</span></label>
-                                    <input class="form-control form-control-sm border-0 bg-light shadow-none" type="date"
-                                        id="tanggal" name="tanggal" value="{{ $detailPembelian->tanggal }}" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <label class="form-label fw-bold">Supplier</span></label>
-                                    <select class="form-select form-select-sm" name="id_supplier">
+                                    <select class="form-select form-select-sm select-single" name="id_supplier">
                                         <option value="">Pilih Supplier</option>
                                         @foreach ($suppliers as $id => $nama)
                                             <option value="{{ $id }}"
                                                 {{ $detailPembelian->id_supplier == $id ? 'selected' : '' }}>
                                                 {{ $nama }}
                                             </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label fw-bold">Sumber Dana</span></label>
-                                    <select class="form-select form-select-sm" name="id_sumber_dana">
-                                        <option value="">-- Pilih Sumber Dana --</option>
-                                        @foreach ($sumberDana as $id => $nama)
-                                            <option value="{{ $id }}"
-                                                {{ optional($detailPembelian->transaksi->first())->id_sumber_dana == $id ? 'selected' : '' }}>
-                                                {{ $nama }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -78,7 +57,7 @@
                                         @foreach ($detailPembelian->mutasi as $detail)
                                             <tr class="detail-item">
                                                 <td>
-                                                    <select class="form-select form-select-sm" name="bahanBaku[]"
+                                                    <select class="form-select form-select-sm select-single" name="bahanBaku[]"
                                                         style="min-width: 200px" required>
                                                         <option value="">Pilih Bahan Baku</option>
                                                         @foreach ($produk as $data)

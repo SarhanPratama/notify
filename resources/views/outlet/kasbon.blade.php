@@ -15,15 +15,15 @@
         <div class="col-md-3 col-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-column gap-2">
                         <div class="flex-shrink-0">
-                            <div class="bg-danger bg-opacity-10 rounded-3 p-3">
-                                <i class="fas fa-money-bill-wave text-danger fs-4"></i>
+                            <div class="bg-danger bg-opacity-10 rounded-3 p-2">
+                                <i class="fas fa-money-bill-wave text-danger fs-6"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Total Kasbon</h6>
-                            <h5 class="mb-0 fw-bold">Rp {{ number_format($totalPiutang, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center">Rp {{ number_format($totalPiutang, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -32,15 +32,15 @@
         <div class="col-md-3 col-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-column gap-2">
                         <div class="flex-shrink-0">
-                            <div class="bg-warning bg-opacity-10 rounded-3 p-3">
-                                <i class="fas fa-exclamation-triangle text-warning fs-4"></i>
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-2">
+                                <i class="fas fa-exclamation-triangle text-warning fs-6"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Jatuh Tempo</h6>
-                            <h5 class="mb-0 fw-bold text-warning">Rp {{ number_format($jatuhTempo, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-warning">Rp {{ number_format($jatuhTempo, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -49,15 +49,15 @@
         <div class="col-md-3 col-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-column gap-2">
                         <div class="flex-shrink-0">
-                            <div class="bg-info bg-opacity-10 rounded-3 p-3">
-                                <i class="fas fa-clock text-info fs-4"></i>
+                            <div class="bg-info bg-opacity-10 rounded-3 p-2">
+                                <i class="fas fa-clock text-info fs-6"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Belum Dibayar</h6>
-                            <h5 class="mb-0 fw-bold">Rp {{ number_format($belumDibayar, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center">Rp {{ number_format($belumDibayar, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -66,15 +66,15 @@
         <div class="col-md-3 col-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-column gap-2">
                         <div class="flex-shrink-0">
-                            <div class="bg-success bg-opacity-10 rounded-3 p-3">
-                                <i class="fas fa-check-circle text-success fs-4"></i>
+                            <div class="bg-success bg-opacity-10 rounded-3 p-2">
+                                <i class="fas fa-check-circle text-success fs-6"></i>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Sudah Dibayar</h6>
-                            <h5 class="mb-0 fw-bold text-success">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-success">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                                 <th class="text-nowrap">Nomor Bukti</th>
                                 <th class="text-nowrap">Tanggal</th>
                                 <th class="text-nowrap">Jatuh Tempo</th>
-                                <th class="text-nowrap">Status</th>
+                                <th class="text-nowrap">Status Transaksi</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>

@@ -12,17 +12,16 @@ class mutasi extends Model
 
     protected $table = 'mutasi';
 
-    public $timestamps = false;
+    // public $timestamps = true;
 
     protected $fillable = [
+        'nobukti',
         'id_bahan_baku',
         'quantity',
         'harga',
         'sub_total',
         'jenis_transaksi',
         'status',
-        'mutasiable_id',
-        'mutasiable_type',
     ];
 
     public function bahanBaku()
@@ -30,9 +29,14 @@ class mutasi extends Model
         return $this->belongsTo(BahanBaku::class, 'id_bahan_baku');
     }
 
-        public function mutasiable()
+    public function penjualan()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
+    }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'nobukti', 'nobukti');
     }
 
 }

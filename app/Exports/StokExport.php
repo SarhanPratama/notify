@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\ViewStok;
 use App\Models\VSaldoAkhir;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,7 +14,7 @@ class StokExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        return VSaldoAkhir::all();
+        return ViewStok::all();
     }
 
     public function headings(): array
@@ -21,11 +22,11 @@ class StokExport implements FromCollection, WithHeadings
         return [
             'No',
             'Nama Barang',
-            'Satuan',
             'Stok Awal',
             'Total Masuk',
             'Total Keluar',
-            'Saldo Akhir'
+            'Saldo Akhir',
+            'Satuan',
         ];
     }
 }

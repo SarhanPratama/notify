@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col-lg-12">
 
-                <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
+                {{-- <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
                     <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
                         <h6 class="font-weight-bold text-primary mb-2">Filter Data</h6>
                     </div>
@@ -19,15 +19,27 @@
                                     <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" class="btn btn-sm {{ $status == 'pending' ? 'btn-primary' : 'btn-outline-primary' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-clock"></i> Pending
                                     </a>
+                                    @if(auth()->user()->hasRole('gudang') || auth()->user()->hasRole('keuangan') || auth()->user()->hasRole('owner'))
+                                    <a href="{{ route('admin.pesanan.index', ['status' => 'approved_by_gudang']) }}" class="btn btn-sm {{ $status == 'approved_by_gudang' ? 'btn-warning' : 'btn-outline-warning' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
+                                        <i class="fas fa-check-circle"></i> Approved Gudang
+                                    </a>
+                                    @endif
+                                    @if(auth()->user()->hasRole('keuangan') || auth()->user()->hasRole('owner'))
                                     <a href="{{ route('admin.pesanan.index', ['status' => 'approved']) }}" class="btn btn-sm {{ $status == 'approved' ? 'btn-success' : 'btn-outline-success' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-check"></i> Approved
                                     </a>
+                                    @endif
                                     <a href="{{ route('admin.pesanan.index', ['status' => 'completed']) }}" class="btn btn-sm {{ $status == 'completed' ? 'btn-info' : 'btn-outline-info' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-check-double"></i> Completed
                                     </a>
                                     <a href="{{ route('admin.pesanan.index', ['status' => 'rejected']) }}" class="btn btn-sm {{ $status == 'rejected' ? 'btn-danger' : 'btn-outline-danger' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-times"></i> Rejected
                                     </a>
+                                    @if(auth()->user()->hasRole('gudang') || auth()->user()->hasRole('owner'))
+                                    <a href="{{ route('admin.pesanan.index', ['status' => 'rejected_by_gudang']) }}" class="btn btn-sm {{ $status == 'rejected_by_gudang' ? 'btn-danger' : 'btn-outline-danger' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
+                                        <i class="fas fa-times-circle"></i> Rejected Gudang
+                                    </a>
+                                    @endif
                                     <a href="{{ route('admin.pesanan.index', ['status' => 'all']) }}" class="btn btn-sm {{ $status == 'all' ? 'btn-secondary' : 'btn-outline-secondary' }} px-4 py-2 d-flex align-items-center gap-2 fw-medium">
                                         <i class="fas fa-list"></i> All
                                     </a>
@@ -35,7 +47,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Card with improved styling -->
                 <div class="card shadow-sm border-0">
@@ -76,15 +88,31 @@
                                                     <span class="bg-light text-maron p-2 rounded-circle mr-2">
                                                         <i class="fas fa-store"></i>
                                                     </span>
-                                                    <strong>{{ $order->cabang->nama ?? '-' }}</strong>
+                                                    <strong>{{ $order->outlet->nama ?? '-' }}</strong>
                                                 </div>
                                             </td>
                                             <td class="align-middle">{{ $order->mutasi->count() }}</td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
-                                                Rp. {{ number_format($order->total, 2, ',', '.') }}
+                                                Rp. {{ number_format($order->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-                                                <span class="badge bg-{{ $order->status == 'pending' ? 'warning text-dark' : ($order->status == 'approved' ? 'success' : ($order->status == 'completed' ? 'info text-dark' : 'danger')) }}">{{ ucfirst($order->status) }}</span>
+                                                @if($order->status == 'pending')
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                @elseif($order->status == 'approved_by_gudang')
+                                                    <span class="badge bg-warning text-dark">
+                                                        Disetujui Gudang
+                                                    </span>
+                                                @elseif($order->status == 'approved')
+                                                    <span class="badge bg-success">Disetujui</span>
+                                                @elseif($order->status == 'completed')
+                                                    <span class="badge bg-info text-dark">Selesai</span>
+                                                @elseif($order->status == 'rejected')
+                                                    <span class="badge bg-danger">Ditolak</span>
+                                                @elseif($order->status == 'rejected_by_gudang')
+                                                    <span class="badge bg-danger">
+                                                        Ditolak Gudang
+                                                    </span>
+                                                @endif
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">

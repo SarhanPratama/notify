@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center mb-3">
         <div class="ms-1">
-            <a href="{{ route('outlet.pesanan', ['token' => $token]) }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ route('outlet.pesanan', ['token' => $token]) }}" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -19,38 +19,53 @@
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-md-4 text-center mb-3">
+                        <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
                             <small class="text-muted d-block">Tanggal Pesan</small>
                             <span class="fw-semibold">{{ $order->created_at->format('d F Y') }}</span>
                             <div class="small text-muted">{{ $order->created_at->format('H:i') }} WIB</div>
                         </div>
-                        <div class="col-md-4 text-center mb-3">
+                        {{-- <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
                             <small class="text-muted d-block">Tanggal Kirim</small>
                             <span
                                 class="fw-semibold">{{ $order->tanggal ? \Carbon\Carbon::parse($order->tanggal)->format('d F Y') : '-' }}</span>
-                        </div>
-                        <div class="col-md-4 text-center mb-3">
+                        </div> --}}
+                        <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
                             <small class="text-muted d-block">Status</small>
-                            @switch($order->status)
-                                @case('pending')
-                                    <span class="badge bg-warning text-dark">Menunggu</span>
-                                @break
+                            @php
+                                $statusBadge = '';
+                                $statusText = '';
 
-                                @case('approved')
-                                    <span class="badge bg-success">Disetujui</span>
-                                @break
-
-                                @case('rejected')
-                                    <span class="badge bg-danger">Ditolak</span>
-                                @break
-
-                                @case('completed')
-                                    <span class="badge bg-info text-dark">Selesai</span>
-                                @break
-
-                                @default
-                                    <span class="badge bg-secondary">{{ ucfirst($order->status) }}</span>
-                            @endswitch
+                                if ($order->status === 'approved' && $order->metode_pembayaran === 'kasbon' && $order->piutang && $order->piutang->status === 'belum_lunas') {
+                                    $statusBadge = 'bg-warning text-dark';
+                                    $statusText = 'Kasbon - Belum Lunas';
+                                } elseif ($order->status === 'approved' && $order->metode_pembayaran === 'kasbon' && $order->piutang && $order->piutang->status === 'lunas') {
+                                    $statusBadge = 'bg-success';
+                                    $statusText = 'Kasbon - Lunas';
+                                } else {
+                                    switch($order->status) {
+                                        case 'pending':
+                                            $statusBadge = 'bg-warning text-dark';
+                                            $statusText = 'Menunggu';
+                                            break;
+                                        case 'approved':
+                                            $statusBadge = 'bg-success';
+                                            $statusText = 'Disetujui';
+                                            break;
+                                        case 'rejected':
+                                            $statusBadge = 'bg-danger';
+                                            $statusText = 'Ditolak';
+                                            break;
+                                        case 'completed':
+                                            $statusBadge = 'bg-info text-dark';
+                                            $statusText = 'Selesai';
+                                            break;
+                                        default:
+                                            $statusBadge = 'bg-secondary';
+                                            $statusText = ucfirst($order->status);
+                                    }
+                                }
+                            @endphp
+                            <span class="badge {{ $statusBadge }}">{{ $statusText }}</span>
                         </div>
                         @if ($order->catatan)
                             <div class="col-md-12 mb-2">

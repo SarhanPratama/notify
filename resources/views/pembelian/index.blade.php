@@ -52,8 +52,7 @@
                 </div>
                 <!-- Card with improved styling -->
                 <div>
-                    <a href="{{ route('pembelian.create') }}"
-                        class="btn btn-outline-primary fw-bold mb-3">
+                    <a href="{{ route('pembelian.create') }}" class="btn btn-outline-primary fw-bold mb-3">
                         Tambah
                     </a>
                 </div>
@@ -104,33 +103,46 @@
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-                                                <span
-                                                    class="badge fw-bolder {{ $item->status == 1 ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $item->status == 1 ? 'Success' : 'Cancel' }}
-                                                </span>
+                                                {{-- @php
+                                                    $status = is_string($item->status) ? $item->status : (string) $item->status;
+                                                @endphp --}}
+
+                                                @if ($item->status === 'approved')
+                                                    <span class="badge fw-bolder bg-success">Disetujui</span>
+                                                @elseif($item->status === 'pending')
+                                                    <span class="badge fw-bolder bg-warning text-dark">Pending</span>
+                                                @elseif($item->status === 'reject' || $item->status === 'rejected')
+                                                    <span class="badge fw-bolder bg-danger">Ditolak</span>
+                                                @else
+                                                    <span
+                                                        class="badge fw-bolder bg-secondary">{{ ucfirst($item->status) }}</span>
+                                                @endif
                                             </td>
                                             <td class="align-middle">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div class="btn-group btn-group-sm" role="group">
+
                                                         @if (is_null($item->deleted_at))
                                                             <a href="{{ route('pembelian.edit', $item->nobukti) }}"
                                                                 class="btn btn-outline-warning rounded-left" title="edit">
                                                                 <i class="fa fa-pencil"></i>
                                                             </a>
-
-                                                            <a href="{{ route('pembelian.show', $item->nobukti) }}"
-                                                                class="btn btn-outline-success" title="Detail">
-                                                                <i class="far fa-eye"></i>
-                                                            </a>
-
+                                                        @endif
+                                                        <a href="{{ route('pembelian.show', $item->nobukti) }}"
+                                                            class="btn btn-outline-success" title="Detail">
+                                                            <i class="far fa-eye"></i>
+                                                        </a>
+                                                        @if ($item->status === 'pending')
                                                             <button class="btn btn-outline-danger rounded-right"
                                                                 data-toggle="modal"
-                                                                data-target="#deleteModal{{ $item->id }}"
+                                                                data-target="#cancelModal{{ $item->id }}"
                                                                 title="Hapus">
-                                                                <i class="far fa-trash-alt"></i>
+                                                                {{-- <i class="far fa-trash-alt"></i> --}}
+                                                                <i class="fa fa-times" aria-hidden="true"></i>
                                                             </button>
                                                         @endif
                                                     </div>
+                                                    @if ($item->status === 'pending' || $item->status === 'canceled')
 
                                                     <div class="btn-group dropleft ml-auto">
                                                         <a class="btn btn-sm border-none" data-toggle="dropdown"
@@ -139,31 +151,39 @@
                                                         </a>
                                                         <div class="dropdown-menu p-2">
                                                             <!-- Tambahkan dropdown menu di sini -->
-                                                            @if ($item->status == 0)
+
+                                                            @if (!is_null($item->deleted_at))
                                                                 <form
                                                                     action="{{ route('pembelian.restore', $item->nobukti) }}"
                                                                     method="POST">
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <button
-                                                                        class="btn btn-sm btn-outline-success w-100 mb-2">Undo</button>
+                                                                        class="btn btn-sm btn-outline-success w-100">Undo</button>
                                                                 </form>
                                                             @endif
-
+                                                            {{-- <button class="btn btn-outline-danger rounded-right"
+                                                                data-toggle="modal"
+                                                                data-target="#deleteModal{{ $item->id }}"
+                                                                title="Hapus">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button> --}}
                                                             {{-- <a class="dropdown-item"
                                                                 href="{{ route('pembelian.restore', $item->nobukti) }}">Undo</a> --}}
                                                             <button class="btn btn-sm btn-outline-danger w-100"
                                                                 data-toggle="modal"
-                                                                data-target="#deletePermanenModal{{ $item->id }}"
+                                                                data-target="#deleteModal{{ $item->id }}"
                                                                 title="Hapus">
-                                                                Hapus Permanen
+                                                                Hapus
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
-                                        @include('pembelian.delete-permanent')
+                                        @include('pembelian.modal-cancel')
+                                        {{-- @include('pembelian.delete-permanent') --}}
                                         @include('pembelian.destroy')
                                     @endforeach
                                 </tbody>

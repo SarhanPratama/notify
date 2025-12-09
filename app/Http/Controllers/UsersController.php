@@ -17,10 +17,10 @@ class UsersController extends Controller
     public function index(Request $request)
     {
 
-        $title = 'Karyawan';
+        $title = 'Users';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Karyawan', 'url' => route('users.index')],
+            ['label' => 'Users', 'url' => route('users.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
@@ -34,7 +34,7 @@ class UsersController extends Controller
         //     });
         // })->paginate($perPage);
 
-        $users = User::with(['cabang', 'roles'])->get();
+        $users = User::with(['roles'])->get();
         // $users = Karyawan::with(['user', 'cabang', 'role'])->get();
 
         return view('users.index', compact('breadcrumbs', 'title', 'users'));
@@ -42,7 +42,6 @@ class UsersController extends Controller
 
     public function create()
     {
-        // User::with('Cabang')->get();
         $title = 'Karyawan';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
@@ -51,11 +50,10 @@ class UsersController extends Controller
         ];
         // $user = User::all();
         // dd($user);
-        $cabang = Cabang::pluck('nama', 'id');
         $roles = Role::pluck('name', 'id');
 
         // dd($cabang);
-        return view('users.create', compact('cabang', 'breadcrumbs', 'title', 'roles'));
+        return view('users.create', compact('breadcrumbs', 'title', 'roles'));
     }
 
 
@@ -65,45 +63,23 @@ class UsersController extends Controller
         $request->validate([
             'name'              => 'required|string|max:255',
             'email'             => 'required|email|unique:users,email',
-            'tgl_lahir'         => 'required|date',
-            'telepon'           => 'required|string|max:15',
             'id_roles'          => 'required|exists:roles,id',
-            'id_cabang'         => 'required|exists:cabang,id',
-            'alamat'            => 'nullable|string',
-            'foto'              => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        //     'password'          => 'required|string|min:8|confirmed',
-        //     'password_confirmation' => 'required|string|min:8',
+            'password'          => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
         ]);
 
         $user = User::create([
             'name'              => $request->name,
             'email'             => $request->email,
-            'tgl_lahir'         => $request->tgl_lahir,
-            'telepon'           => $request->telepon,
-            // 'id_cabang'         => $request->id_cabang,
-            'alamat'            => $request->alamat,
-            // 'password'          => Hash::make($request->password),
+            'password'          => Hash::make($request->password),
+            'id_role'              => $request->id_roles,
             'created_at'        => now(),
             'updated_at'        => now(),
         ]);
 
-        // Assign the role to the user
         $role = Role::findById($request->id_roles, 'web');
         $user->syncRoles([$role->name]);
 
-        // Handle the photo upload if it exists
-        if ($request->hasFile('foto')) {
-            if ($user->foto && Storage::exists('public/' . $user->foto)) {
-                Storage::delete('public/' . $user->foto);
-            }
-
-            $foto = $request->file('foto');
-            $fotoName = time() . '_' . $foto->getClientOriginalName();
-            $fotoPath = $foto->storeAs('uploads/users', $fotoName, 'public');
-
-            $user->foto = $fotoPath;
-            $user->save();
-        }
 
         notify()->success('Data user "' . $user->name . '" berhasil ditambahkan.');
         return redirect()->route('users.index');
@@ -136,57 +112,39 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
         // DD($users);
-        $cabang = Cabang::pluck('nama', 'id');
 
         $roles = Role::pluck('name', 'id');
 
         $userRole = $user->getRoleNames();
 
-        return view('users.edit', compact('title', 'breadcrumbs', 'user', 'cabang', 'roles', 'userRole'));
+        return view('users.edit', compact('title', 'breadcrumbs', 'user', 'roles', 'userRole'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'name'      => 'required|string|max:255',
-            'tgl_lahir' => 'required|date',
-            'telepon'   => 'required|string|max:15',
             'id_roles'  => 'required|exists:roles,id',
-            'id_cabang' => 'required|exists:cabang,id',
-            'alamat'    => 'nullable|string',
-            'foto'      => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'password'          => 'required|string|min:8|confirmed',
-            // 'password_confirmation' => 'required|string|min:8',
+            'password'          => 'nullable|string|min:8|confirmed',
         ]);
 
         // dd($request->all());
         $user = User::findOrFail($id);
 
-        $user->update([
-            'name'      => $request->name,
-            'tgl_lahir' => $request->tgl_lahir,
-            'telepon'   => $request->telepon,
-            // 'id_cabang' => $request->id_cabang,
-            'alamat'    => $request->alamat,
-            // 'password'  => Hash::make($request->password),
+        $data = [
+            'name' => $request->name,
+            'id_role' => $request->id_roles,
             'updated_at' => now(),
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
 
         $role = Role::findById($request->id_roles, 'web');
         $user->syncRoles([$role->name]);
-
-        if ($request->hasFile('foto')) {
-            if ($user->foto && Storage::exists('public/' . $user->foto)) {
-                Storage::delete('public/' . $user->foto);
-            }
-
-            $foto = $request->file('foto');
-            $fotoName = time() . '_' . $foto->getClientOriginalName();
-            $fotoPath = $foto->storeAs('uploads/users', $fotoName, 'public');
-
-            $user->foto = $fotoPath;
-            $user->save();
-        }
 
         notify()->success('Data User berhasil diperbarui!');
         return redirect()->route('users.index');

@@ -1,7 +1,7 @@
 @if ($item->status === 'belum_lunas')
     @php
         $totalDibayar = $item->pembayaran->sum('jumlah');
-        $sisaPiutang = $item->jumlah_piutang - $totalDibayar;
+        // $sisaPiutang = $item->jumlah_piutang - $totalDibayar;
     @endphp
 
     <div class="modal fade" id="bayarModal{{ $item->id }}" tabindex="-1"
@@ -20,17 +20,17 @@
                         <div class="row">
                             <div class="col-4 mb-2">
                                 <label class="fw-bold d-block text-muted">Total Piutang</label>
-                                <div class="text-dark">Rp. {{ number_format($item->jumlah_piutang, 2, ',', '.') }}</div>
+                                <div class="text-dark">Rp. {{ number_format($item->jumlah_piutang, 0, ',', '.') }}</div>
                             </div>
 
                             <div class="col-4 mb-2">
                                 <label class="fw-bold d-block text-muted">Sudah Dibayar</label>
-                                <div class="text-success">Rp. {{ number_format($totalDibayar, 2, ',', '.') }}</div>
+                                <div class="text-success">Rp. {{ number_format($totalDibayar, 0, ',', '.') }}</div>
                             </div>
 
                             <div class="col-4 mb-3">
                                 <label class="fw-bold d-block text-muted">Sisa Piutang</label>
-                                <div class="text-danger">Rp. {{ number_format($sisaPiutang, 2, ',', '.') }}</div>
+                                <div class="text-danger">Rp. {{ number_format($item->sisa_piutang, 0, ',', '.') }}</div>
                             </div>
 
                             <div class="mb-3">

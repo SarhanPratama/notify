@@ -38,7 +38,7 @@
                                         <i class="fas fa-box text-primary mr-2"></i>
                                         Pilih Bahan Baku
                                     </label>
-                                    <select name="id_bahan_baku" id="id_bahan_baku" class="form-control form-control-lg"
+                                    <select name="id_bahan_baku" id="id_bahan_baku" class="form-control form-control-lg select2-single"
                                         required>
                                         <option value="" disabled {{ !$selected_id ? 'selected' : '' }}>
                                             -- Pilih Bahan Baku --
@@ -151,12 +151,9 @@
                                     Riwayat Pergerakan Stok
                                 </h5>
                                 <div>
-                                    <button onclick="printReport()" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-print mr-1"></i> Cetak
-                                    </button>
-                                    {{-- <button onclick="exportExcel()" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-file-excel mr-1"></i> Excel
-                                    </button> --}}
+                                    <a href="{{ route('laporan.kartu-stok.export', ['id_bahan_baku' => $selected_id]) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                        Export Excel
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -210,8 +207,8 @@
 
                                                 $saldo_berjalan = $saldo_berjalan + $masuk - $keluar;
 
-                                                if ($mutasi->mutasiable) {
-                                                    $no_bukti = $mutasi->mutasiable->nobukti ?? 'N/A';
+                                                if ($mutasi->transaksi) {
+                                                    $no_bukti = $mutasi->transaksi->first()->nobukti ?? 'N/A';
                                                 }
                                             @endphp
 
@@ -219,8 +216,8 @@
                                                 <td class="text-center">{{ $loop->iteration }}</td>
                                                 <td>
                                                     <small class="d-block font-weight-semibold">
-                                                        {{ $mutasi->mutasiable->created_at ? $mutasi->mutasiable->created_at->format('d M Y') : '-' }}
-                                                        {{ $mutasi->mutasiable->created_at ? $mutasi->mutasiable->created_at->format('H:i') : '-' }}
+                                                        {{ $mutasi->transaksi->first()->created_at ? $mutasi->transaksi->first()->created_at->format('d M Y') : '-' }}
+                                                        {{ $mutasi->transaksi->first()->created_at ? $mutasi->transaksi->first()->created_at->format('H:i') : '-' }}
                                                     </small>
                                                     {{-- <small class="text-muted">
                                                     </small> --}}

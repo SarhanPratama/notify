@@ -10,14 +10,15 @@ return new class extends Migration
     {
         Schema::create('mutasi', function (Blueprint $table) {
             $table->id();
-            $table->morphs('mutasiable');
-            // $table->string('nobukti');
+            // $table->morphs('mutasiable');
+            $table->string('nobukti');
             $table->foreignId('id_bahan_baku')->constrained('bahan_baku')->onDelete('restrict')->onUpdate('cascade');
             $table->integer('quantity');
-            $table->decimal('harga', 15, 2);
-            $table->decimal('sub_total', 15, 2);
+            $table->decimal('harga', 15, 0);
+            $table->decimal('sub_total', 15, 0);
             $table->enum('jenis_transaksi', ['M', 'K']);
-            $table->boolean('status');
+            $table->boolean('status')->default(0);
+            $table->timestamps();
             $table->softDeletes();
         });
     }

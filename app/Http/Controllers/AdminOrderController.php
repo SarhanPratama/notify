@@ -24,17 +24,43 @@ class AdminOrderController extends Controller
             ['label' => 'Pesanan Outlet', 'url' => route('admin.pesanan.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
+
+        $user = auth()->user();
         $status = $request->get('status', 'pending');
 
-        $orders = Penjualan::with('cabang')
-            ->when($status, function ($q) use ($status) {
-                if ($status === 'all') return $q;
+        // Filter berdasarkan role user
+        if ($user->hasRole('gudang')) {
+            // Admin gudang hanya melihat pesanan pending
+            $allowedStatuses = ['pending'];
+        } elseif ($user->hasRole('keuangan')) {
+            // Admin keuangan melihat pesanan yang sudah disetujui gudang atau pending (untuk backward compatibility)
+            $allowedStatuses = ['approved_by_gudang', 'pending'];
+            // Default status untuk admin keuangan adalah approved_by_gudang
+            if (!$request->has('status')) {
+                $status = 'approved_by_gudang';
+            }
+        } elseif ($user->hasRole('owner')) {
+            // Owner melihat semua status
+            $allowedStatuses = ['pending', 'approved_by_gudang', 'approved', 'rejected', 'rejected_by_gudang', 'completed'];
+        } else {
+            // Default - tidak ada akses
+            $allowedStatuses = [];
+        }
+
+        // Jika status yang diminta tidak diizinkan untuk role ini, redirect ke status pertama yang diizinkan
+        if (!in_array($status, $allowedStatuses)) {
+            $status = $allowedStatuses[0] ?? 'pending';
+        }
+
+        $orders = Penjualan::with('outlet')
+            ->whereIn('status', $allowedStatuses)
+            ->when($status !== 'all', function ($q) use ($status) {
                 return $q->where('status', $status);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('admin.orders.index', compact('orders', 'status', 'title', 'breadcrumbs'));
+        return view('pesanan.index', compact('orders', 'status', 'title', 'breadcrumbs', 'allowedStatuses'));
     }
 
     /**
@@ -42,16 +68,16 @@ class AdminOrderController extends Controller
      */
     public function show($id)
     {
-                $title = 'Detail Pesanan Outlet';
+        $title = 'Detail Pesanan Outlet';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Pesanan Outlet', 'url' => route('admin.pesanan.index')],
             ['label' => 'Detail', 'url' => null],
         ];
-        $order = Penjualan::with('mutasi.bahanBaku.satuan', 'cabang')->findOrFail($id);
+        $order = Penjualan::with('mutasi.bahanBaku.satuan', 'outlet')->findOrFail($id);
         $sumberDana = SumberDana::all();
 
-        return view('admin.orders.show', compact('order', 'sumberDana', 'title', 'breadcrumbs'));
+        return view('pesanan.show', compact('order', 'sumberDana', 'title', 'breadcrumbs'));
     }
 
     /**
@@ -59,80 +85,117 @@ class AdminOrderController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $request->validate([
-            'payment_type' => 'required|in:tunai,kasbon,partial',
-            'paid_amount' => 'nullable|numeric|min:0',
-            'id_sumber_dana' => 'nullable|exists:sumber_dana,id',
-            'jatuh_tempo' => 'nullable|date'
-        ]);
-
         DB::beginTransaction();
         try {
             $order = Penjualan::with('mutasi')->lockForUpdate()->findOrFail($id);
+            $user = auth()->user();
 
-            if ($order->status !== 'pending') {
-                return redirect()->back()->with('error', 'Hanya pesanan dengan status pending dapat diproses.');
-            }
-
-            $order->status = 'approved';
-            $order->metode_pembayaran = $request->payment_type;
-            $order->save();
-
-            // Mark mutasi as approved (status = 1)
-            $order->mutasi()->update(['status' => 1]);
-
-            $paid = (float) ($request->paid_amount ?? 0);
-
-            if ($request->payment_type === 'tunai') {
-                // record transaksi
-                $order->transaksi()->create([
-                    'id_sumber_dana' => $request->id_sumber_dana ?? null,
-                    'tanggal' => now(),
-                    'tipe' => 'in',
-                    'jumlah' => $paid > 0 ? $paid : $order->total,
-                    'deskripsi' => 'Pembayaran tunai untuk pesanan ' . $order->nobukti,
-                    'status' => 1,
-                ]);
-
-                // if fully paid -> completed
-                if ($paid >= $order->total || $paid == 0) {
-                    $order->status = 'completed';
-                    $order->save();
+            // Cek role dan status yang diizinkan
+            if ($user->hasRole('gudang')) {
+                // Admin gudang hanya bisa approve pesanan pending (verifikasi stok)
+                if ($order->status !== 'pending') {
+                    notify()->error('Admin gudang hanya dapat memproses pesanan dengan status pending.');
+                    return redirect()->back();
                 }
-            } else {
-                // kasbon or partial -> create piutang
-                $piutang = Piutang::create([
-                    'nobukti' => $order->nobukti,
-                    'jumlah_piutang' => $order->total,
-                    'jatuh_tempo' => $request->jatuh_tempo ?? now()->addDays(14),
-                    'status' => 'belum_lunas'
+
+                // Admin gudang hanya verifikasi stok, tidak handle pembayaran
+                $order->status = 'approved_by_gudang';
+                $order->save();
+
+                // Mark mutasi as approved by gudang (status = 1)
+                $order->mutasi()->update(['status' => 1]);
+
+                DB::commit();
+                notify()->success('Pesanan berhasil disetujui oleh admin gudang. Menunggu approval admin keuangan.');
+                return redirect()->route('admin.pesanan.index', ['status' => 'pending']);
+            } elseif ($user->hasRole('keuangan') || $user->hasRole('owner')) {
+                // Validasi input untuk admin keuangan
+                $request->validate([
+                    'payment_type' => 'required|in:tunai,kasbon',
+                    'paid_amount' => 'nullable|numeric|min:0',
+                    'id_sumber_dana' => 'nullable|exists:sumber_dana,id',
+                    'jatuh_tempo' => 'nullable|date'
                 ]);
 
-                if ($paid > 0) {
-                    PiutangPembayaran::create([
-                        'id_piutang' => $piutang->id,
+                // Admin keuangan/owner bisa approve final
+                if ($order->status !== 'approved_by_gudang' && $order->status !== 'pending') {
+                    notify()->error('Hanya pesanan yang sudah disetujui gudang atau pending dapat diproses.');
+                    return redirect()->back();
+                }
+
+                $order->status = 'approved';
+                $order->metode_pembayaran = $request->payment_type;
+                $order->save();
+
+                // Mark mutasi as approved (status = 1)
+                $order->mutasi()->update(['status' => 1]);
+
+                $paid = (float) ($request->paid_amount ?? 0);
+
+                if ($request->payment_type === 'tunai') {
+                    // record transaksi
+                    $order->transaksi()->create([
+                        'nobukti' => $order->nobukti,
                         'id_sumber_dana' => $request->id_sumber_dana ?? null,
                         'tanggal' => now(),
-                        'jumlah' => $paid,
-                        'keterangan' => 'Pembayaran sebagian untuk ' . $order->nobukti
+                        'tipe' => 'debit',
+                        'jumlah' => $paid > 0 ? $paid : $order->total,
+                        'deskripsi' => 'Pembayaran tunai untuk pesanan ' . $order->nobukti,
+                        'status' => 1,
                     ]);
 
-                    $totalPaid = $piutang->pembayaran()->sum('jumlah');
-                    if ($totalPaid >= $piutang->jumlah_piutang) {
-                        $piutang->status = 'lunas';
-                        $piutang->save();
+                    // if fully paid -> completed
+                    if ($paid >= $order->total || $paid == 0) {
                         $order->status = 'completed';
                         $order->save();
                     }
+                    DB::commit();
+                    notify()->success('Pesanan berhasil diproses dengan pembayaran tunai.');
+                    return redirect()->route('admin.pesanan.index');
+                } else {
+                    // kasbon or partial -> create piutang
+                    $piutang = Piutang::create([
+                        'nobukti' => $order->nobukti,
+                        'jumlah_piutang' => $order->total,
+                        'sisa_piutang' => $order->total - $paid,
+                        'jatuh_tempo' => $request->jatuh_tempo ?? now()->addDays(3),
+                        'status' => 'belum_lunas'
+                    ]);
+
+                    if ($paid > 0) {
+                        PiutangPembayaran::create([
+                            'nobukti' => $piutang->nobukti,
+                            'id_piutang' => $piutang->id,
+                            'id_sumber_dana' => $request->id_sumber_dana ?? null,
+                            'tanggal' => now(),
+                            'jumlah' => $paid,
+                            'keterangan' => 'Pembayaran kasbon untuk pesanan ' . $order->nobukti
+                        ]);
+
+                        // Juga catat di table transaksi untuk konsistensi
+                        Transaksi::create([
+                            'nobukti' => $piutang->nobukti,
+                            'id_sumber_dana' => $request->id_sumber_dana ?? null,
+                            'tanggal' => now(),
+                            'tipe' => 'debit',
+                            'jumlah' => $paid,
+                            'deskripsi' => 'Pembayaran kasbon untuk pesanan ' . $order->nobukti,
+                            'status' => 1,
+                        ]);
+                    }
+
+                    DB::commit();
+                    notify()->success('Pesanan berhasil diproses dengan pembayaran kasbon.');
+                    return redirect()->route('admin.pesanan.index');
                 }
+            } else {
+                notify()->error('Anda tidak memiliki izin untuk menyetujui pesanan.');
+                return redirect()->back();
             }
-
-            DB::commit();
-
-            return redirect()->route('penjualan.index')->with('success', 'Pesanan berhasil diproses.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            notify()->error('Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 
@@ -144,11 +207,28 @@ class AdminOrderController extends Controller
         DB::beginTransaction();
         try {
             $order = Penjualan::with('mutasi')->findOrFail($id);
-            if ($order->status !== 'pending') {
-                return redirect()->back()->with('error', 'Hanya pesanan dengan status pending dapat ditolak.');
+            $user = auth()->user();
+
+            // Cek role dan status yang diizinkan
+            if ($user->hasRole('gudang')) {
+                // Admin gudang hanya bisa reject pesanan pending
+                if ($order->status !== 'pending') {
+                    notify()->error('Admin gudang hanya dapat menolak pesanan dengan status pending.');
+                    return redirect()->back();
+                }
+                $order->status = 'rejected_by_gudang';
+            } elseif ($user->hasRole('keuangan') || $user->hasRole('owner')) {
+                // Admin keuangan/owner bisa reject pesanan approved_by_gudang atau pending
+                if ($order->status !== 'approved_by_gudang' && $order->status !== 'pending') {
+                    notify()->error('Hanya pesanan yang sudah disetujui gudang atau pending dapat ditolak.');
+                    return redirect()->back();
+                }
+                $order->status = 'rejected';
+            } else {
+                notify()->error('Anda tidak memiliki izin untuk menolak pesanan.');
+                return redirect()->back();
             }
 
-            $order->status = 'rejected';
             $order->save();
 
             // mark mutasi as rejected (status = 2)
@@ -156,10 +236,15 @@ class AdminOrderController extends Controller
 
             DB::commit();
 
-            return redirect()->route('penjualan.index')->with('success', 'Pesanan berhasil ditolak.');
+            $message = $user->hasRole('gudang') ?
+                'Pesanan berhasil ditolak oleh admin gudang.' :
+                'Pesanan berhasil ditolak oleh admin keuangan.';
+
+            return redirect()->route('admin.pesanan.index')->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            notify()->error('Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 }

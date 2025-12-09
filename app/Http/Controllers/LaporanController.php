@@ -8,52 +8,16 @@ use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\Transaksi;
-use App\Models\SumberDana;
 use App\Exports\StokExport;
-use App\Models\VSaldoAkhir;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Charts\SaldoKasChart;
+use App\Exports\BukuBesarExport;
+use App\Exports\KartuStokExport;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {
-    /**
-     * Laporan Saldo Kas per Sumber Dana (Dompet)
-     * Data sumber: view_saldo_dana
-     */
-    public function laporanSaldoKas(Request $request, SaldoKasChart $chart)
-    {
-        $title = 'Laporan Saldo Kas';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Laporan Saldo Kas', 'url' => null],
-        ];
-
-        // Ambil data saldo per dompet dari view_saldo_dana
-        $saldoPerDompet = DB::table('view_saldo_dana')
-            ->select('id_sumber_dana', 'nama', 'saldo_awal', 'total_pemasukan', 'total_pengeluaran', 'saldo_current')
-            ->orderBy('nama')
-            ->get();
-
-        // Ringkasan total
-        $totalSaldoAwal = $saldoPerDompet->sum('saldo_awal');
-        $totalPemasukan = $saldoPerDompet->sum('total_pemasukan');
-        $totalPengeluaran = $saldoPerDompet->sum('total_pengeluaran');
-        $totalSaldoAkhir = $saldoPerDompet->sum('saldo_current');
-
-        return view('laporan.saldo-kas',['chart' => $chart->build()], compact(
-            'title',
-            'breadcrumbs',
-            'saldoPerDompet',
-            'totalSaldoAwal',
-            'totalPemasukan',
-            'totalPengeluaran',
-            'totalSaldoAkhir',
-            // 'chart'
-        ));
-    }
 
     public function laporanStok()
     {
@@ -68,20 +32,20 @@ class LaporanController extends Controller
         return view('laporan.stok', compact('title', 'breadcrumbs', 'laporan_stok'));
     }
 
-    public function exportPdf()
-    {
-        $title = 'Laporan Stok Bahan Baku';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
-            ['label' => 'Tabel Data', 'url' => null],
-        ];
+    // public function exportPdf()
+    // {
+    //     $title = 'Laporan Stok Bahan Baku';
+    //     $breadcrumbs = [
+    //         ['label' => 'Home', 'url' => route('admin.dashboard')],
+    //         ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
+    //         ['label' => 'Tabel Data', 'url' => null],
+    //     ];
 
-        $laporan_stok = ViewStok::all();
-        // dd($laporan_stok);
-        $pdf = Pdf::loadView('laporan.stok-pdf', compact('title', 'breadcrumbs', 'laporan_stok'))->setPaper('A4', 'landscape');
-        return $pdf->stream('laporan-stok.pdf');
-    }
+    //     $laporan_stok = ViewStok::all();
+    //     // dd($laporan_stok);
+    //     $pdf = Pdf::loadView('laporan.stok-pdf', compact('title', 'breadcrumbs', 'laporan_stok'))->setPaper('A4', 'landscape');
+    //     return $pdf->stream('laporan-stok.pdf');
+    // }
 
     // public function cetakPDF()
     // {
@@ -113,6 +77,24 @@ class LaporanController extends Controller
         return Excel::download(new StokExport, 'Laporan-Stok.xlsx');
     }
 
+    public function exportKartuStok(Request $request)
+    {
+        $id_bahan_baku = $request->input('id_bahan_baku');
+        $bahanBaku = BahanBaku::findOrFail($id_bahan_baku);
+
+        return Excel::download(new KartuStokExport($id_bahan_baku), 'Kartu-Stok-' . $bahanBaku->nama . '.xlsx');
+    }
+
+    public function exportBukuBesar(Request $request)
+    {
+        $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
+        $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
+        $tipe_transaksi = $request->input('tipe_transaksi', 'all');
+        $search = $request->input('search', '');
+
+        return Excel::download(new BukuBesarExport($tanggal_awal, $tanggal_akhir, $tipe_transaksi, $search), 'Buku-Besar.xlsx');
+    }
+
     public function laporanKartuStok(Request $request)
     {
         $title = 'Laporan Kartu Stok Bahan Baku';
@@ -138,7 +120,7 @@ class LaporanController extends Controller
 
             // Ambil riwayat mutasi TANPA diurutkan oleh database
             $riwayat_mutasi_unsorted = Mutasi::where('id_bahan_baku', $selected_id)
-                ->with('mutasiable') // Eager load tetap sangat penting
+                ->with('transaksi') // Eager load tetap sangat penting
                 ->get();
 
             // Urutkan data di sisi aplikasi (PHP) menggunakan Collection sort
@@ -171,60 +153,60 @@ class LaporanController extends Controller
         ));
     }
 
-    public function laporanRekapTransaksi(Request $request)
-    {
-        $title = 'Laporan Rekap Transaksi';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Laporan Rekap Transaksi', 'url' => null],
-        ];
+    // public function laporanRekapTransaksi(Request $request)
+    // {
+    //     $title = 'Laporan Rekap Transaksi';
+    //     $breadcrumbs = [
+    //         ['label' => 'Home', 'url' => route('admin.dashboard')],
+    //         ['label' => 'Laporan Rekap Transaksi', 'url' => null],
+    //     ];
 
-        // 1. Ambil filter tanggal dari request
-        $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
-        $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
+    //     // 1. Ambil filter tanggal dari request
+    //     $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
+    //     $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
 
-        // 2. Rekap Pembelian per Supplier
-        $rekap_pembelian = Pembelian::with('supplier')
-            ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
-            ->selectRaw('id_supplier, COUNT(id) as jumlah_transaksi, SUM(total) as total_pembelian')
-            ->groupBy('id_supplier')
-            ->orderByDesc('total_pembelian')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'nama_supplier' => $item->supplier->nama ?? '-',
-                    'jumlah_transaksi' => $item->jumlah_transaksi,
-                    'total_pembelian' => $item->total_pembelian,
-                ];
-            });
+    //     // 2. Rekap Pembelian per Supplier
+    //     $rekap_pembelian = Pembelian::with('supplier')
+    //         ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+    //         ->selectRaw('id_supplier, COUNT(id) as jumlah_transaksi, SUM(total) as total_pembelian')
+    //         ->groupBy('id_supplier')
+    //         ->orderByDesc('total_pembelian')
+    //         ->get()
+    //         ->map(function ($item) {
+    //             return [
+    //                 'nama_supplier' => $item->supplier->nama ?? '-',
+    //                 'jumlah_transaksi' => $item->jumlah_transaksi,
+    //                 'total_pembelian' => $item->total_pembelian,
+    //             ];
+    //         });
 
-        // dd($rekap_pembelian);
+    //     // dd($rekap_pembelian);
 
-        // 3. Rekap Penjualan per Outlet
-        $rekap_penjualan = Penjualan::with('cabang')
-            ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
-            ->selectRaw('id_cabang, COUNT(id) as jumlah_transaksi, SUM(total) as total_penjualan')
-            ->groupBy('id_cabang')
-            ->orderByDesc('total_penjualan')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'nama_outlet' => $item->cabang->nama ?? '-',
-                    'jumlah_transaksi' => $item->jumlah_transaksi,
-                    'total_penjualan' => $item->total_penjualan,
-                ];
-            });
+    //     // 3. Rekap Penjualan per Outlet
+    //     $rekap_penjualan = Penjualan::with('outlet')
+    //         ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+    //         ->selectRaw('id_outlet, COUNT(id) as jumlah_transaksi, SUM(total) as total_penjualan')
+    //         ->groupBy('id_outlet')
+    //         ->orderByDesc('total_penjualan')
+    //         ->get()
+    //         ->map(function ($item) {
+    //             return [
+    //                 'nama_outlet' => $item->outlet->nama ?? '-',
+    //                 'jumlah_transaksi' => $item->jumlah_transaksi,
+    //                 'total_penjualan' => $item->total_penjualan,
+    //             ];
+    //         });
 
-        // 4. Kirim ke view
-        return view('laporan.rekap-transaksi', compact(
-            'title',
-            'breadcrumbs',
-            'rekap_pembelian',
-            'rekap_penjualan',
-            'tanggal_awal',
-            'tanggal_akhir'
-        ));
-    }
+    //     // 4. Kirim ke view
+    //     return view('laporan.rekap-transaksi', compact(
+    //         'title',
+    //         'breadcrumbs',
+    //         'rekap_pembelian',
+    //         'rekap_penjualan',
+    //         'tanggal_awal',
+    //         'tanggal_akhir'
+    //     ));
+    // }
 
     public function laporanBukuBesar(Request $request)
     {
@@ -237,20 +219,14 @@ class LaporanController extends Controller
         // 1. Filter Parameters
         $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
         $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
-        $sumber_dana = $request->input('sumber_dana', 'all');
         $tipe_transaksi = $request->input('tipe_transaksi', 'all');
         $search = $request->input('search', '');
 
         // 2. Query Builder untuk Transaksi
-        $query = Transaksi::with('sumberDana')
-            ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+        $query = Transaksi::whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
             ->where('status', 1); // hanya transaksi aktif
 
         // Apply filters
-        if ($sumber_dana !== 'all') {
-            $query->where('id_sumber_dana', $sumber_dana);
-        }
-
         if ($tipe_transaksi !== 'all') {
             $query->where('tipe', $tipe_transaksi);
         }
@@ -268,24 +244,15 @@ class LaporanController extends Controller
         $totalDebit = Transaksi::where('tipe', 'debit')
             ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
             ->where('status', 1)
-            ->when($sumber_dana !== 'all', function($q) use ($sumber_dana) {
-                return $q->where('id_sumber_dana', $sumber_dana);
-            })
             ->sum('jumlah');
 
         $totalKredit = Transaksi::where('tipe', 'kredit')
             ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
             ->where('status', 1)
-            ->when($sumber_dana !== 'all', function($q) use ($sumber_dana) {
-                return $q->where('id_sumber_dana', $sumber_dana);
-            })
             ->sum('jumlah');
 
         $saldoAkhir = $totalDebit - $totalKredit;
         $jumlahTransaksi = $transaksi->total();
-
-        // 5. Get Sumber Dana untuk Filter Dropdown
-        $sumberDanaList = SumberDana::select('id', 'nama')->get();
 
         // 6. Running Balance Calculation untuk setiap transaksi
         foreach ($transaksi as $index => $trx) {
@@ -293,9 +260,6 @@ class LaporanController extends Controller
                 // Hitung saldo awal dari transaksi sebelum periode
                 $saldoSebelumnya = Transaksi::where('tanggal', '<', $tanggal_awal)
                     ->where('status', 1)
-                    ->when($sumber_dana !== 'all', function($q) use ($sumber_dana) {
-                        return $q->where('id_sumber_dana', $sumber_dana);
-                    })
                     ->sum(DB::raw('CASE WHEN tipe = "debit" THEN jumlah ELSE -jumlah END'));
             } else {
                 $saldoSebelumnya = $transaksi[$index - 1]->running_balance ?? 0;
@@ -310,14 +274,12 @@ class LaporanController extends Controller
             'transaksi',
             'tanggal_awal',
             'tanggal_akhir',
-            'sumber_dana',
             'tipe_transaksi',
             'search',
             'totalDebit',
             'totalKredit',
             'saldoAkhir',
-            'jumlahTransaksi',
-            'sumberDanaList'
+            'jumlahTransaksi'
         ));
     }
 }

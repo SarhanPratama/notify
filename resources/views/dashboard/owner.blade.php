@@ -2,10 +2,32 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Dashboard Owner</h1>
+    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
 
     <!-- 📊 Kartu Info Cepat (Data Ringkasan Utama) -->
     <div class="row mb-4">
+        <!-- Total Saldo Kas Saat Ini -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Saldo Kas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
+                            </div>
+                            {{-- <small class="text-muted">Saldo saat ini</small> --}}
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Pemasukan Bulan Ini -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 p-2">
@@ -159,17 +181,9 @@
 
     <!-- �📈 Grafik dan Visual -->
     <div class="row mb-4">
-        <div class="col-xl-6 col-lg-6">
+        <div class="col-xl-12 col-lg-12">
             <div class="card shadow mb-4 p-3">
                 {!! $ArusKasChart->container() !!}
-            </div>
-        </div>
-
-        <!-- Komposisi Saldo Kas -->
-        <div class="col-xl-6 col-lg-6">
-            <div class="card shadow mb-4 p-3">
-
-                {!! $SaldoKasChart->container() !!}
             </div>
         </div>
     </div>
@@ -248,120 +262,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ $SaldoKasChart->cdn() }}"></script>
-
-{{ $SaldoKasChart->script() }}
+<script src="{{ $ArusKasChart->cdn() }}"></script>
+{{--
+{{ $SaldoKasChart->script() }} --}}
 {{ $ArusKasChart->script() }}
 
-{{-- <script src="{{ url('vendor/chart.js/Chart.min.js')}}"></script> --}}
-
-
-{{-- <script>
-    // Tunggu sampai Chart.js siap
-    function initCharts() {
-        // Cash Flow Chart (7 Days)
-        if (document.getElementById('cashFlowChart') && typeof Chart !== 'undefined') {
-            var ctx = document.getElementById('cashFlowChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($dates) !!},
-                    datasets: [
-                        {
-                            label: 'Pemasukan (Debit)',
-                            data: {!! json_encode($pemasukan) !!},
-                            backgroundColor: '#1cc88a',
-                            hoverBackgroundColor: '#17a673',
-                            borderWidth: 0
-                        },
-                        {
-                            label: 'Pengeluaran (Kredit)',
-                            data: {!! json_encode($pengeluaran) !!},
-                            backgroundColor: '#e74a3b',
-                            hoverBackgroundColor: '#be2617',
-                            borderWidth: 0
-                        }
-                    ]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            stacked: false,
-                        },
-                        y: {
-                            stacked: false,
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Cash Composition Pie Chart
-        if (document.getElementById('kasCompositionChart') && typeof Chart !== 'undefined') {
-            var ctx2 = document.getElementById('kasCompositionChart').getContext('2d');
-            new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: {!! json_encode($kasNames) !!},
-                    datasets: [{
-                        data: {!! json_encode($kasSaldos) !!},
-                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
-                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617', '#5a5c72'],
-                        hoverBorderColor: "rgba(234, 236, 244, 1)",
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            backgroundColor: "rgb(255,255,255)",
-                            bodyColor: "#858796",
-                            borderColor: '#dddfeb',
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: true,
-                            caretPadding: 10,
-                        },
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        },
-                    },
-                    cutout: '80%',
-                }
-            });
-        }
-    }
-
-    // Tunggu sampai document ready dan Chart.js loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tunggu Chart library
-            var checkChart = setInterval(function() {
-                if (typeof Chart !== 'undefined') {
-                    clearInterval(checkChart);
-                    initCharts();
-                }
-            }, 100);
-        });
-    } else {
-        // Document sudah siap
-        var checkChart = setInterval(function() {
-            if (typeof Chart !== 'undefined') {
-                clearInterval(checkChart);
-                initCharts();
-            }
-        }, 100);
-    }
-</script> --}}
 @endpush

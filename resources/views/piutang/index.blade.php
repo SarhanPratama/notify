@@ -69,10 +69,10 @@
                                 <thead class="bg-light">
                                     <tr>
                                         <th class="text-nowrap">No</th>
-                                        <th class="text-nowrap">Tanggal Piutang</th>
+                                        <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">Jatuh Tempo</th>
                                         <th class="text-nowrap">No. Bukti</th>
-                                        <th class="text-nowrap">Total</th>
+                                        <th class="text-nowrap">Sisa Piutang</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
@@ -100,7 +100,7 @@
                                                         <i class="fas fa-store"></i>
                                                     </span>
                                                     <strong>
-                                                        Rp. {{ number_format($item->jumlah_piutang, 0, ',', '.') }}
+                                                        Rp. {{ number_format($item->sisa_piutang, 0, ',', '.') }}
                                                     </strong>
                                                 </div>
                                             </td>
@@ -116,7 +116,7 @@
                                             </td> --}}
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('penjualan.show', $item->penjualan->nobukti) }}"
+                                                    <a href="{{ route('piutang.show', $item->nobukti) }}"
                                                         class="btn btn-outline-success" title="Detail">
                                                         <i class="far fa-eye"></i>
                                                     </a>

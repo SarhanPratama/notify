@@ -14,6 +14,7 @@ use App\Services\PembelianService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PenjualanRequest;
+use App\Models\Outlet;
 use App\Services\PenjualanService;
 
 class PenjualanController extends Controller
@@ -30,7 +31,7 @@ class PenjualanController extends Controller
         $tanggalMulai = $request->input('tanggal_mulai');
         $tanggalSampai = $request->input('tanggal_sampai');
 
-        $penjualan = penjualan::with('cabang', 'piutang');
+        $penjualan = penjualan::with('outlet', 'piutang')->whereIn('status', ['approved', 'completed', 'approved_by_gudang']);
 
         // Tambahkan filter hanya jika kedua tanggal ada
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
@@ -50,7 +51,7 @@ class PenjualanController extends Controller
             ['label' => 'Penjualan', 'url' => route('penjualan.index')],
             ['label' => 'Form Tambah', 'url' => null],
         ];
-        $cabang = Cabang::pluck('nama', 'id');
+        $cabang = Outlet::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
         $sumberDana = SumberDana::pluck('nama', 'id');
 
@@ -95,15 +96,15 @@ class PenjualanController extends Controller
             ['label' => 'Form Edit', 'url' => null],
         ];
 
-        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'cabang', 'transaksi', 'piutang'])
+        $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'outlet', 'transaksi.sumberDana', 'piutang'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
         // dd($penjualan);
         $sumberDana = SumberDana::pluck('nama', 'id');
-        $cabang = Cabang::pluck('nama', 'id');
+        $outlet = Outlet::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
 
-        return view('penjualan.edit', compact('title', 'breadcrumbs', 'penjualan', 'cabang', 'produk', 'sumberDana'));
+        return view('penjualan.edit', compact('title', 'breadcrumbs', 'penjualan', 'outlet', 'produk', 'sumberDana'));
     }
 
     public function update(PenjualanRequest $request, $nobukti, PenjualanService $penjualanService)
@@ -258,31 +259,35 @@ class PenjualanController extends Controller
         DB::beginTransaction();
 
         try {
-            $penjualan = Penjualan::findOrFail($id);
+            $penjualan = Penjualan::with(['mutasi', 'transaksi', 'piutang'])->findOrFail($id);
 
-            // Ambil semua mutasi berdasarkan nomor bukti
-            $mutasiList = Mutasi::where('nobukti', $penjualan->nobukti)->get();
-
-            foreach ($mutasiList as $mutasi) {
-                // Jika status 1, rollback stok bahan baku
+            // Soft delete mutasi (view stok akan otomatis menyesuaikan)
+            foreach ($penjualan->mutasi as $mutasi) {
                 if ($mutasi->status == 1) {
-                    $bahanBaku = BahanBaku::find($mutasi->id_bahan_baku);
-                    if ($bahanBaku) {
-                        $bahanBaku->stok_akhir -= $mutasi->quantity;
-                        $bahanBaku->save();
-                    }
+                    $mutasi->delete();
                 }
-
-                // Hapus mutasi
-                $mutasi->delete();
             }
 
-            // Hapus penjualan
+            // Soft delete transaksi jika ada (view saldo akan otomatis menyesuaikan)
+            $transaksi = $penjualan->transaksi->first();
+            if ($transaksi) {
+                $transaksi->status = 0;
+                $transaksi->save();
+                $transaksi->delete();
+            }
+
+            // Soft delete piutang jika ada
+            $piutang = $penjualan->piutang;
+            if ($piutang) {
+                $piutang->delete();
+            }
+
+            // Soft delete penjualan (tanpa mengubah status karena enum tidak menerima 0)
             $penjualan->delete();
 
             DB::commit();
 
-            notify()->success('Data penjualan berhasil dihapus.');
+            notify()->success('Data penjualan berhasil dihapus sementara.');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -298,6 +303,96 @@ class PenjualanController extends Controller
     //     $penjualan = Penjualan::with('cabang', 'mutasi.bahanBaku.satuan')->findOrFail($id);
     //     return view('penjualan.struk', compact('penjualan'));
     // }
+
+    public function restore($nobukti)
+    {
+        DB::beginTransaction();
+
+        try {
+            $penjualan = Penjualan::withTrashed()
+                ->with([
+                    'mutasi' => fn($q) => $q->withTrashed(),
+                    'transaksi' => fn($q) => $q->withTrashed(),
+                    'piutang' => fn($q) => $q->withTrashed()
+                ])
+                ->where('nobukti', $nobukti)
+                ->firstOrFail();
+
+            // Set status kembali ke approved (karena enum tidak menerima 1)
+            $penjualan->status = 'approved';
+            $penjualan->restore();
+
+            // Restore mutasi (view stok akan otomatis menyesuaikan)
+            foreach ($penjualan->mutasi as $mutasi) {
+                $mutasi->restore();
+            }
+
+            // Restore transaksi jika ada (view saldo akan otomatis menyesuaikan)
+            $transaksi = $penjualan->transaksi->first();
+            if ($transaksi) {
+                $transaksi->status = 1;
+                $transaksi->restore();
+            }
+
+            // Restore piutang jika ada
+            $piutang = $penjualan->piutang;
+            if ($piutang) {
+                $piutang->restore();
+            }
+
+            DB::commit();
+            notify()->success('Data penjualan berhasil dipulihkan.');
+            return redirect()->route('penjualan.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal memulihkan penjualan: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $penjualan = Penjualan::withTrashed()
+                ->with([
+                    'mutasi' => fn($q) => $q->withTrashed(),
+                    'transaksi' => fn($q) => $q->withTrashed(),
+                    'piutang' => fn($q) => $q->withTrashed()
+                ])
+                ->findOrFail($id);
+
+            // Force delete semua mutasi
+            foreach ($penjualan->mutasi as $mutasi) {
+                $mutasi->forceDelete();
+            }
+
+            // Force delete transaksi jika ada
+            $transaksi = $penjualan->transaksi->first();
+            if ($transaksi) {
+                $transaksi->forceDelete();
+            }
+
+            // Force delete piutang jika ada
+            $piutang = $penjualan->piutang;
+            if ($piutang) {
+                $piutang->forceDelete();
+            }
+
+            // Force delete penjualan
+            $penjualan->forceDelete();
+
+            DB::commit();
+
+            notify()->success('Data penjualan berhasil dihapus permanen.');
+            return redirect()->route('penjualan.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            notify()->error('Gagal menghapus permanen: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
 
     public function laporanPenjualan(Request $request)
     {
@@ -323,7 +418,7 @@ class PenjualanController extends Controller
             $tanggalSampaiFormatted = Carbon::parse($tanggalSampai)->endOfDay()->toDateTimeString();
 
             // Query untuk mengambil data mutasi (penjualan)
-            $laporan_penjualan = Mutasi::with(['bahanBaku.satuan', 'penjualan.cabang'])
+            $laporan_penjualan = Mutasi::with(['bahanBaku.satuan', 'penjualan.outlet'])
                 ->where('jenis_transaksi', 'K') // 'K' untuk Keluar (Penjualan)
                 ->where('status', 1) // Asumsi status 1 adalah transaksi yang valid/selesai
                 ->whereBetween('created_at', [$tanggalMulai, $tanggalSampaiFormatted])

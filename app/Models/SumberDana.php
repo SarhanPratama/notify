@@ -21,4 +21,9 @@ class SumberDana extends Model
     {
         return $this->hasMany(Transaksi::class);
     }
+
+        public function saldo()
+    {
+        return $this->hasOne(ViewSaldo::class, 'id_sumber_dana', 'id');
+    }
 }

@@ -1,10 +1,10 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
-        <div class="row">
+<div class="container-fluid">
+    @include('layouts.breadcrumbs')
+    <div class="row">
             <div class="col-lg-12 mb-4">
                 <!-- Simple Tables -->
                 <div class="card">
@@ -22,10 +22,8 @@
                                 <tr>
                                     <th class="text-start">No</th>
                                     <th>Nama</th>
-                                    <th>Jabatan</th>
-                                    <th>Cabang</th>
-                                    <th>Telepon</th>
-                                    {{-- <th>Alamat</th> --}}
+                                    <th>Email</th>
+                                    <th>Role</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -34,25 +32,14 @@
                                     <tr>
                                         <td class="align-middle">{{ $loop->iteration }}</td>
                                         <td class="align-middle">{{ ucwords($item->name) }}</td>
-                                        <td class="align-middle">{{ Ucwords($item->roles->first()->name ?? '-') }}</td>
-                                        <td class="align-middle">{{ ucwords($item->cabang->nama ?? '-') }}</td>
-                                        <td class="align-middle">
-                                            <a href="https://wa.me/{{ $item->telepon ?? 'nomor_default' }}" target="_blank">
-                                                {{ $item->telepon ?? '-' }}
-                                            </a>
-                                        </td>
+                                        <td class="align-middle">{{ $item->email }}</td>
+                                        <td class="align-middle">{{ Ucwords($item->role->name ?? '-') }}</td>
                                         <td class="text-center align-middle">
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <a href="{{ route('users.edit', $item->id) }}"
                                                     class="btn btn-outline-warning rounded-left" title="edit">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
-
-                                                <a href="{{ route('users.show', $item->id) }}"
-                                                    class="btn btn-sm btn-outline-success">
-                                                    <i class="fa fa-eye" aria-hidden="true"></i>
-                                                </a>
-
                                            <button class="btn btn-sm btn-outline-danger rounded-right" data-toggle="modal"
                                                     data-target="#usersDestroyModal{{ $item->id }}">
                                                     <i class="fa fa-trash fs-6" aria-hidden="true"></i>
@@ -61,52 +48,11 @@
                                         </td>
                                     </tr>
 
-                                    <div class="modal fade" id="usersDestroyModal{{ $item->id }}" tabindex="-1"
-                                        aria-labelledby="usersDestroyModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-danger">
-                                                    <h6 class="modal-title text-light font-weight-bold"
-                                                        id="usersDestroyModalLabel">Konfirmasi Hapus</h6>
-                                                    <button type="button" class="close text-light" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <form action="{{ route('users.destroy', $item->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <div class="modal-body">
-                                                        <p>Apakah anda yakin ingin menghapus users
-                                                            <strong>"{{ $item->name }}"</strong>?
-                                                        </p>
-
-                                                        <div class="my-3">
-                                                            <label for="password" class="form-label">Masukkan password
-                                                                user <span class="text-danger">*</span></label>
-                                                            <input type="password" class="form-control form-control-sm"
-                                                                id="password" name="password" required>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-outline-primary btn-sm"
-                                                                data-dismiss="modal">Close</button>
-                                                            <button type="submit"
-                                                                class="btn btn-outline-danger btn-sm">Delete</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @include('users.destroy')
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="card-footer d-flex justify-content-center">
-                        {{-- {{ $users->appends(['search' => request('search')], ['per_page' => request('per_page')])->links('pagination::bootstrap-4') }} --}}
-                    </div>
-
                 </div>
             </div>
         </div>

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('piutang', function (Blueprint $table) {
             $table->id();
             $table->string('nobukti')->unique();
-            $table->decimal('jumlah_piutang', 15, 2);
+            $table->decimal('jumlah_piutang', 15, 0);
+            $table->decimal('sisa_piutang', 15, 0); 
             $table->date('jatuh_tempo');
             $table->enum('status', ['belum_lunas', 'lunas'])->default('belum_lunas');
             $table->timestamps();

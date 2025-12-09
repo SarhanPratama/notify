@@ -137,10 +137,6 @@
                                         <i class="fas fa-money-bill-wave me-2"></i>Bayar Sekarang
                                     </button>
                                 @endif
-                                <button type="button" class="btn bg-maron text-white"
-                                    onclick="downloadInvoice('{{ $piutang->nobukti }}')">
-                                    <i class="fas fa-download me-2"></i>Download Invoice
-                                </button>
                             </div>
                         </div>
                     </div>

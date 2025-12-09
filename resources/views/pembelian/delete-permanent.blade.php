@@ -13,7 +13,7 @@
                 <!-- Tombol Batal -->
                 <button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Batal</button>
                 <!-- Tombol Hapus -->
-                <form action="{{ route('pembelian.forceDelete', $item->id ) }}" method="POST">
+                <form action="{{ url('pembelian.forceDelete', $item->id ) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>

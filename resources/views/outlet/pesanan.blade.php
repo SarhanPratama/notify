@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-center align-items-center flex-wrap gap-3">
             <div>
                 <h3 class="mb-1 text-maron fs-4 fw-bold">
-                    Riwayat Pesanan
+                    Pesanan
                 </h3>
             </div>
         </div>
@@ -25,7 +25,8 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             <h6 class="text-muted mb-1 small">Menunggu</h6>
-                            <h5 class="mb-0 fw-bold text-center">{{ $orders->where('status', 'pending')->count() }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-warning">
+                                {{ $orders->where('status', 'pending')->count() }}</h5>
                         </div>
                     </div>
                 </div>
@@ -42,7 +43,8 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             <h6 class="text-muted mb-1 small">Disetujui</h6>
-                            <h5 class="mb-0 fw-bold text-center">{{ $orders->where('status', 'approved')->count() }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-success">
+                                {{ $orders->whereIn('status', ['approved', 'approved_by_gudang'])->count() }}</h5>
                         </div>
                     </div>
                 </div>
@@ -59,7 +61,8 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             <h6 class="text-muted mb-1 small">Selesai</h6>
-                            <h5 class="mb-0 fw-bold text-center">{{ $orders->where('status', 'completed')->count() }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-info">
+                                {{ $orders->where('status', 'completed')->count() }}</h5>
                         </div>
                     </div>
                 </div>
@@ -76,7 +79,7 @@
                         </div>
                         <div class="flex-grow-1 ms-2">
                             <h6 class="text-muted mb-1 small">Total Pesanan</h6>
-                            <h5 class="mb-0 fw-bold text-center">{{ $orders->total() }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-primary">{{ $orders->total() }}</h5>
                         </div>
                     </div>
                 </div>
@@ -98,7 +101,7 @@
                                 <td>No</td>
                                 <th class="text-nowrap">Nomor Bukti</th>
                                 <th class="text-nowrap">Tanggal Pesan</th>
-                                <th class="text-nowrap">Status</th>
+                                <th class="text-nowrap">Status Transaksi</th>
                                 <th class="text-end">Total</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
@@ -120,26 +123,56 @@
                                         <div class="small text-muted">{{ $order->created_at->format('H:i') }} WIB</div>
                                     </td>
                                     <td>
-                                        @switch($order->status)
-                                            @case('pending')
-                                                <span class="badge bg-warning text-dark">Menunggu</span>
-                                                @break
-                                            @case('approved')
-                                                <span class="badge bg-success">Disetujui</span>
-                                                @break
-                                            @case('rejected')
-                                                <span class="badge bg-danger">Ditolak</span>
-                                                @break
-                                            @case('completed')
-                                                <span class="badge bg-info text-dark">Selesai</span>
-                                                @break
-                                            @default
-                                                <span class="badge bg-secondary">{{ ucfirst($order->status) }}</span>
-                                        @endswitch
+                                        @php
+                                            $statusBadge = '';
+                                            $statusText = '';
+
+                                            if (
+                                                $order->status === 'approved' &&
+                                                $order->metode_pembayaran === 'kasbon' &&
+                                                $order->piutang &&
+                                                $order->piutang->status === 'belum_lunas'
+                                            ) {
+                                                $statusBadge = 'bg-warning text-dark';
+                                                $statusText = 'Kasbon - Belum Lunas';
+                                            } elseif (
+                                                $order->status === 'approved' &&
+                                                $order->metode_pembayaran === 'kasbon' &&
+                                                $order->piutang &&
+                                                $order->piutang->status === 'lunas'
+                                            ) {
+                                                $statusBadge = 'bg-success';
+                                                $statusText = 'Kasbon - Lunas';
+                                            } else {
+                                                switch ($order->status) {
+                                                    case 'pending':
+                                                        $statusBadge = 'bg-warning text-dark';
+                                                        $statusText = 'Menunggu';
+                                                        break;
+                                                    case 'approved':
+                                                        $statusBadge = 'bg-success';
+                                                        $statusText = 'Disetujui';
+                                                        break;
+                                                    case 'rejected':
+                                                        $statusBadge = 'bg-danger';
+                                                        $statusText = 'Ditolak';
+                                                        break;
+                                                    case 'completed':
+                                                        $statusBadge = 'bg-info text-dark';
+                                                        $statusText = 'Selesai';
+                                                        break;
+                                                    default:
+                                                        $statusBadge = 'bg-secondary';
+                                                        $statusText = ucfirst($order->status);
+                                                }
+                                            }
+                                        @endphp
+                                        <span class="badge {{ $statusBadge }}">{{ $statusText }}</span>
                                     </td>
                                     <td class="text-end">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                                     <td class="text-center">
-                                        <a href="{{ route('outlet.pesanan.detail', [$token, $order->id]) }}" class="btn btn-outline-primary btn-sm" title="Lihat Detail">
+                                        <a href="{{ route('outlet.pesanan.detail', [$token, $order->id]) }}"
+                                            class="btn btn-outline-primary btn-sm" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>
@@ -157,7 +190,8 @@
                     <i class="fas fa-shopping-bag text-muted" style="font-size: 64px; opacity: 0.3;"></i>
                 </div>
                 <h5 class="text-muted mb-2">Belum Ada Pesanan</h5>
-                <p class="text-muted mb-4">Anda belum melakukan pemesanan apapun. Yuk mulai pesan bahan baku untuk outlet Anda!</p>
+                <p class="text-muted mb-4">Anda belum melakukan pemesanan apapun. Yuk mulai pesan bahan baku untuk outlet
+                    Anda!</p>
                 <a href="{{ route('outlet.belanja', $token) }}" class="btn bg-maron text-white">
                     <i class="fas fa-shopping-cart me-2"></i>Mulai Belanja
                 </a>
@@ -165,4 +199,4 @@
         </div>
     @endif
 
-    @endsection
+@endsection

@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Penjualan extends Model
 {
-    use HasFactory;
+    use HasFactory
+    // SoftDeletes
+    ;
 
     protected $table = 'penjualan';
 
@@ -51,12 +54,12 @@ class Penjualan extends Model
     }
     public function mutasi()
     {
-        return $this->morphMany(mutasi::class, 'mutasiable');
+        return $this->hasMany(mutasi::class, 'nobukti', 'nobukti');
     }
 
     public function transaksi()
     {
-        return $this->morphOne(Transaksi::class, 'referenceable');
+        return $this->belongsTo(Transaksi::class, 'nobukti', 'nobukti');
     }
 
     public function outlet()

@@ -14,15 +14,36 @@ class RolePermissionSeeder extends Seeder
      */
     public function run(): void
     {
+        // Hapus permission lama jika ada
+        Permission::query()->delete();
+
         $permissions = [
-            'dashboard.view',
-            'produk.view', 'discount.view',
-            'kas.view', 'kas.manage',
-            'pembelian.view', 'penjualan.view',
-            'supplier.view', 'bahan-baku.view',
-            'laporan.view',
-            'users.view', 'cabang.view',
-            'role.view', 'permission.view', 'akses-role.manage'
+            // Dashboard
+            'dashboard',
+
+            // Data Master
+            'kategori',
+            'bahan-baku',
+            'supplier',
+            'outlet',
+
+            // Transaksi Gudang
+            'pembelian',
+            'penjualan',
+            'pesanan',
+
+            // Keuangan
+            'upproval-pembelian',
+            'kas',
+            'piutang',
+            'transaksi',
+
+            // Laporan
+            'laporan',
+
+            // Pengguna & Akses
+            'users',
+            'akses-role',
         ];
 
         foreach ($permissions as $permission) {
@@ -34,18 +55,31 @@ class RolePermissionSeeder extends Seeder
         $keuangan = Role::firstOrCreate(['name' => 'keuangan']);
         $gudang = Role::firstOrCreate(['name' => 'gudang']);
 
+        // Owner - Full Access
         $owner->givePermissionTo(Permission::all());
 
-        $keuangan->givePermissionTo([
-            'dashboard.view', 'kas.view', 'kas.manage',
-            'pembelian.view', 'penjualan.view', 'laporan.view'
+        // Gudang/Inventory - Akses modul gudang
+        $gudang->givePermissionTo([
+            'dashboard',
+            'kategori',
+            'bahan-baku',
+            'supplier',
+            'outlet',
+            'pembelian',
+            'penjualan',
+            'pesanan',
+            'laporan'
         ]);
 
-        $gudang->givePermissionTo([
-            'dashboard.view',
-            'produk.view', 'bahan-baku.view',
-            'supplier.view', 'pembelian.view',
-            'laporan.view'
+        // Keuangan - Akses modul keuangan
+        $keuangan->givePermissionTo([
+            'dashboard',
+            'upproval-pembelian',
+            'kas',
+            'pesanan',
+            'piutang',
+            'transaksi',
+            'laporan'
         ]);
     }
 }
