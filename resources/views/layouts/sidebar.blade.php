@@ -102,15 +102,15 @@
                         <a class="collapse-item {{ request()->routeIs('piutang.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('piutang.index') }}">Piutang</a>
                     @endcan
-                    @can('kas')
+                    @can('pemasukan')
                         <a class="collapse-item {{ request()->routeIs('pemasukan.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('pemasukan.index') }}">Pemasukan</a>
                     @endcan
-                    @can('kas')
+                    @can('pengeluaran')
                         <a class="collapse-item {{ request()->routeIs('pengeluaran.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('pengeluaran.index') }}">Pengeluaran</a>
                     @endcan
-                    @can('kas')
+                    @can('transaksi')
                         <a class="collapse-item {{ request()->routeIs('transaksi.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('transaksi.index') }}">Transaksi Kas</a>
                     @endcan

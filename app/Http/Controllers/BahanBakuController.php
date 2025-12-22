@@ -49,7 +49,6 @@ class BahanBakuController extends Controller
             bahanBaku::create([
                 'nama' => $request->nama,
                 'stok_awal' => $request->stok_awal,
-                // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
                 'foto' => $fotoPath,
@@ -70,7 +69,6 @@ class BahanBakuController extends Controller
         $request->validate([
             'nama' => 'required',
             'stok_awal' => 'required',
-            // 'stok_akhir' => 'required',
             'stok_minimum' => 'required',
             'harga' => 'required',
             'id_satuan' => 'required',
@@ -82,7 +80,6 @@ class BahanBakuController extends Controller
             $bahanBaku = bahanBaku::findOrFail($id);
 
             if ($request->hasFile('foto')) {
-                // Hapus foto lama jika ada
                 if ($bahanBaku->foto && Storage::disk('public')->exists($bahanBaku->foto)) {
                     Storage::disk('public')->delete($bahanBaku->foto);
                 }
@@ -96,7 +93,6 @@ class BahanBakuController extends Controller
             $bahanBaku->update([
                 'nama' => $request->nama,
                 'stok_awal' => $request->stok_awal,
-                // 'stok_akhir' => $request->stok_akhir,
                 'stok_minimum' => $request->stok_minimum,
                 'harga' => $request->harga,
                 'foto' => $fotoPath,

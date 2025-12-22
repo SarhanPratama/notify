@@ -9,7 +9,6 @@ namespace Database\Seeders;
 use App\Models\Supplier;
 use Illuminate\Database\Seeder;
 use Database\Seeders\KategoriSeeder;
-use Database\Seeders\SumberDanaSeedeer;
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,7 +39,6 @@ class DatabaseSeeder extends Seeder
             KategoriSeeder::class,
             KategoriKeuanganSeeder::class,
             SatuanSeeder::class,
-            SumberDanaSeedeer::class,
             BahanBakuSeeder::class,
         ]);
 

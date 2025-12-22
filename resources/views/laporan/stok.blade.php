@@ -7,9 +7,9 @@
         <div class="row">
             <div class="col col-lg-12">
                 <!-- Simple Tables -->
-                <div class="d-flex justify-content-end align-items-center mb-3">
+                <div class="mb-3">
                     <div>
-                        <a href="{{ route('laporan-stok.exportExcel') }}" target="_blank" class="btn btn-outline-success btn-sm btn-lg">
+                        <a href="{{ route('laporan-stok.exportExcel') }}" target="_blank" class="btn btn-outline-success">
                             Export Excel
                         </a>
                     </div>

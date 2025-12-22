@@ -177,7 +177,7 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Tanggal</th>
-                                        <th>Sumber Dana</th>
+                                        {{-- <th>Sumber Dana</th> --}}
                                         <th>Deskripsi</th>
                                         <th>Tipe</th>
                                         <th>Jumlah</th>
@@ -188,7 +188,7 @@
                                     @forelse($transaksiTerbaru as $transaksi)
                                         <tr>
                                             <td>{{ $transaksi->tanggal->format('d/m/Y') }}</td>
-                                            <td>{{ $transaksi->SumberDana->nama ?? 'N/A' }}</td>
+                                            {{-- <td>{{ $transaksi->SumberDana->nama ?? 'N/A' }}</td> --}}
                                             <td>{{ Str::limit($transaksi->deskripsi, 50) }}</td>
                                             <td>
                                                 <span

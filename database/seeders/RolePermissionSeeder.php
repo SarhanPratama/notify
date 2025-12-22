@@ -33,7 +33,8 @@ class RolePermissionSeeder extends Seeder
             'pesanan',
 
             // Keuangan
-            'kas',
+            'pemasukan',
+            'pengeluaran',
             'piutang',
             'transaksi',
             'kategori-keuangan',
@@ -75,8 +76,8 @@ class RolePermissionSeeder extends Seeder
         $keuangan->givePermissionTo([
             'dashboard',
             'kategori-keuangan',
-            'kas',
-            'pesanan',
+            'pemasukan',
+            'pengeluaran',
             'piutang',
             'transaksi',
             'laporan'

@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminOrderController extends Controller
 {
-    /**
-     * List orders (admin) - show pending by default
-     */
+
     public function index(Request $request)
     {
         $title = 'Pesanan Outlet';
@@ -33,26 +31,6 @@ class AdminOrderController extends Controller
         return view('pesanan.index', compact('orders', 'title', 'breadcrumbs'));
     }
 
-    /**
-     * Show single order for review
-     */
-    public function show($id)
-    {
-        $title = 'Detail Pesanan Outlet';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Pesanan Outlet', 'url' => route('admin.pesanan.index')],
-            ['label' => 'Detail', 'url' => null],
-        ];
-        $order = Penjualan::with('mutasi.bahanBaku.satuan', 'outlet')->findOrFail($id);
-        $sumberDana = SumberDana::all();
-
-        return view('pesanan.show', compact('order', 'sumberDana', 'title', 'breadcrumbs'));
-    }
-
-    /**
-     * Approve order and optionally record payment / piutang
-     */
     public function approve(Request $request, $id)
     {
         DB::beginTransaction();

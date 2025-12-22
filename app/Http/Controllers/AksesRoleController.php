@@ -30,9 +30,7 @@ class AksesRoleController extends Controller
                 });
         })->paginate($perPage);
 
-
         // $role = Role::with('permissions')->get();
-
         $permissions = Permission::pluck('name', 'id');
 
         // dd($permissions);
@@ -40,15 +38,6 @@ class AksesRoleController extends Controller
         return view('akses-role.index', compact('role', 'permissions', 'title', 'breadcrumbs'));
     }
 
-    // public function edit($id) {
-
-    //     $role = Role::findOrFail($id);
-
-
-    //     $permissions = Permission::orderBy('name', 'ASC');
-    //     // dd($permissions);
-    //     return view('akses-role.create', compact('permissions', 'role'));
-    // }
 
     public function update(Request $request, Role $akses_role)
     {

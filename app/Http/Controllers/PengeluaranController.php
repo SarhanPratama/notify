@@ -30,12 +30,11 @@ class PengeluaranController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $sumberDana = SumberDana::pluck('nama', 'id');
         $categories = KategoriKeuangan::whereIn('jenis', ['pengeluaran'])
             ->where('nama', '!=', 'Pembelian BB')
             ->get();
 
-        return view('pengeluaran.index', compact('title', 'breadcrumbs', 'pengeluaran', 'sumberDana', 'pembelianPending', 'categories'));
+        return view('pengeluaran.index', compact('title', 'breadcrumbs', 'pengeluaran', 'pembelianPending', 'categories'));
     }
 
     public function approvePembelian(Request $request, $id)
@@ -45,7 +44,6 @@ class PengeluaranController extends Controller
             'posisi_kas' => 'required|in:Tunai,Bank BSI',
         ]);
 
-        // $nobukti = $this->generateNoBukti();
         DB::beginTransaction();
 
         try {
@@ -83,7 +81,7 @@ class PengeluaranController extends Controller
                 'id_kategori_keuangan' => $kategoriPembelian->id,
             ]);
 
-            // Catat di Transaksi (Log Utama)
+            // Catat di Transaksi
             Transaksi::create([
                 'nobukti' => $pembelian->nobukti,
                 'tanggal' => now(),
@@ -177,7 +175,6 @@ class PengeluaranController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:0',
-            // 'id_sumber_dana' => 'required|exists:sumber_dana,id',
             'deskripsi' => 'required|string|max:255',
             'id_kategori_keuangan' => 'nullable|exists:kategori_keuangans,id',
             'posisi_kas' => 'required|in:Tunai,Bank BSI',

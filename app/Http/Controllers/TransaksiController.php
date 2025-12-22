@@ -22,66 +22,6 @@ class TransaksiController extends Controller
         $kas = Transaksi::orderBy('tanggal', 'desc')->get();
 
 
-        return view('kas.index', compact('title', 'breadcrumbs', 'kas'));
-    }
-
-    public function create()
-    {
-        $title = 'Arus Kas';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
-            ['label' => 'Form Tambah', 'url' => null],
-        ];
-
-        // $sumberDana = SumberDana::pluck('nama', 'id');
-        return view('kas.create', compact('title', 'breadcrumbs'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'tanggal' => 'required|date',
-            'jumlah' => 'required|numeric|min:0',
-            'tipe' => 'required|in:debit,kredit',
-            // 'id_sumber_dana' => 'required|exists:sumber_dana,id',
-            'deskripsi' => 'required|string|max:255',
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            // Simpan transaksi manual
-            $transaksi = Transaksi::create([
-                'nobukti' => 'CF' . date('YmdHis'),
-                // 'id_sumber_dana' => $request->id_sumber_dana,
-                'tanggal' => $request->tanggal,
-                'tipe' => $request->tipe,
-                'jumlah' => $request->jumlah,
-                'deskripsi' => strip_tags($request->deskripsi, '<b><i>'),
-                'status' => 1,
-            ]);
-
-            DB::commit();
-            notify()->success('Transaksi berhasil ditambahkan.');
-            return redirect()->route('transaksi.index');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            notify()->error('Gagal menyimpan transaksi: ' . $e->getMessage());
-            return redirect()->back();
-        }
-    }
-
-    public function show($id)
-    {
-        $title = 'Arus Kas';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
-            ['label' => 'Detail', 'url' => null],
-        ];
-        $transaksi = Transaksi::with(['sumberDana', 'referenceable'])->findOrFail($id);
-
-        return view('kas.show', compact('title', 'breadcrumbs', 'transaksi'));
+        return view('transaksi.index', compact('title', 'breadcrumbs', 'kas'));
     }
 }

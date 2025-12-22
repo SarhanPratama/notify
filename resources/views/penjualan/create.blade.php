@@ -64,12 +64,7 @@
                                                 <i class="fas fa-wallet mr-1 text-primary"></i>
                                                 Kas Masuk <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-control" name="id_sumber_dana" required>
-                                                <option value="">-- Pilih Kas Masuk --</option>
-                                                @foreach ($sumberDana as $id => $nama)
-                                                    <option value="{{ $id }}">{{ $nama }}</option>
-                                                @endforeach
-                                            </select>
+                                                {{-- Sumber Dana tidak digunakan --}}
                                         </div>
                                     </div>
                                 </div>

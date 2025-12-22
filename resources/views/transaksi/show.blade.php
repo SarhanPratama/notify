@@ -60,7 +60,7 @@
                                 <small class="text-muted font-weight-bold">Kas Masuk</small>
                             </div>
                             <div class="col-sm-8">
-                                <span>{{ $transaksi->sumberDana->nama ?? '-' }}</span>
+                                {{-- Sumber Dana tidak digunakan --}}
                             </div>
                         </div>
                         <div class="row">

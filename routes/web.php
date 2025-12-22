@@ -94,39 +94,39 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::post('pesanan-admin/{id}/reject', [AdminOrderController::class, 'reject'])->name('admin.pesanan.reject')->middleware('role:gudang|keuangan|owner');
 
     // route keuangan
-    Route::resource('pemasukan', PemasukanController::class)->middleware('permission:kas');
-    Route::post('pemasukan/{id}/approve-penjualan', [PemasukanController::class, 'approvePenjualan'])->name('pemasukan.approve-penjualan')->middleware('permission:kas');
-    Route::post('pemasukan/{id}/reject-penjualan', [PemasukanController::class, 'rejectPenjualan'])->name('pemasukan.reject-penjualan')->middleware('permission:kas');
-    Route::resource('pengeluaran', PengeluaranController::class)->middleware('permission:kas');
-    Route::post('pengeluaran/{id}/approve-pembelian', [PengeluaranController::class, 'approvePembelian'])->name('pengeluaran.approve-pembelian')->middleware('permission:kas');
-    Route::post('pengeluaran/{id}/reject-pembelian', [PengeluaranController::class, 'rejectPembelian'])->name('pengeluaran.reject-pembelian')->middleware('permission:kas');
-    // Route::resource('pengeluaran-kas',)
+    Route::resource('pemasukan', PemasukanController::class)->middleware('permission:pemasukan');
+    Route::post('pemasukan/{id}/approve-penjualan', [PemasukanController::class, 'approvePenjualan'])->name('pemasukan.approve-penjualan')->middleware('permission:pemasukan');
+    Route::post('pemasukan/{id}/reject-penjualan', [PemasukanController::class, 'rejectPenjualan'])->name('pemasukan.reject-penjualan')->middleware('permission:pemasukan');
+
+    Route::resource('pengeluaran', PengeluaranController::class)->middleware('permission:pengeluaran');
+    Route::post('pengeluaran/{id}/approve-pembelian', [PengeluaranController::class, 'approvePembelian'])->name('pengeluaran.approve-pembelian')->middleware('permission:pengeluaran');
+    Route::post('pengeluaran/{id}/reject-pembelian', [PengeluaranController::class, 'rejectPembelian'])->name('pengeluaran.reject-pembelian')->middleware('permission:pengeluaran');
+
     Route::resource('piutang', PiutangController::class)->middleware('permission:piutang');
     Route::post('piutang/{nobukti}/bayar', [PiutangController::class, 'bayar'])->name('piutang.bayar')->middleware('permission:piutang');
     Route::get('piutang/{nobukti}/print', [PiutangController::class, 'printInvoice'])->name('piutang.print')->middleware('permission:piutang');
-    Route::resource('transaksi', TransaksiController::class)->middleware('permission:kas');
+    Route::resource('transaksi', TransaksiController::class)->middleware('permission:transaksi');
 
+    // Route::get('laporan-pembelian', [PembelianController::class, 'laporanPembelian'])->name('laporan-pembelian');
+    // Route::get('/laporan-pembelian/pdf', [PembelianController::class, 'exportPDF'])->name('laporan-pembelian.pdf');
 
-    Route::get('laporan-pembelian', [PembelianController::class, 'laporanPembelian'])->name('laporan-pembelian');
-    Route::get('/laporan-pembelian/pdf', [PembelianController::class, 'exportPDF'])->name('laporan-pembelian.pdf');
-
-    Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
-    Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
+    // Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
+    // Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
+    
+    //Route laporan
     Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok')->middleware('permission:laporan');
-    Route::get('/laporan-stok/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan-stok.exportPdf')->middleware('permission:laporan');
     Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel')->middleware('permission:laporan');
+
     Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok')->middleware('permission:laporan');
     Route::get('/laporan/kartu-stok/export', [LaporanController::class, 'exportKartuStok'])->name('laporan.kartu-stok.export')->middleware('permission:laporan');
+
     Route::get('/laporan/rekap-transaksi', [LaporanController::class, 'laporanRekapTransaksi'])
         ->name('laporan.rekap-transaksi')->middleware('permission:laporan');
     Route::get('/laporan/rekap-transaksi/export', [LaporanController::class, 'exportRekapTransaksi'])
         ->name('laporan.rekap-transaksi.export')->middleware('permission:laporan');
-    Route::get('/laporan/buku-besar', [LaporanController::class, 'laporanBukuBesar'])
-        ->name('laporan.buku-besar')->middleware('permission:laporan');
-    Route::get('/laporan/buku-besar/export', [LaporanController::class, 'exportBukuBesar'])
-        ->name('laporan.buku-besar.export')->middleware('permission:laporan');
 
-    Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
+
+    // Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
 });
 
 // Outlet Routes (No Login Required)

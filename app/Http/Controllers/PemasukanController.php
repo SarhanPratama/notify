@@ -33,13 +33,11 @@ class PemasukanController extends Controller
             ->get();
         // dd($penjualanPending);
 
-
-        $sumberDana = SumberDana::pluck('nama', 'id');
         $categories = KategoriKeuangan::whereIn('jenis', ['pemasukan'])
             ->where('nama', '!=', 'Penjualan BB')
             ->get();
 
-        return view('pemasukan.index', compact('title', 'breadcrumbs', 'pemasukan', 'penjualanPending', 'sumberDana', 'categories'));
+        return view('pemasukan.index', compact('title', 'breadcrumbs', 'pemasukan', 'penjualanPending', 'categories'));
     }
 
     public function approvePenjualan($id)

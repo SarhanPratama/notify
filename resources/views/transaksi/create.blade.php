@@ -68,17 +68,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label fw-bold mb-2">
-                                            <i class="fas fa-wallet me-1 text-primary"></i> Sumber Dana <span
-                                                class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select @error('id_sumber_dana') is-invalid @enderror"
-                                            name="id_sumber_dana" required>
-                                            <option value="" disabled selected>Pilih Sumber</option>
-                                            @foreach ($sumberDana as $id => $nama)
-                                                <option value="{{ $id }}">{{ $nama }}</option>
-                                            @endforeach
-                                        </select>
+                                        {{-- Sumber Dana tidak digunakan --}}
                                     </div>
                                 </div>
 

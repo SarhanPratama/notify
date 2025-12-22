@@ -495,7 +495,7 @@ class OutletOrderController extends Controller
             // Ambil piutang dengan relasi
             $piutang = Piutang::with([
                 'penjualan.mutasi.bahanBaku.satuan',
-                'pembayaran.sumberDana'
+                'pembayaran'
             ])->whereHas('penjualan', function ($q) use ($outlet) {
                 $q->where('id_outlet', $outlet->id);
             })->findOrFail($piutangId);
