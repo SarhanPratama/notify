@@ -4,10 +4,9 @@
     <div class="container-fluid">
         <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
 
-        <!-- 📊 Kartu Info Cepat (Data Ringkasan Utama) -->
         <div class="row mb-4">
             <!-- Total Saldo Kas Saat Ini -->
-            <div class="col-xl-3 col-md-6 mb-4">
+            {{-- <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-primary shadow h-100 p-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -18,7 +17,7 @@
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
                                     Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
                                 </div>
-                                {{-- <small class="text-muted">Saldo saat ini</small> --}}
+                                <small class="text-muted">Saldo saat ini</small>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-wallet fa-2x text-primary"></i>
@@ -26,7 +25,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Total Pendapatan Bulan Ini -->
             <div class="col-xl-3 col-md-6 mb-4">
@@ -112,12 +111,9 @@
             </div>
         </div>
 
-        {{-- <!-- 💰 Saldo Sumber Dana (Removed) --> --}}
-
-        <!-- 📈 Grafik dan Visual -->
         <div class="row mb-4">
             <!-- Cash Flow 30 Hari -->
-            <div class="col-xl-8 col-lg-8">
+            <div class="col-lg-12">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-info"><i class="fas fa-chart-line text-info"></i> Cash Flow 30
@@ -128,60 +124,10 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Top Pengeluaran -->
-            <div class="col-xl-4 col-lg-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-arrow-down text-danger"></i> Top
-                            Pengeluaran</h6>
-                    </div>
-                    <div class="card-body">
-                        @forelse($topPengeluaran as $pengeluaran)
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <div class="font-weight-bold text-gray-800">
-                                        {{ Str::limit($pengeluaran->deskripsi, 30) }}
-                                    </div>
-                                    <div class="text-xs text-muted">
-                                        {{ $pengeluaran->SumberDana->nama ?? 'N/A' }} •
-                                        {{ $pengeluaran->tanggal->format('d/m/Y') }}
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-weight-bold text-danger">
-                                        Rp {{ number_format($pengeluaran->jumlah, 0, ',', '.') }}
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center text-muted">
-                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                <p>Tidak ada data pengeluaran</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- 📊 Laporan Laba Rugi & Piutang -->
         <div class="row mb-4">
-            <!-- Laporan Laba Rugi Bulanan -->
-            <div class="col-xl-8 col-lg-8">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-chart-bar text-success"></i> Laporan
-                            Laba Rugi Bulanan</h6>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="labaRugiChart" width="100%" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Piutang Jatuh Tempo -->
-            <div class="col-xl-4 col-lg-4">
+            <div class="col-lg-12">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                         <h6 class="m-0 font-weight-bold text-warning"><i class="fas fa-credit-card text-warning"></i>
@@ -207,8 +153,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="alert alert-success text-center text-black" role="alert">
-                                <i class="fas fa-check-circle text-success mr-2"></i>
+                            <div class="alert alert-warning text-center text-warning" role="alert">
                                 <strong>Semua piutang lancar!</strong><br>
                                 <small>Tidak ada tagihan yang melewati jatuh tempo.</small>
                             </div>
@@ -258,7 +203,7 @@
                                             <td>
                                                 <span
                                                     class="badge badge-{{ $transaksi->status == 1 ? 'success' : 'warning' }}">
-                                                    {{ $transaksi->status == 1 ? 'Aktif' : 'Pending' }}
+                                                    {{ $transaksi->status == 1 ? 'Success' : 'Pending' }}
                                                 </span>
                                             </td>
                                         </tr>

@@ -21,16 +21,26 @@ class StorePembelianRequest extends FormRequest
      */
     public function rules(): array
     {
-        // \Log::info('StorePembelianRequest rules() dipanggil');
+        // Cek apakah ini dari session cart (edit form) atau dari create form
+        $isFromCreateForm = $this->has('bahanBaku');
+
+        if ($isFromCreateForm) {
+            // Validasi untuk create form (format array)
+            return [
+                'id_supplier' => 'nullable|exists:supplier,id',
+                'bahanBaku' => 'required|array',
+                'bahanBaku.*' => 'required|exists:bahan_baku,id',
+                'quantity' => 'required|array',
+                'quantity.*' => 'required|integer|min:1',
+                'harga' => 'required|array',
+                'harga.*' => 'required|numeric|min:0',
+                'catatan' => 'nullable|string',
+            ];
+        }
+
+        // Validasi untuk edit form (menggunakan session cart)
         return [
-            // 'tanggal' => 'required|date',
             'id_supplier' => 'nullable|exists:supplier,id',
-            'bahanBaku' => 'required|array',
-            'bahanBaku.*' => 'required|exists:bahan_baku,id',
-            'quantity' => 'required|array',
-            'quantity.*' => 'required|integer|min:1',
-            'harga' => 'required|array',
-            'harga.*' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
         ];
     }

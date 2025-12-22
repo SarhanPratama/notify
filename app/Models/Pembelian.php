@@ -22,13 +22,17 @@ class Pembelian extends Model
         'id_supplier',
     ];
 
+    protected $casts = [
+        'tanggal' => 'date',
+    ];
+
       protected function catatan(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value ?? 'Tidak ada catatan',
         );
     }
-    
+
     public function mutasi()
     {
         return $this->hasMany(mutasi::class, 'nobukti', 'nobukti');

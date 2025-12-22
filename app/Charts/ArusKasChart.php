@@ -2,6 +2,7 @@
 
 namespace App\Charts;
 
+use App\Models\Transaksi;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
 
 class ArusKasChart
@@ -20,9 +21,10 @@ class ArusKasChart
         $endDate = now()->endOfDay();
 
         // Ambil semua transaksi dalam 7 hari terakhir (1 query saja)
-        $transaksi = \App\Models\Transaksi::whereBetween('tanggal', [$startDate, $endDate])
+        $transaksi = Transaksi::with('kategoriKeuangan')
+            ->whereBetween('tanggal', [$startDate, $endDate])
             ->where('status', 1)
-            ->get(['tanggal', 'tipe', 'jumlah']);
+            ->get();
 
         // Kelompokkan transaksi per tanggal
         $grouped = $transaksi->groupBy(function ($item) {
@@ -43,8 +45,13 @@ class ArusKasChart
             $transaksiHarian = $grouped->get($dateString, collect());
 
             // Hitung total pemasukan & pengeluaran
-            $pemasukan = $transaksiHarian->where('tipe', 'debit')->sum('jumlah');
-            $pengeluaran = $transaksiHarian->where('tipe', 'kredit')->sum('jumlah');
+            $pemasukan = $transaksiHarian->filter(function ($item) {
+                return $item->kategoriKeuangan && $item->kategoriKeuangan->jenis === 'pemasukan';
+            })->sum('jumlah');
+
+            $pengeluaran = $transaksiHarian->filter(function ($item) {
+                return $item->kategoriKeuangan && $item->kategoriKeuangan->jenis === 'pengeluaran';
+            })->sum('jumlah');
 
             $pemasukanData[] = (int) $pemasukan;
             $pengeluaranData[] = (int) $pengeluaran;

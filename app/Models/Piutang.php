@@ -14,6 +14,7 @@ class Piutang extends Model
     protected $fillable = ['nobukti', 'jumlah_piutang', 'sisa_piutang', 'jatuh_tempo', 'status'];
 
     protected $casts = [
+        'tanggal' => 'date',
         'jatuh_tempo' => 'date',
     ];
 

@@ -19,9 +19,6 @@
 
                         <h5 class="mb-0 text-white fs-5 fw-bold">Form Input Kas</h5>
                     </div>
-
-
-
                     <div class="card-body p-4">
                         <form action="{{ route('transaksi.store') }}" method="POST">
                             @csrf

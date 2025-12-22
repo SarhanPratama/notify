@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <!-- Header Section -->
         <div class="row mb-4">
             <div class="col-12">
@@ -38,22 +38,21 @@
                                         <i class="fas fa-box text-primary mr-2"></i>
                                         Pilih Bahan Baku
                                     </label>
-                                    <select name="id_bahan_baku" id="id_bahan_baku" class="form-control form-control-lg select2-single"
-                                        required>
-                                        <option value="" disabled {{ !$selected_id ? 'selected' : '' }}>
+                                    <select name="id_bahan_baku" id="id_bahan_baku"
+                                        class="form-control form-control-lg select2-single" required>
+                                        <option value="" disabled {{ !$selected_item ? 'selected' : '' }}>
                                             -- Pilih Bahan Baku --
                                         </option>
                                         @foreach ($bahan_baku_list as $item)
                                             <option value="{{ $item->id }}"
-                                                {{ $selected_id == $item->id ? 'selected' : '' }}>
+                                                {{ ($selected_item && $selected_item->id == $item->id) ? 'selected' : '' }}>
                                                 {{ ucwords($item->nama) }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="submit" class="btn btn-outline-primary btn-lg btn-block">
-                                        <i class="fas fa-search mr-2"></i>
+                                    <button type="submit" class="btn btn-outline-primary btn-block">
                                         Tampilkan
                                     </button>
                                 </div>
@@ -151,7 +150,8 @@
                                     Riwayat Pergerakan Stok
                                 </h5>
                                 <div>
-                                    <a href="{{ route('laporan.kartu-stok.export', ['id_bahan_baku' => $selected_id]) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <a href="{{ route('laporan.kartu-stok.export', ['id_bahan_baku' => $selected_item]) }}"
+                                        target="_blank" class="btn btn-sm btn-outline-success">
                                         Export Excel
                                     </a>
                                 </div>
@@ -192,75 +192,36 @@
                                     <tbody>
                                         @foreach ($riwayat_mutasi as $mutasi)
                                             @php
-                                                $masuk = 0;
-                                                $keluar = 0;
-                                                $keterangan = 'N/A';
-                                                $no_bukti = 'N/A';
-
-                                                if ($mutasi->jenis_transaksi == 'M') {
-                                                    $masuk = $mutasi->quantity;
-                                                    $keterangan = 'Pembelian Stok';
-                                                } elseif ($mutasi->jenis_transaksi == 'K') {
-                                                    $keluar = $mutasi->quantity;
-                                                    $keterangan = 'Distribusi ke Outlet';
-                                                }
-
-                                                $saldo_berjalan = $saldo_berjalan + $masuk - $keluar;
-
-                                                if ($mutasi->transaksi) {
-                                                    $no_bukti = $mutasi->transaksi->first()->nobukti ?? 'N/A';
-                                                }
+                                                $qty_masuk = $mutasi->jenis_transaksi == 'M' ? $mutasi->quantity : 0;
+                                                $qty_keluar = $mutasi->jenis_transaksi == 'K' ? $mutasi->quantity : 0;
+                                                $saldo_berjalan += $qty_masuk - $qty_keluar;
                                             @endphp
-
                                             <tr>
                                                 <td class="text-center">{{ $loop->iteration }}</td>
+                                                <td>{{ $mutasi->created_at->format('d M Y') }}</td>
                                                 <td>
-                                                    <small class="d-block font-weight-semibold">
-                                                        {{ $mutasi->transaksi->first()->created_at ? $mutasi->transaksi->first()->created_at->format('d M Y') : '-' }}
-                                                        {{ $mutasi->transaksi->first()->created_at ? $mutasi->transaksi->first()->created_at->format('H:i') : '-' }}
-                                                    </small>
-                                                    {{-- <small class="text-muted">
-                                                    </small> --}}
+                                                    <span class="badge badge-secondary">
+                                                        {{ $mutasi->nobukti ?? '-' }}
+                                                    </span>
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-secondary">{{ $no_bukti }}</span>
-                                                </td>
-                                                <td>
-                                                    @if ($masuk > 0)
-                                                        <span class="badge badge-success badge-pill">
-                                                            <i class="fas fa-arrow-down mr-1"></i>{{ $keterangan }}
-                                                        </span>
+                                                    @if ($mutasi->jenis_transaksi == 'M')
+                                                        <span class="badge badge-success">Masuk</span>
                                                     @else
-                                                        <span class="badge badge-danger badge-pill">
-                                                            <i class="fas fa-arrow-up mr-1"></i>{{ $keterangan }}
-                                                        </span>
+                                                        <span class="badge badge-danger">Keluar</span>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">
-                                                    @if ($masuk > 0)
-                                                        <span class="text-success font-weight-bold">
-                                                            +{{ number_format($masuk, 0, ',', '.') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
+                                                <td class="text-success text-right">
+                                                    {{ $qty_masuk ? number_format($qty_masuk) : '-' }}
                                                 </td>
-                                                <td class="text-center">
-                                                    @if ($keluar > 0)
-                                                        <span class="text-danger font-weight-bold">
-                                                            -{{ number_format($keluar, 0, ',', '.') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
+                                                <td class="text-danger text-right">
+                                                    {{ $qty_keluar ? number_format($qty_keluar) : '-' }}
                                                 </td>
-                                                <td class="text-center bg-light font-weight-bold">
-                                                    {{ number_format($saldo_berjalan, 0, ',', '.') }}
+                                                <td class="font-weight-bold text-right bg-light">
+                                                    {{ number_format($saldo_berjalan) }}
                                                 </td>
                                             </tr>
                                         @endforeach
-
-                                        <!-- Row Saldo Akhir -->
                                     </tbody>
                                     @if ($riwayat_mutasi->count() > 0)
                                         <tfoot>
@@ -273,13 +234,13 @@
                                                     SALDO AKHIR
                                                 </td>
                                                 <td class="text-center text-success">
-                                                    +{{ number_format($riwayat_mutasi->where('jenis_transaksi', 'M')->sum('quantity'), 0, ',', '.') }}
+                                                    +{{ number_format($riwayat_mutasi->where('jenis_transaksi', 'M')->sum('quantity')) }}
                                                 </td>
                                                 <td class="text-center text-danger">
-                                                    -{{ number_format($riwayat_mutasi->where('jenis_transaksi', 'K')->sum('quantity'), 0, ',', '.') }}
+                                                    -{{ number_format($riwayat_mutasi->where('jenis_transaksi', 'K')->sum('quantity')) }}
                                                 </td>
                                                 <td class="text-center">
-                                                    {{ number_format($saldo_berjalan, 0, ',', '.') }}
+                                                    {{ number_format($saldo_berjalan) }}
                                                 </td>
                                             </tr>
                                         </tfoot>

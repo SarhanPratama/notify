@@ -17,6 +17,24 @@ use App\Http\Requests\StorePembelianRequest;
 class PembelianController extends Controller
 {
 
+    public static function generateNoBukti()
+    {
+        $prefix = 'PB-';
+        $date = date('Ymd');
+
+        $lastTransaction = Pembelian::where('nobukti', 'like', $prefix . $date . '%')
+                              ->orderBy('nobukti', 'desc')
+                              ->first();
+
+        if ($lastTransaction) {
+            $lastNumber = intval(substr($lastTransaction->nobukti, -3));
+            $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+        } else {
+            $nextNumber = '001';
+        }
+
+        return $prefix . $date . '-' . $nextNumber;
+    }
 
     public function index(Request $request)
     {
@@ -55,42 +73,95 @@ class PembelianController extends Controller
         $sumberDana = SumberDana::pluck('nama', 'id');
         $bahanBaku = BahanBaku::with('satuan')->get();
 
-        return view('pembelian.create', compact('title', 'breadcrumbs', 'suppliers', 'sumberDana', 'bahanBaku'));
+        // Clear cart jika bukan dari operasi cart (fresh page load/reload)
+        $previousUrl = url()->previous();
+        $isFromCartOperation = str_contains($previousUrl, 'pembelian/cart') || str_contains($previousUrl, 'pembelian/create');
+        if (!$isFromCartOperation) {
+            session()->forget('cart_pembelian_create');
+        }
+
+        // Ambil cart dari session
+        $cartItems = session('cart_pembelian_create', []);
+
+        return view('pembelian.create', compact('title', 'breadcrumbs', 'suppliers', 'sumberDana', 'bahanBaku', 'cartItems'));
+    }
+
+    // Tambah item ke cart create
+    public function addToCartCreate(Request $request)
+    {
+        $request->validate([
+            'id_bahan_baku' => 'required|exists:bahan_baku,id',
+            'quantity' => 'required|integer|min:1',
+            'harga' => 'required|numeric|min:0',
+        ]);
+
+        $sessionKey = 'cart_pembelian_create';
+        $cartItems = session($sessionKey, []);
+
+        $bahanBaku = BahanBaku::with('satuan')->find($request->id_bahan_baku);
+
+        $cartItems[] = [
+            'id_bahan_baku' => $request->id_bahan_baku,
+            'nama_bahan_baku' => $bahanBaku->nama,
+            'satuan' => $bahanBaku->satuan->nama ?? '',
+            'quantity' => $request->quantity,
+            'harga' => $request->harga,
+            'sub_total' => $request->quantity * $request->harga,
+        ];
+
+        session([$sessionKey => $cartItems]);
+
+        notify()->success('Item berhasil ditambahkan ke keranjang');
+        return redirect()->route('pembelian.create');
+    }
+
+    // Hapus item dari cart create
+    public function removeFromCartCreate($index)
+    {
+        $sessionKey = 'cart_pembelian_create';
+        $cartItems = session($sessionKey, []);
+
+        if (isset($cartItems[$index])) {
+            unset($cartItems[$index]);
+            $cartItems = array_values($cartItems);
+            session([$sessionKey => $cartItems]);
+            notify()->success('Item berhasil dihapus dari keranjang');
+        }
+
+        return redirect()->route('pembelian.create');
+    }
+
+    // Clear cart create
+    public function clearCartCreate()
+    {
+        session()->forget('cart_pembelian_create');
+        notify()->success('Keranjang berhasil dikosongkan');
+        return redirect()->route('pembelian.create');
     }
 
     public function store(Request $request)
     {
+        $sessionKey = 'cart_pembelian_create';
+        $cartItems = session($sessionKey, []);
+
+        // Validasi hanya supplier dan catatan karena item dari session
         $request->validate([
             'id_supplier' => 'nullable|exists:supplier,id',
-            'bahanBaku'   => 'required|array',
-            'bahanBaku.*' => 'required|exists:bahan_baku,id',
-            'quantity'    => 'required|array',
-            'quantity.*'  => 'required|integer|min:1',
-            'harga'       => 'required|array',
-            'harga.*'     => 'required|numeric|min:0',
             'catatan'     => 'nullable|string',
         ]);
 
+        if (empty($cartItems)) {
+            notify()->error('Keranjang masih kosong, tambahkan item terlebih dahulu');
+            return redirect()->back();
+        }
+        
         DB::beginTransaction();
 
         try {
-            // Buat items agar bisa dipakai di total & foreach
-            $items = [];
-            foreach ($request->bahanBaku as $index => $idBahan) {
-                $items[] = [
-                    'id_bahan_baku' => $idBahan,
-                    'quantity'      => $request->quantity[$index],
-                    'harga'         => $request->harga[$index],
-                ];
-            }
+            $nobukti = $this->generateNoBukti();
 
-            $nobukti = 'PB-' . now()->format('Ymd-His') . '-' . rand(1000, 9999);
-
-            // Hitung total
-            $total = collect($items)->sum(
-                fn($item) =>
-                $item['quantity'] * $item['harga']
-            );
+            // Hitung total dari session cart
+            $total = collect($cartItems)->sum('sub_total');
 
             $pembelian = Pembelian::create([
                 'nobukti'     => $nobukti,
@@ -101,18 +172,22 @@ class PembelianController extends Controller
                 'id_supplier' => $request->id_supplier,
             ]);
 
-            foreach ($items as $item) {
+            foreach ($cartItems as $item) {
                 $pembelian->mutasi()->create([
                     'id_bahan_baku'   => $item['id_bahan_baku'],
                     'quantity'        => $item['quantity'],
                     'harga'           => $item['harga'],
-                    'sub_total'       => $item['quantity'] * $item['harga'],
+                    'sub_total'       => $item['sub_total'],
                     'jenis_transaksi' => 'M',
                     'nobukti'         => $nobukti,
                 ]);
             }
 
             DB::commit();
+
+            // Clear session setelah berhasil
+            session()->forget($sessionKey);
+
             notify()->success('Pembelian berhasil disimpan');
             return redirect()->route('pembelian.index');
         } catch (\Exception $e) {
@@ -123,7 +198,7 @@ class PembelianController extends Controller
     }
 
 
-    public function show($nobukti, PembelianService $pembelianService)
+    public function show($nobukti)
     {
 
         $title = 'Detail Pembelian';
@@ -133,7 +208,10 @@ class PembelianController extends Controller
             ['label' => 'Detail', 'url' => null],
         ];
 
-        $detailPembelian = $pembelianService->getPembelianDetails($nobukti);
+        $detailPembelian = Pembelian::with(['mutasi.bahanBaku.satuan', 'supplier', 'Transaksi'])
+            ->where('nobukti', $nobukti)
+            ->firstOrFail();
+
         // dd($detailPembelian);
         return view('pembelian.show', compact('title', 'breadcrumbs', 'detailPembelian'));
     }
@@ -148,22 +226,115 @@ class PembelianController extends Controller
         ];
 
         $detailPembelian = $pembelianService->getPembelianDetails($nobukti);
-        // dd($detailPembelian);
+
+        // Session key unik per nobukti
+        $sessionKey = 'cart_pembelian_' . $nobukti;
+
+        // Clear cart jika bukan dari operasi cart (fresh page load/reload)
+        $previousUrl = url()->previous();
+        $isFromCartOperation = str_contains($previousUrl, $nobukti . '/cart') || str_contains($previousUrl, 'pembelian/' . $nobukti . '/edit');
+        if (!$isFromCartOperation) {
+            session()->forget($sessionKey);
+        }
+
+        // Jika session belum ada, inisialisasi dengan data dari database
+        if (!session()->has($sessionKey)) {
+            $cartItems = [];
+            foreach ($detailPembelian->mutasi as $mutasi) {
+                $cartItems[] = [
+                    'id_bahan_baku' => $mutasi->id_bahan_baku,
+                    'nama_bahan_baku' => $mutasi->bahanBaku->nama,
+                    'satuan' => $mutasi->bahanBaku->satuan->nama ?? '',
+                    'quantity' => $mutasi->quantity,
+                    'harga' => $mutasi->harga,
+                    'sub_total' => $mutasi->sub_total,
+                ];
+            }
+            session([$sessionKey => $cartItems]);
+        }
+
+        $cartItems = session($sessionKey, []);
 
         $sumberDana = SumberDana::pluck('nama', 'id');
         $suppliers = Supplier::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
 
-        return view('pembelian.edit', compact('title', 'breadcrumbs', 'detailPembelian', 'suppliers', 'sumberDana', 'produk'));
+        return view('pembelian.edit', compact('title', 'breadcrumbs', 'detailPembelian', 'suppliers', 'sumberDana', 'produk', 'cartItems'));
+    }
+
+    // Tambah item ke cart session
+    public function addToCart(Request $request, $nobukti)
+    {
+        $request->validate([
+            'id_bahan_baku' => 'required|exists:bahan_baku,id',
+            'quantity' => 'required|integer|min:1',
+            'harga' => 'required|numeric|min:0',
+        ]);
+
+        $sessionKey = 'cart_pembelian_' . $nobukti;
+        $cartItems = session($sessionKey, []);
+
+        $bahanBaku = BahanBaku::with('satuan')->find($request->id_bahan_baku);
+
+        $cartItems[] = [
+            'id_bahan_baku' => $request->id_bahan_baku,
+            'nama_bahan_baku' => $bahanBaku->nama,
+            'satuan' => $bahanBaku->satuan->nama ?? '',
+            'quantity' => $request->quantity,
+            'harga' => $request->harga,
+            'sub_total' => $request->quantity * $request->harga,
+        ];
+
+        session([$sessionKey => $cartItems]);
+
+        notify()->success('Item berhasil ditambahkan ke keranjang');
+        return redirect()->route('pembelian.edit', $nobukti);
+    }
+
+    // Hapus item dari cart session
+    public function removeFromCart($nobukti, $index)
+    {
+        $sessionKey = 'cart_pembelian_' . $nobukti;
+        $cartItems = session($sessionKey, []);
+
+        if (isset($cartItems[$index])) {
+            unset($cartItems[$index]);
+            $cartItems = array_values($cartItems); // Re-index array
+            session([$sessionKey => $cartItems]);
+            notify()->success('Item berhasil dihapus dari keranjang');
+        }
+
+        return redirect()->route('pembelian.edit', $nobukti);
+    }
+
+    // Clear cart session
+    public function clearCart($nobukti)
+    {
+        $sessionKey = 'cart_pembelian_' . $nobukti;
+        session()->forget($sessionKey);
+        notify()->success('Keranjang berhasil dikosongkan');
+        return redirect()->route('pembelian.edit', $nobukti);
     }
 
     public function update(StorePembelianRequest $request, $nobukti, PembelianService $pembelianService)
     {
+        $sessionKey = 'cart_pembelian_' . $nobukti;
+        $cartItems = session($sessionKey, []);
+
+        if (empty($cartItems)) {
+            notify()->error('Keranjang masih kosong, tambahkan item terlebih dahulu');
+            return redirect()->back();
+        }
 
         try {
             $validated = $request->validated();
-            // dd($validated);
+            $validated['cartItems'] = $cartItems;
+
             $pembelianService->updatePembelian($nobukti, $validated);
+
+            // Clear session setelah berhasil update
+            session()->forget($sessionKey);
+
             notify()->success('Pembelian berhasil diperbarui');
             return redirect()->route('pembelian.index');
         } catch (\Exception $e) {

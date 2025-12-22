@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col col-lg-12">
                 <!-- Simple Tables -->

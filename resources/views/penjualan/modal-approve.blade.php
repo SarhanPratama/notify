@@ -10,13 +10,13 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('admin.pesanan.approve', $order->id) }}" method="POST">
+                <form action="{{ route('admin.pesanan.approve', $detailPenjualan->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="text-center mb-3">
                             {{-- <i class="fas fa-question-circle fa-3x text-success mb-3"></i> --}}
                             <p class="mb-0">Apakah Anda yakin ingin menyetujui pesanan outlet ini?</p>
-                            <p class="text-muted small">Kode: <strong>{{ $order->nobukti }}</strong></p>
+                            <p class="text-muted small">Kode: <strong>{{ $detailPenjualan->nobukti }}</strong></p>
                         </div>
 
                         @if(auth()->user()->hasRole('gudang'))
@@ -25,7 +25,7 @@
                             </div>
                         @endif
 
-                        @if(auth()->user()->hasRole('keuangan') || auth()->user()->hasRole('owner'))
+                        @if(auth()->user()->hasRole('keuangan'))
                             <div class="alert alert-info small text-info">
                                 Menyetujui ini akan mencatat piutang/pembayaran dan mengurangi stok sistem.
                             </div>

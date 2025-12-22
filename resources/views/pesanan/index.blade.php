@@ -66,7 +66,6 @@
                                         <th class="text-nowrap">Tanggal</th>
                                         <th class="text-nowrap">No. Bukti</th>
                                         <th class="text-nowrap">Outlet</th>
-                                        <th class="text-nowrap">Items</th>
                                         <th class="text-nowrap">Total</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-center">Aksi</th>
@@ -91,32 +90,15 @@
                                                     <strong>{{ $order->outlet->nama ?? '-' }}</strong>
                                                 </div>
                                             </td>
-                                            <td class="align-middle">{{ $order->mutasi->count() }}</td>
                                             <td class="align-middle text-success font-weight-bold text-nowrap">
                                                 Rp. {{ number_format($order->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-                                                @if($order->status == 'pending')
-                                                    <span class="badge bg-warning text-dark">Pending</span>
-                                                @elseif($order->status == 'approved_by_gudang')
-                                                    <span class="badge bg-warning text-dark">
-                                                        Disetujui Gudang
-                                                    </span>
-                                                @elseif($order->status == 'approved')
-                                                    <span class="badge bg-success">Disetujui</span>
-                                                @elseif($order->status == 'completed')
-                                                    <span class="badge bg-info text-dark">Selesai</span>
-                                                @elseif($order->status == 'rejected')
-                                                    <span class="badge bg-danger">Ditolak</span>
-                                                @elseif($order->status == 'rejected_by_gudang')
-                                                    <span class="badge bg-danger">
-                                                        Ditolak Gudang
-                                                    </span>
-                                                @endif
+                                               <span class="badge bg-warning">Pending</span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('admin.pesanan.show', $order->id) }}" class="btn btn-outline-success" title="Lihat">
+                                                    <a href="{{ route('penjualan.show', $order->nobukti) }}" class="btn btn-outline-success" title="Lihat">
                                                         <i class="far fa-eye"></i>
                                                     </a>
                                                 </div>
@@ -126,10 +108,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="card-footer bg-white d-flex justify-content-center py-3">
-                        {{ $orders->links() }}
                     </div>
                 </div>
             </div>

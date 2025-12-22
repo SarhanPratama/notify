@@ -19,7 +19,7 @@ class PenjualanRequest extends FormRequest
             'tanggal' => 'required',
             'id_cabang' => 'required|exists:cabang,id',
             'id_sumber_dana' => 'required|exists:sumber_dana,id',
-            'metode_pembayaran' => 'required|in:tunai,kasbon',
+            'status_pembayaran' => 'required|in:lunas,kasbon',
             'bahanBaku' => 'required|array',
             'bahanBaku.*' => 'required|exists:bahan_baku,id',
             'quantity' => 'required|array',

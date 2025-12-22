@@ -29,8 +29,9 @@ class PenjualanService
                 'total' => $total,
                 'catatan' => strip_tags($data['catatan']),
                 'id_cabang' => $data['id_cabang'],
-                'metode_pembayaran' => $data['metode_pembayaran'],
-                // 'status' => $data['metode_pembayaran'] === 'tunai' ? 'lunas' : 'piutang',
+                'status_gudang' => $data['status_gudang'] ?? 'pending',
+                'status_keuangan' => $data['status_keuangan'] ?? 'pending',
+                'status_pembayaran' => $data['status_pembayaran'],
             ]);
 
             $this->syncMutasi($penjualan, $data);
@@ -58,8 +59,9 @@ class PenjualanService
                 'tanggal' => $data['tanggal'],
                 'catatan' => strip_tags($data['catatan'] ?? null),
                 'id_cabang' => $data['id_cabang'] ?? null,
-                'metode_pembayaran' => $data['metode_pembayaran'],
-                // 'status' => $data['metode_pembayaran'] === 'tunai' ? 'lunas' : 'piutang',
+                'status_gudang' => $data['status_gudang'] ?? $penjualan->status_gudang,
+                'status_keuangan' => $data['status_keuangan'] ?? $penjualan->status_keuangan,
+                'status_pembayaran' => $data['status_pembayaran'],
             ]);
 
             $this->syncMutasi($penjualan, $data);
@@ -67,7 +69,7 @@ class PenjualanService
             $sumberDanaBaru = SumberDana::find($data['id_sumber_dana']);
             $oldSumberDana = $oldSumberDanaId ? SumberDana::find($oldSumberDanaId) : null;
 
-            $this->updateTransaksi($penjualan, $oldSumberDana, $sumberDanaBaru, $oldTotal, $total, $data['metode_pembayaran']);
+            $this->updateTransaksi($penjualan, $oldSumberDana, $sumberDanaBaru, $oldTotal, $total, $data['status_pembayaran']);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -133,7 +135,7 @@ class PenjualanService
 
     private function tambahTransaksi(Penjualan $penjualan, array $data, float $jumlah): void
     {
-        if ($data['metode_pembayaran'] === 'tunai') {
+        if ($data['status_pembayaran'] === 'lunas') {
             $sumberDana = SumberDana::findOrFail($data['id_sumber_dana']);
             $penjualan->transaksi()->create([
                 'id_sumber_dana' => $sumberDana->id,
@@ -160,14 +162,14 @@ class PenjualanService
         ?SumberDana $newSumberDana,
         float $oldTotal,
         float $newTotal,
-        string $metodePembayaran
+        string $statusPembayaran
     ): void {
 
         // dd('$newTotal');
         $transaksi = $penjualan->transaksi->first();
         $piutang = $penjualan->piutang;
 
-        if ($metodePembayaran === 'tunai') {
+        if ($statusPembayaran === 'lunas') {
             if (!$newSumberDana) {
                 throw new \Exception("Sumber dana diperlukan untuk metode pembayaran tunai.");
             }
@@ -199,7 +201,7 @@ class PenjualanService
 
             $newSumberDana->increment('saldo_current', $newTotal);
 
-        } elseif ($metodePembayaran === 'kasbon') {
+        } elseif ($statusPembayaran === 'kasbon') {
             if ($transaksi) {
                 if ($oldSumberDana) {
                     $oldSumberDana->decrement('saldo_current', $oldTotal);
@@ -225,7 +227,7 @@ class PenjualanService
                 ]);
             }
         } else {
-            throw new \InvalidArgumentException("Metode pembayaran tidak valid: {$metodePembayaran}");
+            throw new \InvalidArgumentException("Metode pembayaran tidak valid: {$statusPembayaran}");
         }
     }
 }

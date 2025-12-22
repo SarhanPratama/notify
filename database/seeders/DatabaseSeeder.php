@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             UserSeeder::class,
             KategoriSeeder::class,
+            KategoriKeuanganSeeder::class,
             SatuanSeeder::class,
             SumberDanaSeedeer::class,
             BahanBakuSeeder::class,

@@ -1,13 +1,12 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col-lg-12">
-
-                <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
+                {{-- <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
                     <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
                         <h6 class="font-weight-bold text-primary mb-2">Filter Data</h6>
                     </div>
@@ -49,7 +48,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div> --}}
                 {{-- <a href="{{ route('penjualan.create') }}" class="btn btn-outline-primary fw-bold mb-3">
                     Tambah
                 </a> --}}
@@ -81,16 +80,16 @@
                                     @foreach ($piutang as $item)
                                         <tr class="border-bottom">
                                             <td class="align-middle">{{ $loop->iteration }}</td>
-                                             <td class="align-middle">
+                                            <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                    {{ $item->created_at->translatedFormat('l, d M Y') }}
                                                 </span>
                                             </td>
                                             <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ \Carbon\Carbon::parse($item->jatuh_tempo)->format('d M Y') }}
+                                                    {{ $item->jatuh_tempo->translatedFormat('l, d M Y') }}
                                                 </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
@@ -106,7 +105,7 @@
                                             </td>
                                             <td class="align-middle">
                                                 @if ($item->status === 'belum_lunas')
-                                                    <span class="badge bg-warning text-dark">Belum Lunas</span>
+                                                    <span class="badge bg-warning">Belum Lunas</span>
                                                 @else
                                                     <span class="badge bg-success">Lunas</span>
                                                 @endif
@@ -120,24 +119,13 @@
                                                         class="btn btn-outline-success" title="Detail">
                                                         <i class="far fa-eye"></i>
                                                     </a>
-                                                    @if ($item->status === 'belum_lunas')
-                                                        <button class="btn btn-sm btn-outline-primary" data-toggle="modal"
-                                                            data-target="#bayarModal{{ $item->id }}" title="Bayar">
-                                                            <i class="fa fa-credit-card" aria-hidden="true"></i>
-                                                        </button>
-                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
-                                        @include('piutang.bayar')
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="card-footer bg-white d-flex justify-content-center py-3">
-                        {{-- {{ $pembelian->appends(['tanggal' => request('tanggal')])->links('pagination::bootstrap-4') }} --}}
                     </div>
                 </div>
             </div>

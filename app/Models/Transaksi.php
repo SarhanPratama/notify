@@ -15,17 +15,24 @@ class Transaksi extends Model
     protected $fillable = [
         'nobukti',
         // 'id_bahan_baku',
-        'id_sumber_dana',
+        // 'id_sumber_dana',
         'tanggal',
         'tipe',
         'jumlah',
         'deskripsi',
+        'id_kategori_keuangan',
         'status',
+        'posisi_kas',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
     ];
+
+    public function kategoriKeuangan()
+    {
+        return $this->belongsTo(KategoriKeuangan::class, 'id_kategori_keuangan');
+    }
 
         public function SumberDana()
     {

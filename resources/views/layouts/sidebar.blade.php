@@ -12,7 +12,7 @@
 
     <!-- Dashboard -->
     @can('dashboard')
-        <li class="nav-item active">
+        <li class="nav-item {{ request()->routeIs('dashboard.*') ? 'active text-maron' : '' }}">
             <a class="nav-link" href="{{ route('admin.dashboard') }}">
                 <i class="fas fa-fw fa-tachometer-alt text-maron"></i>
                 <span>Dashboard</span>
@@ -23,7 +23,7 @@
     <hr class="sidebar-divider">
 
     <div class="sidebar-heading">Operasional</div>
-    @hasrole('gudang|owner')
+    @hasrole('gudang|owner|keuangan')
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse" data-target="#collapseDataMaster"
                 aria-expanded="true" aria-controls="collapseDataMaster">
@@ -31,15 +31,19 @@
                 <span>Data Master</span>
             </a>
             <div id="collapseDataMaster"
-                class="collapse {{ request()->routeIs(['kategori.*', 'bahan-baku.*', 'kategori.*', 'supplier.*', 'outlet.*']) ? 'show' : '' }}"
+                class="collapse {{ request()->routeIs(['kategori.*', 'bahan-baku.*', 'kategori.*', 'kategori-keuangan.*', 'supplier.*', 'outlet.*']) ? 'show' : '' }}"
                 aria-labelledby="headingKas" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     @can('kategori')
-                        <a class="collapse-item {{ request()->routeIs('kategori.index') ? 'active font-weight-bold' : '' }}"
-                            href="{{ route('kategori.index') }}">Kategori</a>
+                        <a class="collapse-item {{ request()->routeIs('kategori.*') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('kategori.index') }}">Kategori BB</a>
+                    @endcan
+                    @can('kategori-keuangan')
+                        <a class="collapse-item {{ request()->routeIs('kategori-keuangan.*') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('kategori-keuangan.index') }}">Kategori Keuangan</a>
                     @endcan
                     @can('bahan-baku')
-                        <a class="collapse-item {{ request()->routeIs('bahan-baku.index') ? 'active font-weight-bold' : '' }}"
+                        <a class="collapse-item {{ request()->routeIs('bahan-baku.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('bahan-baku.index') }}">Bahan Baku</a>
                     @endcan
                     @can('supplier')
@@ -56,7 +60,7 @@
     @endhasrole
 
     <!-- Transaksi -->
-    @hasrole('gudang|owner|keuangan')
+    @hasrole('gudang|owner')
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse"
                 data-target="#collapseTransaksiGudang" aria-expanded="true" aria-controls="collapseTransaksiGudang">
@@ -92,15 +96,19 @@
                 <span>Keuangan</span>
             </a>
             <div id="collapseKeuangan"
-                class="collapse {{ request()->routeIs(['approval-pembelian.*', 'piutang.*', 'transaksi.*']) ? 'show' : '' }}">
+                class="collapse {{ request()->routeIs(['piutang.*', 'transaksi.*', 'pemasukan.*', 'pengeluaran.*']) ? 'show' : '' }}">
                 <div class="bg-white py-2 collapse-inner rounded">
                     @can('piutang')
-                        <a class="collapse-item {{ request()->routeIs('approval-pembelian.*') ? 'active font-weight-bold' : '' }}"
-                            href="{{ route('approval-pembelian.index') }}">Approval Pembelian</a>
-                    @endcan
-                    @can('piutang')
-                        <a class="collapse-item {{ request()->routeIs('piutang.index') ? 'active font-weight-bold' : '' }}"
+                        <a class="collapse-item {{ request()->routeIs('piutang.*') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('piutang.index') }}">Piutang</a>
+                    @endcan
+                    @can('kas')
+                        <a class="collapse-item {{ request()->routeIs('pemasukan.*') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('pemasukan.index') }}">Pemasukan</a>
+                    @endcan
+                    @can('kas')
+                        <a class="collapse-item {{ request()->routeIs('pengeluaran.*') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('pengeluaran.index') }}">Pengeluaran</a>
                     @endcan
                     @can('kas')
                         <a class="collapse-item {{ request()->routeIs('transaksi.*') ? 'active font-weight-bold' : '' }}"
@@ -127,8 +135,10 @@
                         href="{{ route('laporan-stok') }}">Stok</a>
                     <a class="collapse-item {{ request()->routeIs('laporan.kartu-stok') ? 'active font-weight-bold' : '' }}"
                         href="{{ route('laporan.kartu-stok') }}">Kartu Stok</a>
-                    <a class="collapse-item {{ request()->routeIs('laporan.buku-besar') ? 'active font-weight-bold' : '' }}"
-                        href="{{ route('laporan.buku-besar') }}">Buku Besar</a>
+                    <a class="collapse-item {{ request()->routeIs('laporan.rekap-transaksi') ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('laporan.rekap-transaksi') }}">Rekap Transaksi</a>
+                    {{-- <a class="collapse-item {{ request()->routeIs('laporan.buku-besar') ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('laporan.buku-besar') }}">Buku Besar</a> --}}
                 </div>
             </div>
         </li>

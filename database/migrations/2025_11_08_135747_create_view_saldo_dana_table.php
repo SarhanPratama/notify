@@ -16,32 +16,33 @@ return new class extends Migration
             SELECT
                 -- Total Pemasukan (hanya transaksi aktif dan belum dihapus)
                 COALESCE(SUM(CASE
-                    WHEN tipe = 'debit' AND status = 1 AND deleted_at IS NULL
-                    THEN jumlah
+                    WHEN k.jenis = 'pemasukan' AND t.status = 1 AND t.deleted_at IS NULL
+                    THEN t.jumlah
                     ELSE 0
                 END), 0) AS total_pemasukan,
 
                 -- Total Pengeluaran (hanya transaksi aktif dan belum dihapus)
                 COALESCE(SUM(CASE
-                    WHEN tipe = 'kredit' AND status = 1 AND deleted_at IS NULL
-                    THEN jumlah
+                    WHEN k.jenis = 'pengeluaran' AND t.status = 1 AND t.deleted_at IS NULL
+                    THEN t.jumlah
                     ELSE 0
                 END), 0) AS total_pengeluaran,
 
                 -- Saldo Akhir (Current Saldo)
                 (COALESCE(SUM(CASE
-                    WHEN tipe = 'debit' AND status = 1 AND deleted_at IS NULL
-                    THEN jumlah
+                    WHEN k.jenis = 'pemasukan' AND t.status = 1 AND t.deleted_at IS NULL
+                    THEN t.jumlah
                     ELSE 0
                 END), 0)
                 - COALESCE(SUM(CASE
-                    WHEN tipe = 'kredit' AND status = 1 AND deleted_at IS NULL
-                    THEN jumlah
+                    WHEN k.jenis = 'pengeluaran' AND t.status = 1 AND t.deleted_at IS NULL
+                    THEN t.jumlah
                     ELSE 0
                 END), 0)) AS saldo_current
 
-            FROM transaksi
-            WHERE deleted_at IS NULL AND status = 1;
+            FROM transaksi t
+            LEFT JOIN kategori_keuangan k ON t.id_kategori_keuangan = k.id
+            WHERE t.deleted_at IS NULL AND t.status = 1;
         ");
     }
 

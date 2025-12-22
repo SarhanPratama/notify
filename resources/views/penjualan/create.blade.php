@@ -80,35 +80,41 @@
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0 font-weight-bold text-primary">
                                         <i class="fas fa-credit-card mr-2"></i>
-                                        Metode Pembayaran
+                                        Status & Metode Pembayaran
                                     </h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="card border-primary h-100">
-                                                <div class="card-body text-center">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="metode_pembayaran" id="tunai" value="tunai" required>
-                                                        <label class="form-check-label font-weight-bold" for="tunai">
-                                                            <i class="fas fa-money-bill-wave text-success fa-2x d-block mb-2"></i>
-                                                            Tunai
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label font-weight-bold">Status Gudang</label>
+                                            <select class="form-control" name="status_gudang">
+                                                <option value="pending">Pending</option>
+                                                <option value="approved">Approved</option>
+                                                <option value="rejected">Rejected</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="card border-warning h-100">
-                                                <div class="card-body text-center">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="metode_pembayaran" id="kasbon" value="kasbon">
-                                                        <label class="form-check-label font-weight-bold" for="kasbon">
-                                                            <i class="fas fa-handshake text-warning fa-2x d-block mb-2"></i>
-                                                            Kasbon
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label font-weight-bold">Status Keuangan</label>
+                                            <select class="form-control" name="status_keuangan">
+                                                <option value="pending">Pending</option>
+                                                <option value="approved">Approved</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label font-weight-bold">Status Pembayaran</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="status_pembayaran" id="lunas" value="lunas" required>
+                                                <label class="form-check-label font-weight-bold" for="lunas">
+                                                    <i class="fas fa-money-bill-wave text-success fa-2x d-block mb-2"></i>
+                                                    Lunas
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="status_pembayaran" id="piutang" value="piutang">
+                                                <label class="form-check-label font-weight-bold" for="piutang">
+                                                    <i class="fas fa-handshake text-warning fa-2x d-block mb-2"></i>
+                                                    Piutang
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -372,7 +378,7 @@
             document.querySelector('input[name="tanggal"]').value = dateString;
 
             // Highlight selected payment method
-            document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
+            document.querySelectorAll('input[name="status_pembayaran"]').forEach(radio => {
                 radio.addEventListener('change', function() {
                     document.querySelectorAll('.card.border-primary, .card.border-warning').forEach(card => {
                         card.classList.remove('border-success', 'bg-light');

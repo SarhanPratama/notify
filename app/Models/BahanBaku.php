@@ -36,7 +36,7 @@ class BahanBaku extends Model
         return $this->hasMany(mutasi::class, 'id_bahan_baku');
     }
 
-        public function ViewStok()
+        public function viewStok()
     {
         return $this->hasOne(ViewStok::class, 'id_bahan_baku');
     }

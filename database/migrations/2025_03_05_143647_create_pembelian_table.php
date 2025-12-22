@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('nobukti')->unique();
             $table->date('tanggal');
             $table->decimal('total', 15, 0);
-            $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'cancelled', 'rejected'])->default('pending');
             $table->text('catatan')->nullable();
-            $table->foreignId('id_supplier')->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('id_supplier')->nullable()->constrained('supplier')->onDelete('restrict')->onUpdate('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

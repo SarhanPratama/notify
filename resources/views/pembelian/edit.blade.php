@@ -1,228 +1,160 @@
 @extends('layouts.master')
-@section('css')
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/trix.css') }}">
-@endsection
+
 @section('content')
     @include('layouts.breadcrumbs')
 
     <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{{ route('pembelian.index') }}" class="btn btn-outline-secondary fw-bold">
+                <i class="fa fa-arrow-left me-2"></i>Kembali
+            </a>
+            <form action="{{ route('pembelian.cart.clear', $detailPembelian->nobukti) }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Yakin ingin mengosongkan keranjang?')">
+                    Reset Keranjang
+                </button>
+            </form>
+        </div>
 
-        <a href="{{ route('pembelian.index') }}" class="btn btn-outline-secondary mb-3 fw-bold">
-            <i class="fa fa-arrow-left me-2"></i>Kembali
-        </a>
-        <div class="row justify-content-center">
-            <div class="col-lg-12">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-maron py-3 text-center">
-                        <h1 class="mb-0 fs-5 fw-bolder text-light">Form Edit Pembelian Stok</h1>
+        <div class="row">
+            <!-- Form Tambah Item ke Keranjang -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-maron text-white py-3">
+                        <h6 class="mb-0 fw-bold">Tambah Item</h6>
                     </div>
-
                     <div class="card-body">
-                        <form action="{{ route('pembelian.update', $detailPembelian->nobukti) }}" method="POST">
+                        <form action="{{ route('pembelian.cart.add', $detailPembelian->nobukti) }}" method="POST">
                             @csrf
-                            @method('PUT')
-                            <div class="row mb-4">
-                                <div class="col-md-12 mb-3">
-                                    <label class="form-label fw-bold">Supplier</span></label>
-                                    <select class="form-select form-select-sm select-single" name="id_supplier">
-                                        <option value="">Pilih Supplier</option>
-                                        @foreach ($suppliers as $id => $nama)
-                                            <option value="{{ $id }}"
-                                                {{ $detailPembelian->id_supplier == $id ? 'selected' : '' }}>
-                                                {{ $nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Bahan Baku <span class="text-danger">*</span></label>
+                                <select class="form-select" name="id_bahan_baku" required>
+                                    <option value="">-- Pilih Bahan Baku --</option>
+                                    @foreach ($produk as $data)
+                                        <option value="{{ $data->id }}">
+                                            {{ $data->nama }} ({{ $data->satuan->nama ?? '' }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label fw-bold">Qty <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" name="quantity" min="1" value="1" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label fw-bold">Harga <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" name="harga" min="0" required placeholder="0">
                                 </div>
                             </div>
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-                            <!-- Product Table -->
-                            <div class="table-responsive mb-4">
-                                <div class="mb-3">
-                                    <button type="button" id="tambah-detail" class="btn btn-outline-primary btn-sm">
-                                        Tambah Baris
-                                    </button>
-                                </div>
-                                <table class="table table-bordered">
-                                    <thead class="bg-light">
+            <!-- Keranjang & Form Final Submit -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-maron text-white py-3">
+                        <h6 class="mb-0 fw-bold">Keranjang Pembelian</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- Info Pembelian -->
+                        <div class="alert alert-info mb-3 text-info">
+                            <strong>No. Bukti:</strong> {{ $detailPembelian->nobukti }}
+                        </div>
+
+                        <!-- Tabel Keranjang -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">No</th>
+                                        <th class="text-nowrap">Bahan Baku</th>
+                                        <th class="text-center">Qty</th>
+                                        <th class="text-end">Harga</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($cartItems as $index => $item)
                                         <tr>
-                                            <th>Produk</th>
-                                            <th>Qty</th>
-                                            <th>Harga</th>
-                                            <th>Total per item</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="detail-pembelian">
-                                        @foreach ($detailPembelian->mutasi as $detail)
-                                            <tr class="detail-item">
-                                                <td>
-                                                    <select class="form-select form-select-sm select-single" name="bahanBaku[]"
-                                                        style="min-width: 200px" required>
-                                                        <option value="">Pilih Bahan Baku</option>
-                                                        @foreach ($produk as $data)
-                                                            <option value="{{ $data->id }}"
-                                                                {{ $detail->id_bahan_baku == $data->id ? 'selected' : '' }}
-                                                                data-satuan="{{ $data->satuan ? $data->satuan->nama : '' }}">
-                                                                {{ $data->nama }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="input-group input-group-sm" style="min-width: 120px">
-                                                        <input type="number" class="form-control form-control-sm quantity"
-                                                            name="quantity[]" min="1"
-                                                            value="{{ $detail->quantity }}" required>
-                                                        <span class="input-group-text satuan-display"></span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <input type="number" class="form-control form-control-sm harga"
-                                                        name="harga[]" min="0" style="min-width: 120px"
-                                                        value="{{ $detail->harga }}" required>
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control form-control-sm total"
-                                                        value="{{ $detail->sub_total }}" style="min-width: 120px" readonly>
-                                                </td>
-                                                <td class="text-center">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm remove-row">
+                                            <td class="text-center">{{ $index + 1 }}</td>
+                                            <td>{{ $item['nama_bahan_baku'] }}</td>
+                                            <td class="text-center text-nowrap">{{ $item['quantity'] }} {{ $item['satuan'] }}</td>
+                                            <td class="text-end">Rp {{ number_format($item['harga'], 0, ',', '.') }}</td>
+                                            <td class="text-end fw-bold">Rp {{ number_format($item['sub_total'], 0, ',', '.') }}</td>
+                                            <td class="text-center">
+                                                <form action="{{ route('pembelian.cart.remove', [$detailPembelian->nobukti, $index]) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Hapus item ini?')">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="fa fa-shopping-cart fa-2x mb-2 d-block"></i>
+                                                Keranjang masih kosong. Tambahkan item terlebih dahulu.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                                @if (count($cartItems) > 0)
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="4" class="text-end fw-bold">Total:</td>
+                                            <td class="text-end fw-bold">Rp {{ number_format(collect($cartItems)->sum('sub_total'), 0, ',', '.') }}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                @endif
+                            </table>
+                        </div>
 
-                            <!-- Total Section -->
-                            <div class="row">
-                                <div class="col-md-4 offset-md-8 col-8 offset-4 mb-3">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text">Total</span>
-                                        <input type="text" class="form-control font-weight-bold total"
-                                            id="total-keseluruhan"
-                                            value="{{ number_format($detailPembelian->mutasi->sum('sub_total'), 0, ',', '.') }}"
-                                            readonly>
+                        <!-- Form Final Submit -->
+                        @if (count($cartItems) > 0)
+                            <hr>
+                            <form action="{{ route('pembelian.update', $detailPembelian->nobukti) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Supplier</label>
+                                        <select class="form-select" name="id_supplier">
+                                            <option value="">-- Pilih Supplier (Opsional) --</option>
+                                            @foreach ($suppliers as $id => $nama)
+                                                <option value="{{ $id }}" {{ $detailPembelian->id_supplier == $id ? 'selected' : '' }}>
+                                                    {{ $nama }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Catatan</label>
+                                        <input type="text" class="form-control" name="catatan" value="{{ $detailPembelian->catatan }}" placeholder="Catatan (opsional)">
                                     </div>
                                 </div>
-                                 <div class="col-lg-6 col-md-6 col-sm12 col-12">
-                                    <label for="catatan"><strong>Catatan (Opsional)</strong></label>
-                                    <input name="catatan" type="hidden" id="catatan"
-                                        value="{{ $detailPembelian->catatan }}" rows="10" class="form-control">
-                                    <trix-editor input="catatan"></trix-editor>
-                                </div>
-                            </div>
 
-                            <div class="row mt-4">
-                                <div class="col-md-12 text-end">
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">
-                                        Submit
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-outline-success" onclick="return confirm('Yakin ingin menyimpan perubahan pembelian ini?')">
+                                        Simpan Pembelian
                                     </button>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
-
-@section('scripts')
-    <script src="{{ asset('assets/js/trix.js') }}"></script>
-@endsection
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fungsi tambah baris
-        document.getElementById('tambah-detail').addEventListener('click', function() {
-            const newRow = document.querySelector('.detail-item').cloneNode(true);
-            newRow.querySelectorAll('input').forEach(input => input.value = '');
-            newRow.querySelector('select').selectedIndex = 0;
-            document.querySelector('#detail-pembelian').appendChild(newRow);
-
-            // Bind event listeners untuk baris baru
-            setupRowEventListeners(newRow);
-        });
-
-        // Fungsi untuk setup event listeners pada baris
-        function setupRowEventListeners(row) {
-            const qtyInput = row.querySelector('.quantity');
-            const hargaInput = row.querySelector('.harga');
-            const produkSelect = row.querySelector('select[name="produk[]"]');
-
-            qtyInput.addEventListener('input', function() {
-                calculateTotal(row);
-            });
-
-            hargaInput.addEventListener('input', function() {
-                calculateTotal(row);
-            });
-
-            produkSelect.addEventListener('change', function() {
-                updateSatuan(row);
-            });
-        }
-
-        // Fungsi hapus baris
-        document.querySelector('#detail-pembelian').addEventListener('click', function(e) {
-            if (e.target.closest('.remove-row')) {
-                const row = e.target.closest('tr');
-                if (document.querySelectorAll('#detail-pembelian tr').length > 1) {
-                    row.remove();
-                    updateTotal();
-                }
-            }
-        });
-
-        function calculateTotal(row) {
-            const qty = parseFloat(row.querySelector('.quantity').value) || 0;
-            const harga = parseFloat(row.querySelector('.harga').value) || 0;
-            const total = qty * harga;
-            const totalInput = row.querySelector('.total');
-
-            totalInput.value = formatRupiah(total);
-            totalInput.dataset.rawTotal = total.toFixed(2);
-            updateTotal();
-        }
-
-        function updateTotal() {
-            let total = 0;
-            document.querySelectorAll('#detail-pembelian tr').forEach(row => {
-                const qty = parseFloat(row.querySelector('.quantity').value) || 0;
-                const harga = parseFloat(row.querySelector('.harga').value) || 0;
-                total += qty * harga;
-            });
-            document.getElementById('total-keseluruhan').value = formatRupiah(total);
-        }
-
-        function updateSatuan(row) {
-            const selectProduk = row.querySelector('select[name="produk[]"]');
-            const selectedOption = selectProduk.options[selectProduk.selectedIndex];
-            const satuan = selectedOption.getAttribute('data-satuan');
-            const satuanDisplay = row.querySelector('.satuan-display');
-
-            if (satuan) {
-                satuanDisplay.textContent = `${satuan}`;
-            } else {
-                satuanDisplay.textContent = '';
-            }
-        }
-
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(angka);
-        }
-
-        document.querySelectorAll('#detail-pembelian tr.detail-item').forEach(row => {
-            setupRowEventListeners(row);
-            updateSatuan(row); // Update satuan untuk baris yang sudah ada
-        });
-    });
-</script>

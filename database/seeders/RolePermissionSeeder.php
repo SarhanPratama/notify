@@ -33,10 +33,10 @@ class RolePermissionSeeder extends Seeder
             'pesanan',
 
             // Keuangan
-            'upproval-pembelian',
             'kas',
             'piutang',
             'transaksi',
+            'kategori-keuangan',
 
             // Laporan
             'laporan',
@@ -74,7 +74,7 @@ class RolePermissionSeeder extends Seeder
         // Keuangan - Akses modul keuangan
         $keuangan->givePermissionTo([
             'dashboard',
-            'upproval-pembelian',
+            'kategori-keuangan',
             'kas',
             'pesanan',
             'piutang',

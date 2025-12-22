@@ -42,8 +42,7 @@
 
                             <div class="alert alert-info">
                                 <small>
-                                    <i class="fas fa-info-circle me-1 text-dark"></i>
-                                    <strong class="text-dark">URL Akses:</strong><br>
+                                    <strong class="text-info fs-6">URL Akses:</strong><br>
                                     <code class="text-break">{{ $outlet->barcode_url }}</code>
                                 </small>
                             </div>

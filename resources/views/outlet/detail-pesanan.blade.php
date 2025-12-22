@@ -1,6 +1,7 @@
 @extends('layouts.outlet')
 
 @section('content')
+<div class="container-fluid mt-3">
     <div class="d-flex align-items-center mb-3">
         <div class="ms-1">
             <a href="{{ route('outlet.pesanan', ['token' => $token]) }}" class="btn btn-outline-danger btn-sm">
@@ -14,8 +15,7 @@
     </div>
 
     <div class="row g-3">
-        <!-- Left Column: Main Info -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
                     <div class="row mb-3">
@@ -30,42 +30,30 @@
                                 class="fw-semibold">{{ $order->tanggal ? \Carbon\Carbon::parse($order->tanggal)->format('d F Y') : '-' }}</span>
                         </div> --}}
                         <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
-                            <small class="text-muted d-block">Status</small>
-                            @php
-                                $statusBadge = '';
-                                $statusText = '';
-
-                                if ($order->status === 'approved' && $order->metode_pembayaran === 'kasbon' && $order->piutang && $order->piutang->status === 'belum_lunas') {
-                                    $statusBadge = 'bg-warning text-dark';
-                                    $statusText = 'Kasbon - Belum Lunas';
-                                } elseif ($order->status === 'approved' && $order->metode_pembayaran === 'kasbon' && $order->piutang && $order->piutang->status === 'lunas') {
-                                    $statusBadge = 'bg-success';
-                                    $statusText = 'Kasbon - Lunas';
-                                } else {
-                                    switch($order->status) {
-                                        case 'pending':
-                                            $statusBadge = 'bg-warning text-dark';
-                                            $statusText = 'Menunggu';
-                                            break;
-                                        case 'approved':
-                                            $statusBadge = 'bg-success';
-                                            $statusText = 'Disetujui';
-                                            break;
-                                        case 'rejected':
-                                            $statusBadge = 'bg-danger';
-                                            $statusText = 'Ditolak';
-                                            break;
-                                        case 'completed':
-                                            $statusBadge = 'bg-info text-dark';
-                                            $statusText = 'Selesai';
-                                            break;
-                                        default:
-                                            $statusBadge = 'bg-secondary';
-                                            $statusText = ucfirst($order->status);
-                                    }
-                                }
-                            @endphp
-                            <span class="badge {{ $statusBadge }}">{{ $statusText }}</span>
+                                <small class="text-muted d-block">Status Gudang</small>
+                                @if ($order->status_gudang == 'pending')
+                                    <span class="badge bg-warning">Menunggu</span>
+                                @elseif($order->status_gudang == 'approved')
+                                    <span class="badge bg-success">Disetujui</span>
+                                @elseif($order->status_gudang == 'rejected')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @endif
+                                <br>
+                                <small class="text-muted d-block mt-2">Status Keuangan</small>
+                                @if ($order->status_keuangan == 'pending')
+                                    <span class="badge bg-warning">Menunggu</span>
+                                @elseif($order->status_keuangan == 'approved')
+                                    <span class="badge bg-success">Disetujui</span>
+                                @elseif($order->status_keuangan == 'rejected')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @endif
+                                <br>
+                                <small class="text-muted d-block mt-2">Status Pembayaran</small>
+                                @if ($order->status_pembayaran == 'lunas')
+                                    <span class="badge bg-success">Lunas</span>
+                                @elseif($order->status_pembayaran == 'piutang')
+                                    <span class="badge bg-warning">Belum Lunas</span>
+                                @endif
                         </div>
                         @if ($order->catatan)
                             <div class="col-md-12 mb-2">
@@ -78,7 +66,7 @@
 
                     <hr class="mt-0">
 
-                    <h6 class="fw-bold mb-3 my-3 text-center text-maron">Daftar Item</h6>
+                    <h6 class="fw-bold mb-3 my-3 text-center text-maron">Daftar Belanja</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover">
                             <thead class="table-light">
@@ -118,7 +106,7 @@
             </div>
         </div>
 
-        <!-- Right Column: Summary -->
+        {{-- <!-- Right Column: Summary -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
@@ -132,6 +120,7 @@
                     <!-- Back button moved to header -->
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
+</div>
 @endsection

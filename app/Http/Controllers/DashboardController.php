@@ -60,6 +60,7 @@ class DashboardController extends Controller
 
         // Pembelian Terakhir
         $pembelianTerakhir = Pembelian::with('supplier')
+            ->where('status', '=', 'approved')
             ->orderBy('tanggal', 'desc')
             ->take(5)
             ->get();
@@ -71,7 +72,7 @@ class DashboardController extends Controller
 
         // Opsi 3: Total penjualan - piutang beredar (menggunakan sisa_piutang accessor)
         $totalPenjualanBulanIni = Penjualan::whereMonth('tanggal', Carbon::now()->month)
-        ->where('status', '=', 'completed')
+        ->where('status_gudang', '=', 'completed')
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('total');
 
@@ -136,32 +137,40 @@ class DashboardController extends Controller
         ];
 
         // Total Saldo Kas Saat Ini (All Time)
-        $totalSaldoSaatIni = Transaksi::where('status', 1)
-            ->sum(DB::raw("CASE WHEN tipe = 'debit' THEN jumlah ELSE -jumlah END"));
+        $totalSaldoSaatIni = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
+            ->where('transaksi.status', 1)
+            ->sum(DB::raw("CASE WHEN kategori_keuangan.jenis = 'pemasukan' THEN transaksi.jumlah ELSE -transaksi.jumlah END"));
 
         // Total Pendapatan & Pengeluaran Bulan Ini
-        $totalPendapatanBulanIni = Transaksi::where('tipe', 'debit')
+        $totalPendapatanBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pemasukan');
+            })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
 
-        $totalPengeluaranBulanIni = Transaksi::where('tipe', 'kredit')
+        $totalPengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pengeluaran');
+            })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
 
         // Cash Flow 30 Hari Terakhir
-        $cashFlow30Hari = Transaksi::selectRaw('DATE(tanggal) as date,
-                                            SUM(CASE WHEN tipe = "debit" THEN jumlah ELSE 0 END) as debit,
-                                            SUM(CASE WHEN tipe = "kredit" THEN jumlah ELSE 0 END) as kredit')
-            ->where('tanggal', '>=', Carbon::now()->subDays(30))
+        $cashFlow30Hari = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
+            ->selectRaw('DATE(transaksi.tanggal) as date,
+                         SUM(CASE WHEN kategori_keuangan.jenis = "pemasukan" THEN transaksi.jumlah ELSE 0 END) as debit,
+                         SUM(CASE WHEN kategori_keuangan.jenis = "pengeluaran" THEN transaksi.jumlah ELSE 0 END) as kredit')
+            ->where('transaksi.tanggal', '>=', Carbon::now()->subDays(30))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
         // Top Pengeluaran
         $topPengeluaran = Transaksi::with('SumberDana')
-            ->where('tipe', 'kredit')
+            ->whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pengeluaran');
+            })
             ->orderBy('jumlah', 'desc')
             ->take(5)
             ->get();
@@ -178,11 +187,12 @@ class DashboardController extends Controller
             ->sum('sisa_piutang');
 
         // Laporan Laba/Rugi Bulanan (12 bulan terakhir)
-        $laporanBulanan = Transaksi::selectRaw('MONTH(tanggal) as bulan,
-                                      YEAR(tanggal) as tahun,
-                                      SUM(CASE WHEN tipe = "debit" THEN jumlah ELSE 0 END) as pendapatan,
-                                      SUM(CASE WHEN tipe = "kredit" THEN jumlah ELSE 0 END) as pengeluaran')
-            ->where('tanggal', '>=', Carbon::now()->subMonths(11)->startOfMonth())
+        $laporanBulanan = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
+            ->selectRaw('MONTH(transaksi.tanggal) as bulan,
+                         YEAR(transaksi.tanggal) as tahun,
+                         SUM(CASE WHEN kategori_keuangan.jenis = "pemasukan" THEN transaksi.jumlah ELSE 0 END) as pendapatan,
+                         SUM(CASE WHEN kategori_keuangan.jenis = "pengeluaran" THEN transaksi.jumlah ELSE 0 END) as pengeluaran')
+            ->where('transaksi.tanggal', '>=', Carbon::now()->subMonths(11)->startOfMonth())
             ->groupBy('bulan', 'tahun')
             ->orderBy('tahun')
             ->orderBy('bulan')
@@ -226,17 +236,22 @@ class DashboardController extends Controller
         ];
 
         // Total Saldo Kas Saat Ini (All Time)
-        $totalSaldoSaatIni = Transaksi::where('status', 1)
-            ->sum(DB::raw("CASE WHEN tipe = 'debit' THEN jumlah ELSE -jumlah END"));
+        $totalSaldoSaatIni = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
+            ->where('transaksi.status', 1)
+            ->sum(DB::raw("CASE WHEN kategori_keuangan.jenis = 'pemasukan' THEN transaksi.jumlah ELSE -transaksi.jumlah END"));
 
         // Pemasukan Bulan Ini: SUM(jumlah) dari transaksi tipe='pemasukan' bulan berjalan
-        $pemasukanBulanIni = Transaksi::where('tipe', 'debit')
+        $pemasukanBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pemasukan');
+            })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
 
         // Pengeluaran Bulan Ini: SUM(jumlah) dari transaksi tipe='pengeluaran' bulan berjalan
-        $pengeluaranBulanIni = Transaksi::where('tipe', 'kredit')
+        $pengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pengeluaran');
+            })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
@@ -277,23 +292,27 @@ class DashboardController extends Controller
             ->get();
 
         // Query: SUM(jumlah) dari transaksi WHERE tipe = 'debit' AND tanggal = HARI_INI
-        $pemasukanHariIni = Transaksi::where('tipe', 'debit')
+        $pemasukanHariIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pemasukan');
+            })
             ->whereDate('tanggal', Carbon::today())
             ->sum('jumlah');
 
         // Query: SUM(jumlah) dari transaksi WHERE tipe = 'kredit' AND tanggal = HARI_INI
-        $pengeluaranHariIni = Transaksi::where('tipe', 'kredit')
+        $pengeluaranHariIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
+                $q->where('jenis', 'pengeluaran');
+            })
             ->whereDate('tanggal', Carbon::today())
             ->sum('jumlah');
 
         // Query: COUNT(id) dari penjualan + pembelian WHERE tanggal = HARI_INI
-        $penjualanHariIni = Penjualan::whereDate('tanggal', Carbon::today())
+        // $penjualanHariIni = Penjualan::whereDate('tanggal', Carbon::today())
+        //     ->count();
+
+        $transaksiBaruHariIni = Transaksi::whereDate('tanggal', Carbon::today())
             ->count();
 
-        $pembelianHariIni = Pembelian::whereDate('tanggal', Carbon::today())
-            ->count();
-
-        $transaksiBaruHariIni = $penjualanHariIni + $pembelianHariIni;
+        // $transaksiBaruHariIni = $penjualanHariIni + $pembelianHariIni;
 
         $ArusKasChart = $ArusKasChart->build();
 

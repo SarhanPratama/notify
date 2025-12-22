@@ -8,7 +8,7 @@ use App\Models\SumberDana;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class cashFlowController extends Controller
+class TransaksiController extends Controller
 {
     public function index()
     {
@@ -19,7 +19,7 @@ class cashFlowController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $kas = Transaksi::with('SumberDana')->get();
+        $kas = Transaksi::orderBy('tanggal', 'desc')->get();
 
 
         return view('kas.index', compact('title', 'breadcrumbs', 'kas'));
@@ -34,8 +34,8 @@ class cashFlowController extends Controller
             ['label' => 'Form Tambah', 'url' => null],
         ];
 
-        $sumberDana = SumberDana::pluck('nama', 'id');
-        return view('kas.create', compact('title', 'breadcrumbs', 'sumberDana'));
+        // $sumberDana = SumberDana::pluck('nama', 'id');
+        return view('kas.create', compact('title', 'breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -44,7 +44,7 @@ class cashFlowController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:0',
             'tipe' => 'required|in:debit,kredit',
-            'id_sumber_dana' => 'required|exists:sumber_dana,id',
+            // 'id_sumber_dana' => 'required|exists:sumber_dana,id',
             'deskripsi' => 'required|string|max:255',
         ]);
 
@@ -54,7 +54,7 @@ class cashFlowController extends Controller
             // Simpan transaksi manual
             $transaksi = Transaksi::create([
                 'nobukti' => 'CF' . date('YmdHis'),
-                'id_sumber_dana' => $request->id_sumber_dana,
+                // 'id_sumber_dana' => $request->id_sumber_dana,
                 'tanggal' => $request->tanggal,
                 'tipe' => $request->tipe,
                 'jumlah' => $request->jumlah,

@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <!-- Filter Form -->
-                <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
+                {{-- <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
                     <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
                         <h6 class="font-weight-bold text-primary mb-2">Filter Data</h6>
                     </div>
@@ -49,7 +49,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div> --}}
                 <!-- Card with improved styling -->
                 <div>
                     <a href="{{ route('pembelian.create') }}" class="btn btn-outline-primary fw-bold mb-3">
@@ -85,8 +85,8 @@
                                             <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
-                                                </span>
+                                                    {{ $item->tanggal->translatedFormat('l, d M Y') }}
+                                                    </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
                                             <td class="align-middle">
@@ -103,26 +103,21 @@
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-                                                {{-- @php
-                                                    $status = is_string($item->status) ? $item->status : (string) $item->status;
-                                                @endphp --}}
-
                                                 @if ($item->status === 'approved')
                                                     <span class="badge fw-bolder bg-success">Disetujui</span>
                                                 @elseif($item->status === 'pending')
-                                                    <span class="badge fw-bolder bg-warning text-dark">Pending</span>
-                                                @elseif($item->status === 'reject' || $item->status === 'rejected')
+                                                    <span class="badge fw-bolder bg-warning">Pending</span>
+                                                @elseif($item->status === 'rejected')
                                                     <span class="badge fw-bolder bg-danger">Ditolak</span>
-                                                @else
-                                                    <span
-                                                        class="badge fw-bolder bg-secondary">{{ ucfirst($item->status) }}</span>
+                                                @elseif ($item->status === 'cancelled')
+                                                    <span class="badge fw-bolder bg-danger">Dibatalkan</span>
                                                 @endif
                                             </td>
                                             <td class="align-middle">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div class="btn-group btn-group-sm" role="group">
 
-                                                        @if (is_null($item->deleted_at))
+                                                        @if ($item->status === 'pending')
                                                             <a href="{{ route('pembelian.edit', $item->nobukti) }}"
                                                                 class="btn btn-outline-warning rounded-left" title="edit">
                                                                 <i class="fa fa-pencil"></i>
@@ -136,49 +131,44 @@
                                                             <button class="btn btn-outline-danger rounded-right"
                                                                 data-toggle="modal"
                                                                 data-target="#cancelModal{{ $item->id }}"
-                                                                title="Hapus">
-                                                                {{-- <i class="far fa-trash-alt"></i> --}}
+                                                                title="Batalkan Pembelian">
                                                                 <i class="fa fa-times" aria-hidden="true"></i>
                                                             </button>
                                                         @endif
                                                     </div>
-                                                    @if ($item->status === 'pending' || $item->status === 'canceled')
-
-                                                    <div class="btn-group dropleft ml-auto">
-                                                        <a class="btn btn-sm border-none" data-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                            <i class="fa fa-ellipsis-v fs-5" aria-hidden="true"></i>
-                                                        </a>
-                                                        <div class="dropdown-menu p-2">
-                                                            <!-- Tambahkan dropdown menu di sini -->
-
-                                                            @if (!is_null($item->deleted_at))
-                                                                <form
-                                                                    action="{{ route('pembelian.restore', $item->nobukti) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <button
-                                                                        class="btn btn-sm btn-outline-success w-100">Undo</button>
-                                                                </form>
-                                                            @endif
-                                                            {{-- <button class="btn btn-outline-danger rounded-right"
-                                                                data-toggle="modal"
-                                                                data-target="#deleteModal{{ $item->id }}"
-                                                                title="Hapus">
-                                                                <i class="far fa-trash-alt"></i>
-                                                            </button> --}}
-                                                            {{-- <a class="dropdown-item"
-                                                                href="{{ route('pembelian.restore', $item->nobukti) }}">Undo</a> --}}
-                                                            <button class="btn btn-sm btn-outline-danger w-100"
-                                                                data-toggle="modal"
-                                                                data-target="#deleteModal{{ $item->id }}"
-                                                                title="Hapus">
-                                                                Hapus
-                                                            </button>
+                                                    {{-- @if ($item->status === 'pending' || $item->status === 'canceled')
+                                                        <div class="btn-group dropleft ml-auto">
+                                                            <a class="btn btn-sm border-none" data-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                                <i class="fa fa-ellipsis-v fs-5" aria-hidden="true"></i>
+                                                            </a>
+                                                            <div class="dropdown-menu p-2">
+                                                                @if (!is_null($item->deleted_at))
+                                                                    <form
+                                                                        action="{{ route('pembelian.restore', $item->nobukti) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <button
+                                                                            class="btn btn-sm btn-outline-success w-100">Undo</button>
+                                                                    </form>
+                                                                @endif
+                                                                <button class="btn btn-outline-danger rounded-right"
+                                                                        data-toggle="modal"
+                                                                        data-target="#deleteModal{{ $item->id }}"
+                                                                        title="Hapus">
+                                                                        <i class="far fa-trash-alt"></i>
+                                                                     </button>
+                                                                <a class="dropdown-item" href="{{ route('pembelian.restore', $item->nobukti) }}">Undo</a>
+                                                                <button class="btn btn-sm btn-outline-danger w-100"
+                                                                    data-toggle="modal"
+                                                                    data-target="#deleteModal{{ $item->id }}"
+                                                                    title="Hapus">
+                                                                    Hapus
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -189,10 +179,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="card-footer bg-white d-flex justify-content-center py-3">
-                        {{-- {{ $pembelian->appends(['tanggal_mulai' => request('tanggal_mulai'), 'tanggal_sampai' => request('tanggal_sampai')])->links('pagination::bootstrap-4') }} --}}
                     </div>
                 </div>
             </div>

@@ -4,10 +4,9 @@
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
 
-    <!-- 📊 Kartu Info Cepat (Data Ringkasan Utama) -->
     <div class="row mb-4">
-        <!-- Total Saldo Kas Saat Ini -->
-        <div class="col-xl-3 col-md-6 mb-4">
+
+        {{-- <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 p-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -18,7 +17,7 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
                             </div>
-                            {{-- <small class="text-muted">Saldo saat ini</small> --}}
+                            <small class="text-muted">Saldo saat ini</small>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-wallet fa-2x text-primary"></i>
@@ -26,7 +25,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Pemasukan Bulan Ini -->
         <div class="col-xl-3 col-md-6 mb-4">

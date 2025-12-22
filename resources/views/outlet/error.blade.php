@@ -104,7 +104,6 @@
                 @if($type === 'invalid_token')
                 <!-- Invalid Token Error -->
                 <div class="card card-error shadow-sm border-0">
-                    <div class="error-code text-danger">404</div>
                     <div class="card-body text-center p-5">
                         <div class="error-icon text-danger mb-4">
                             <i class="fas fa-qrcode"></i>
@@ -113,8 +112,8 @@
                         <p class="lead text-muted mb-4">
                             QR Code yang Anda scan tidak valid atau sudah tidak aktif.
                         </p>
-                        <div class="alert alert-warning text-start">
-                            <h6 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Kemungkinan Penyebab:</h6>
+                        <div class="alert alert-warning text-center text-warning">
+                            <h6 class="mb-2">Kemungkinan Penyebab:</h6>
                             <ul class="mb-0">
                                 <li>QR Code sudah kadaluarsa atau dinonaktifkan</li>
                                 <li>Link QR Code rusak atau tidak lengkap</li>
@@ -123,14 +122,12 @@
                             </ul>
                         </div>
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <button onclick="window.location.reload()" class="btn btn-primary-custom">
-                                <i class="fas fa-sync-alt me-1"></i>
+                            <a onclick="window.location.reload()" class="btn btn-outline-danger">
                                 Coba Lagi
-                            </button>
-                            <button onclick="contactSupport()" class="btn btn-outline-primary">
-                                <i class="fas fa-headset me-1"></i>
+                            </a>
+                            <a href="https://wa.me/6281373586179" class="btn btn-outline-primary">
                                 Hubungi Support
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -263,53 +260,6 @@
                     </div>
                 </div>
                 @endif
-
-                <!-- Help Section -->
-                <div class="card shadow-sm border-0 mt-4">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0 text-maron">
-                            <i class="fas fa-question-circle me-2"></i>
-                            Butuh Bantuan?
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-3">
-                                <div class="p-3">
-                                    <i class="fas fa-phone fa-2x text-success mb-2"></i>
-                                    <h6>Telepon</h6>
-                                    <p class="text-muted mb-0">
-                                        <a href="tel:+62811234567" class="text-decoration-none">
-                                            +62 811-234-567
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-center mb-3">
-                                <div class="p-3">
-                                    <i class="fab fa-whatsapp fa-2x text-success mb-2"></i>
-                                    <h6>WhatsApp</h6>
-                                    <p class="text-muted mb-0">
-                                        <a href="https://wa.me/62811234567" target="_blank" class="text-decoration-none">
-                                            Chat Support
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-center mb-3">
-                                <div class="p-3">
-                                    <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
-                                    <h6>Email</h6>
-                                    <p class="text-muted mb-0">
-                                        <a href="mailto:support@seroo.com" class="text-decoration-none">
-                                            support@seroo.com
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

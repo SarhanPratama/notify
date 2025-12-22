@@ -6,53 +6,53 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-
-                <div class="card shadow-sm border-0 mb-4 rounded-lg overflow-hidden">
-                    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
-                        <h6 class="font-weight-bold text-primary mb-2">Filter Data</h6>
+                {{--
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h6 class="font-weight-bold text-primary mb-0">
+                            <i class="fas fa-filter mr-2"></i>Filter Data
+                        </h6>
                     </div>
-                    <div class="card-body bg-white p-4">
-                        <form method="GET" action="{{ route('penjualan.index') }}" class="row g-3 align-items-end">
-                            <div class="col-md-4">
-                                <label for="tanggal_mulai"
-                                    class="form-label text-secondary small text-uppercase fw-bold">Tanggal Mulai</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0"><i
-                                            class="far fa-calendar-alt text-maron"></i></span>
-                                    <input class="form-control border-0 bg-light shadow-none" type="date"
-                                        id="tanggal_mulai" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
-                                        required>
+                    <div class="card-body p-4">
+                        <form method="GET" action="{{ route('penjualan.index') }}">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label for="tanggal_mulai" class="form-label fw-bold">Tanggal Mulai</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt text-maron"></i></span>
+                                        <input class="form-control" type="date" id="tanggal_mulai" name="tanggal_mulai"
+                                            value="{{ request('tanggal_mulai') }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="tanggal_sampai"
-                                    class="form-label text-secondary small text-uppercase fw-bold">Tanggal Sampai</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0"><i
-                                            class="far fa-calendar-alt text-maron"></i></span>
-                                    <input class="form-control border-0 bg-light shadow-none" type="date"
-                                        id="tanggal_sampai" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
-                                        required>
+                                <div class="col-md-5 mb-2 mb-md-0">
+                                    <label for="tanggal_sampai" class="form-label fw-bold">Tanggal Sampai</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt text-maron"></i></span>
+                                        <input class="form-control" type="date" id="tanggal_sampai" name="tanggal_sampai"
+                                            value="{{ request('tanggal_sampai') }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex gap-2">
-                                    <button type="submit"
-                                        class="btn btn-sm btn-outline-primary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
-                                        <i class="fas fa-filter"></i> Filter Data
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-outline-primary w-100 mb-2 mb-md-0">
+                                        Filter
                                     </button>
-                                    <a href="{{ route('penjualan.index') }}"
-                                        class="btn btn-sm btn-outline-secondary px-4 py-2 d-flex align-items-center gap-2 fw-medium">
-                                        <i class="fas fa-undo"></i> Reset
-                                    </a>
                                 </div>
                             </div>
+                            @if (request('tanggal_mulai') || request('tanggal_sampai'))
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <a href="{{ route('penjualan.index') }}" class="btn btn-sm btn-outline-secondary">
+                                            Reset
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
                         </form>
                     </div>
-                </div>
-                <a href="{{ route('penjualan.create') }}" class="btn btn-outline-primary fw-bold mb-3">
+                </div> --}}
+                {{-- <!-- <a href="{{ route('penjualan.create') }}" class="btn btn-outline-primary fw-bold mb-3">
                     Tambah
-                </a>
+                </a> --> --}}
                 <!-- Card with improved styling -->
                 <div class="card shadow-sm border-0">
                     <div
@@ -83,7 +83,7 @@
                                             <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}
+                                                    {{ $item->tanggal->translatedFormat('l, d M Y') }}
                                                 </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
@@ -102,72 +102,40 @@
                                                 Rp. {{ number_format($item->total, 0, ',', '.') }}
                                             </td>
                                             <td class="align-middle">
-
-                                                @php
-                                                    $metode = $item->metode_pembayaran;
-                                                    $statusTransaksi = $item->status; // pending, approved, rejected, completed
-                                                    $statusPiutang = $item->piutang->status ?? null; // lunas, belum_lunas (hanya kasbon)
-                                                @endphp
-
-                                                {{-- CASE 1: PEMBAYARAN TUNAI --}}
-                                                @if ($metode === 'tunai')
-                                                    @switch($statusTransaksi)
-                                                        @case('pending')
-                                                            <span class="badge bg-warning text-dark">Pending</span>
-                                                        @break
-
-                                                        @case('approved')
-                                                            <span class="badge bg-info text-dark">Approved</span>
-                                                        @break
-
-                                                        @case('rejected')
-                                                            <span class="badge bg-danger">Rejected</span>
-                                                        @break
-
-                                                        @case('completed')
-                                                            <span class="badge bg-success">Lunas</span>
-                                                        @break
-
-                                                        @default
-                                                            <span class="badge bg-secondary">Unknown</span>
-                                                    @endswitch
-
-                                                    {{-- CASE 2: PEMBAYARAN KASBON --}}
-                                                @elseif ($metode === 'kasbon')
-                                                    @switch($statusPiutang)
-                                                        @case('belum_lunas')
-                                                            <span class="badge bg-warning text-dark">Kasbon - Belum Lunas</span>
-                                                        @break
-
-                                                        @case('lunas')
-                                                            <span class="badge bg-success">Kasbon - Lunas</span>
-                                                        @break
-
-                                                        @default
-                                                            <span class="badge bg-secondary">Kasbon - Tidak Diketahui</span>
-                                                    @endswitch
+                                                @if ($item->status_gudang === 'approved' && $item->status_keuangan === 'pending')
+                                                    <span class="badge bg-success">Gudang: Approved</span>
+                                                @elseif($item->status_gudang === 'rejected')
+                                                    <span class="badge bg-danger">Gudang: Rejected</span>
+                                                @elseif($item->status_gudang === 'pending')
+                                                    <span class="badge bg-warning">Gudang: Pending</span>
+                                                @elseif ($item->status_keuangan === 'approved' && $item->status_gudang === 'approved' && $item->status_pembayaran !== 'lunas')
+                                                    <span class="badge bg-success">Keuangan: Approved</span>
+                                                @elseif($item->status_keuangan === 'rejected')
+                                                    <span class="badge bg-danger">Keuangan: Rejected</span>
+                                                @elseif($item->status_keuangan === 'pending')
+                                                    <span class="badge bg-warning">Keuangan: Pending</span>
+                                                @elseif($item->status_pembayaran === 'lunas' && $item->status_keuangan === 'approved' && $item->status_gudang === 'approved')
+                                                    <span class="badge bg-success">Pembayaran: Lunas</span>
                                                 @endif
-
                                             </td>
 
                                             <td class="text-center align-middle">
                                                 <div class="btn-group btn-group-sm" role="group">
-                                                    <a href="{{ route('penjualan.edit', $item->nobukti) }}"
+                                                    {{-- <a href="{{ route('penjualan.edit', $item->nobukti) }}"
                                                         class="btn btn-sm btn-outline-warning rounded-left" title="Edit">
                                                         <i class="fa fa-pencil"></i>
-                                                    </a>
+                                                    </a> --}}
                                                     <a href="{{ route('penjualan.show', $item->nobukti) }}"
                                                         class="btn btn-outline-success" title="Detail">
                                                         <i class="far fa-eye"></i>
                                                     </a>
-                                                    <button class="btn btn-outline-danger rounded-right" data-toggle="modal"
-                                                        data-target="#deleteModal{{ $item->id }}" title="Hapus">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </button>
-                                                    {{-- <a href="{{ route('penjualan.struk', $item->id)}}"
-                                                        class="btn btn-sm btn-outline-secondary rounded-right" title="Cetak Struk">
-                                                         <i class="fas fa-receipt mr-1"></i>
-                                                     </a> --}}
+                                                    @if ($item->status !== 'approved' && $item->status !== 'completed')
+                                                        <button class="btn btn-outline-danger rounded-right"
+                                                            data-toggle="modal"
+                                                            data-target="#deleteModal{{ $item->id }}" title="Hapus">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -177,10 +145,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="card-footer bg-white d-flex justify-content-center py-3">
-                        {{-- {{ $pembelian->appends(['tanggal' => request('tanggal')])->links('pagination::bootstrap-4') }} --}}
                     </div>
                 </div>
             </div>

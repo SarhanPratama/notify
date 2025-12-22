@@ -20,10 +20,16 @@ class Penjualan extends Model
         'total',
         'tanggal',
         'status',
-        'metode_pembayaran',
+        'status_gudang',
+        'status_keuangan',
+        'status_pembayaran',
         'catatan',
         'id_outlet',
         // 'id_user'
+    ];
+
+    protected $casts = [
+        'tanggal' => 'date',
     ];
 
     protected static function booted()

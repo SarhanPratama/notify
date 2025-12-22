@@ -10,12 +10,12 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ route('admin.pesanan.reject', $order->id) }}" method="POST">
+                <form action="{{ route('admin.pesanan.reject', $detailPenjualan->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="text-center mb-3">
                             <p class="mb-0">Apakah Anda yakin ingin menolak pesanan outlet ini?</p>
-                            <p class="text-muted small">Kode: <strong>{{ $order->nobukti }}</strong></p>
+                            <p class="text-muted small">Kode: <strong>{{ $detailPenjualan->nobukti }}</strong></p>
                         </div>
                     </div>
                     <div class="modal-footer">

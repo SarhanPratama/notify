@@ -1,17 +1,16 @@
 @extends('layouts.master')
 
 @section('content')
-    {{-- Menggunakan breadcrumbs yang sudah ada --}}
+
     @include('layouts.breadcrumbs')
 
     <div class="container-fluid">
-        <!-- ===== HEADER HALAMAN ===== -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="{{ url()->previous() }}" class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-1">
                 <i class="fas fa-arrow-left me-1"></i>Kembali
             </a>
             {{-- <button onclick="window.print()" class="btn btn-primary">
-                <i class="fas fa-print me-1"></i> Cetak
+                    <i class="fas fa-print me-1"></i> Cetak
             </button> --}}
         </div>
 
@@ -50,7 +49,7 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <small class="d-block">Tanggal</small>
-                                <span>{{ \Carbon\Carbon::parse($detailPembelian->tanggal)->format('d F Y') }}</span>
+                                <span>{{ $detailPembelian->tanggal->translatedFormat('l, d F Y') }}</span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <small class="d-block">Kode</small>
@@ -58,15 +57,14 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <small class="d-block">Status transaksi</small>
-
-                                @if ($detailPembelian->status === 'completed')
-                                    <span class="badge fw-bolder bg-success">Selesai</span>
+                                @if ($detailPembelian->status === 'approved')
+                                    <span class="badge fw-bolder bg-success">Disetujui</span>
                                 @elseif($detailPembelian->status === 'pending')
-                                    <span class="badge fw-bolder bg-warning text-dark">Pending</span>
-                                @elseif($detailPembelian->status === 'reject' || $detailPembelian->status === 'rejected')
+                                    <span class="badge fw-bolder bg-warning">Pending</span>
+                                @elseif($detailPembelian->status === 'rejected')
                                     <span class="badge fw-bolder bg-danger">Ditolak</span>
-                                @else
-                                    <span class="badge fw-bolder bg-secondary">{{ ucfirst($detailPembelian->status) }}</span>
+                                @elseif($detailPembelian->status === 'cancelled')
+                                    <span class="badge fw-bolder bg-danger">Dibatalkan</span>
                                 @endif
                             </div>
                         </div>
@@ -75,7 +73,6 @@
             </div>
         </div>
 
-        <!-- ===== DAFTAR PRODUK ===== -->
         <div class="card shadow-sm rounded-3 border-light">
             <div class="card-header bg-maron py-3 text-light">
                 <h6 class="mb-0 fw-bold d-flex align-items-center">
@@ -119,43 +116,26 @@
                             </tr>
                         @endforelse
                     </tbody>
+                    <tfoot>
+                        <tr class="bg-light">
+                            <th colspan="3" class="text-end py-3 pe-4">Total</th>
+                            <th class="text-nowrap py-3">Rp
+                                {{ number_format($detailPembelian->total, 0, ',', '.') }}</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
 
-        <!-- ===== RINGKASAN & CATATAN ===== -->
         <div class="row my-3 g-4">
             <!-- Kolom Catatan -->
-            <div class="col-lg-7">
+            <div class="col-lg-12">
                 <div class="card h-100 shadow-sm rounded-3 border-light">
                     <div class="card-body p-4">
                         <h6 class="fw-bold mb-2">Catatan</h6>
                         <p class="text-muted mb-0">
                             {!! $detailPembelian->catatan !!}
                         </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kolom Total -->
-            <div class="col-lg-5">
-                <div class="card shadow-sm rounded-3 border-light">
-                    <div class="card-body p-4">
-                        {{-- Anda bisa menambahkan item lain seperti diskon atau pajak di sini --}}
-                        {{-- <div class="d-flex justify-content-between text-muted mb-2">
-                            <span>Subtotal</span>
-                            <span>Rp 1.000.000</span>
-                        </div>
-                        <div class="d-flex justify-content-between text-muted mb-2">
-                            <span>Pajak (11%)</span>
-                            <span>Rp 110.000</span>
-                        </div>
-                        <hr> --}}
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="h5 mb-0 fw-semibold">Total</span>
-                            <span class="h5 mb-0 fw-bold text-primary">Rp
-                                {{ number_format($detailPembelian->total, 0, ',', '.') }}</span>
-                        </div>
                     </div>
                 </div>
             </div>

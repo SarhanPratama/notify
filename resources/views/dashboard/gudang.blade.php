@@ -99,7 +99,7 @@
                                     <tbody>
                                         @foreach ($distribusiHariIni as $distribusi)
                                             <tr>
-                                                <td>{{ $distribusi->penjualan->tanggal ?? '-' }}</td>
+                                                <td>{{ $distribusi->penjualan->tanggal->translatedFormat('l, d F Y') ?? '-' }}</td>
                                                 <td>{{ $distribusi->penjualan->outlet->nama ?? '-' }}</td>
                                                 <td>{{ $distribusi->bahanBaku->nama }}</td>
                                                 <td>{{ $distribusi->quantity }} {{ $distribusi->bahanBaku->satuan->nama ?? '' }}</td>
@@ -133,7 +133,7 @@
                                         @foreach ($pembelianTerakhir as $pembelian)
                                             <tr>
                                                 <td>{{ $pembelian->nobukti }}</td>
-                                                <td>{{ $pembelian->tanggal }}</td>
+                                                <td>{{ $pembelian->tanggal->translatedFormat('l, d F Y') }}</td>
                                                 <td>{{ $pembelian->supplier->nama ?? '-' }}</td>
                                                 <td>Rp {{ number_format($pembelian->total, 0, ',', '.') }}</td>
                                             </tr>

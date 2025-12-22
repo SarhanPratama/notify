@@ -1,6 +1,7 @@
 @extends('layouts.outlet')
 
 @section('content')
+<div class="container-fluid mt-3">
     <!-- Page Header -->
     <div class="d-flex justify-content-center align-items-center mb-4">
         <div>
@@ -40,7 +41,8 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Jatuh Tempo</h6>
-                            <h5 class="mb-0 fw-bold text-center text-warning">Rp {{ number_format($jatuhTempo, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-warning">Rp
+                                {{ number_format($jatuhTempo, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -74,7 +76,8 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="text-muted mb-1 small">Sudah Dibayar</h6>
-                            <h5 class="mb-0 fw-bold text-center text-success">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</h5>
+                            <h5 class="mb-0 fw-bold text-center text-success">Rp
+                                {{ number_format($totalDibayar, 0, ',', '.') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -109,7 +112,8 @@
                                     <td class="fw-semibold text-nowrap">
                                         {{ $piutang->nobukti }}
                                         @if ($piutang->penjualan->mutasi->count() > 0)
-                                            <div class="small text-muted">Item: {{ $piutang->penjualan->mutasi->count() }}</div>
+                                            <div class="small text-muted">Item: {{ $piutang->penjualan->mutasi->count() }}
+                                            </div>
                                         @endif
                                     </td>
                                     <td>
@@ -124,19 +128,17 @@
                                     <td>
                                         @if ($piutang->status == 'lunas')
                                             <span class="badge bg-success">Lunas</span>
-
                                         @else
                                             <span class="badge bg-danger">Belum Lunas</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
-                                            <a class="btn btn-outline-primary" href="{{ route('outlet.kasbon.detail', ['token' => $token, 'piutang' => $piutang->id]) }}" title="Detail">
+                                            <a class="btn btn-outline-primary"
+                                                href="{{ route('outlet.kasbon.detail', ['token' => $token, 'piutang' => $piutang->id]) }}"
+                                                title="Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            {{-- <button class="btn btn-outline-secondary" onclick="downloadInvoice('{{ $piutang->nobukti }}')" title="Download">
-                                                <i class="fas fa-download"></i>
-                                            </button> --}}
                                         </div>
                                     </td>
                                 </tr>
@@ -153,66 +155,14 @@
                 <div class="mb-4">
                     <i class="fas fa-file-invoice-dollar text-muted" style="font-size: 64px; opacity: 0.3;"></i>
                 </div>
-                <h5 class="text-muted mb-2">Tidak Ada Tagihan</h5>
                 <p class="text-muted mb-4">
-                    @if (request('status') || request('search'))
-                        Tidak ditemukan tagihan dengan kriteria pencarian Anda.
-                    @else
-                        Belum ada tagihan untuk outlet Anda saat ini.
-                    @endif
+                    Belum ada tagihan untuk outlet Anda saat ini.
                 </p>
-                @if (request('status') || request('search'))
-                    <a href="{{ route('outlet.kasbon', ['token' => $token]) }}" class="btn bg-maron text-white">
-                        <i class="fas fa-redo me-2"></i>Reset Filter
-                    </a>
-                @else
-                    <a href="{{ route('outlet.belanja', ['token' => $token]) }}" class="btn bg-maron text-white">
-                        <i class="fas fa-shopping-cart me-2"></i>Mulai Belanja
-                    </a>
-                @endif
+                <a href="{{ route('outlet.belanja', ['token' => $token]) }}" class="btn btn-outline-danger">
+                    Mulai Belanja
+                </a>
             </div>
         </div>
     @endif
-
-    <script>
-        function bayarTagihan(nobukti, sisaPiutang) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Pembayaran Tagihan',
-                html: `
-                <p>Nomor Bukti: <strong>${nobukti}</strong></p>
-                <p>Sisa Tagihan: <strong>Rp ${sisaPiutang.toLocaleString('id-ID')}</strong></p>
-                <hr>
-                <p class="text-muted">Silahkan hubungi admin untuk melakukan pembayaran tagihan ini.</p>
-            `,
-                confirmButtonText: 'Hubungi Admin',
-                confirmButtonColor: '#9c1515',
-                showCancelButton: true,
-                cancelButtonText: 'Tutup'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    hubungiAdmin();
-                }
-            });
-        }
-
-        function downloadInvoice(nobukti) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Download Invoice',
-                text: 'Fitur download invoice sedang dalam pengembangan',
-                confirmButtonColor: '#9c1515'
-            });
-        }
-
-        function hubungiAdmin() {
-            Swal.fire({
-                icon: 'info',
-                title: 'Hubungi Admin',
-                text: 'Fitur chat dengan admin sedang dalam pengembangan',
-                confirmButtonColor: '#9c1515'
-            });
-        }
-    </script>
-
+</div>
 @endsection

@@ -42,12 +42,11 @@
 
 
                         <div class="mb-3">
-                            <label class="form-label">Pilih Kas Masuk <span class="text-danger">*</span></label>
-                            <select name="id_sumber_dana" class="form-select" required>
-                                <option disabled selected>-- Pilih Sumber Dana --</option>
-                                @foreach ($sumberDana as $id => $nama)
-                                    <option value="{{ $id }}">{{ $nama }}</option>
-                                @endforeach
+                            <label class="form-label fw-bold">Posisi Kas <span class="text-danger">*</span></label>
+                            <select name="posisi_kas" class="form-control" required>
+                                <option value="" selected disabled>-- Pilih Posisi Kas --</option>
+                                <option value="Tunai">Tunai</option>
+                                <option value="Bank BSI">Bank BSI</option>
                             </select>
                         </div>
                     </div>

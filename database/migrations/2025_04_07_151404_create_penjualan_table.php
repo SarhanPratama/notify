@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('nobukti')->unique();
             $table->date('tanggal');
             $table->decimal('total', 15, 0);
-            $table->enum('status', ['pending', 'approved_by_gudang', 'rejected_by_gudang', 'approved', 'rejected', 'completed'])
-                ->default('pending');
-            $table->enum('metode_pembayaran', ['kasbon'])->default('kasbon');
+            $table->enum('status_gudang', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status_keuangan', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status_pembayaran', ['lunas', 'piutang'])->default('piutang');
             $table->text('catatan')->nullable();
             $table->foreignId('id_outlet')->constrained('outlet')->onDelete('restrict')->onUpdate('cascade');
             $table->softDeletes();

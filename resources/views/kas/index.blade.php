@@ -1,15 +1,11 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col col-lg-12">
-                <!-- Simple Tables -->
-                  <a href="{{ route('transaksi.create') }}" type="button" class="btn btn-outline-primary mb-3 fw-bold">
-                        Tambah
-                    </a>
                 <div class="card">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-maron">
                         <h6 class="font-weight-bold text-light text-sm">{{ $breadcrumbs[count($breadcrumbs) - 1]['label'] }}
@@ -21,10 +17,11 @@
                                 <tr class="text-nowrap">
                                     <th class="text-start">No</th>
                                     <th>Tanggal</th>
-                                    {{-- <th>Sumber Dana</th> --}}
-                                    <th>Type</th>
+                                    <th>Tipe</th>
+                                    <th>Kategori</th>
                                     <th>Jumlah</th>
                                     <th>Keterangan</th>
+                                    <th>Posisi Kas</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -34,24 +31,29 @@
                                         <td class="align-middle text-nowrap">
                                             <span class="badge badge-light p-2 text-dark">
                                                 <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                {{ $item->tanggal->format('d M Y') }}
+                                                {{ $item->tanggal->format('d M Y') }} - {{ $item->tanggal->translatedFormat('l') }}
                                             </span>
                                         </td>
-                                        {{-- <td class="align-middle text-nowrap"> {{ $item->SumberDana->nama }}</td> --}}
-                                        <td class="align-middle text-nowrap"> <span
-                                                class="badge fw-bolder {{ $item->tipe === 'credit' ? 'bg-danger' : 'bg-success' }}">
-                                                {{ ucwords($item->tipe) }}
-                                            </span></td>
+                                        <td class="align-middle text-nowrap">
+                                            @if ($item->kategoriKeuangan->jenis === 'pengeluaran')
+                                                <span class="badge fw-bolder bg-danger">
+                                                    Pengeluaran
+                                                </span>
+                                            @else
+                                                <span class="badge fw-bolder bg-success">
+                                                    Pemasukan
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="align-middle text-nowrap"> {{ $item->kategoriKeuangan->nama }}</td>
                                         <td class="align-middle text-nowrap">Rp.
                                             {{ number_format($item->jumlah, 0, ',', '.') }}</td>
                                         <td class="align-middle text-nowrap">{{ $item->deskripsi }}</td>
+                                        <td class="align-middle text-nowrap">{{ $item->posisi_kas }}</td>
                                     </tr>
-
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
-                    <div class="card-footer d-flex justify-content-center">
                     </div>
                 </div>
             </div>

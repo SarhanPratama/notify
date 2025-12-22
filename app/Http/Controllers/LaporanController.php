@@ -8,6 +8,7 @@ use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\Transaksi;
+use App\Models\KategoriKeuangan;
 use App\Exports\StokExport;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -103,53 +104,24 @@ class LaporanController extends Controller
             ['label' => 'Laporan Kartu Stok', 'url' => null],
         ];
 
-        // 1. Ambil semua bahan baku untuk pilihan filter (dropdown)
-        $bahan_baku_list = BahanBaku::orderBy('nama', 'asc')->get();
-
-        // 2. Siapkan variabel untuk menampung hasil
-        $riwayat_mutasi = collect(); // Gunakan collect() agar selalu jadi collection
+        $bahan_baku_list = BahanBaku::orderBy('nama')->get();
+        $riwayat_mutasi = collect();
         $selected_item = null;
-        $selected_id = $request->input('id_bahan_baku');
 
-        // 3. Jika ada bahan baku yang dipilih, jalankan query
-        if ($selected_id) {
-            // Ambil data bahan baku yang dipilih (untuk info stok awal)
-            $selected_item = BahanBaku::find($selected_id);
+        if ($request->filled('id_bahan_baku')) {
+            $selected_item = BahanBaku::findOrFail($request->id_bahan_baku);
 
-            // --- PERBAIKAN DIMULAI DI SINI ---
-
-            // Ambil riwayat mutasi TANPA diurutkan oleh database
-            $riwayat_mutasi_unsorted = Mutasi::where('id_bahan_baku', $selected_id)
-                ->with('transaksi') // Eager load tetap sangat penting
+            $riwayat_mutasi = Mutasi::where('id_bahan_baku', $request->id_bahan_baku)
+                ->orderBy('created_at')
                 ->get();
-
-            // Urutkan data di sisi aplikasi (PHP) menggunakan Collection sort
-            // Kita mengasumsikan kedua tabel (pembelian & penjualan)
-            // memiliki kolom 'tanggal' sebagai tanggal transaksi.
-            $riwayat_mutasi = $riwayat_mutasi_unsorted->sortBy(function ($mutasi) {
-
-                // Cek untuk menghindari error jika relasi 'mutasiable' rusak/null
-                if ($mutasi->mutasiable) {
-                    // 'tanggal' adalah kolom tanggal transaksi di tabel pembelian/penjualan
-                    // Ganti 'tanggal' jika nama kolomnya beda (misal: 'tgl_transaksi')
-                    return $mutasi->mutasiable->tanggal;
-                }
-
-                // Jika relasi tidak ada, taruh di akhir
-                return now()->addYears(10);
-            });
-
-            // --- PERBAIKAN SELESAI ---
         }
 
-        // 4. Kirim data ke view
         return view('laporan.kartu-stok', compact(
             'title',
             'breadcrumbs',
-            'bahan_baku_list',  // Data untuk dropdown filter
-            'riwayat_mutasi',   // Hasil laporan (sudah terurut)
-            'selected_item',    // Info bahan baku yang dipilih
-            'selected_id'       // Untuk set 'selected' di dropdown
+            'bahan_baku_list',
+            'riwayat_mutasi',
+            'selected_item'
         ));
     }
 
@@ -207,6 +179,68 @@ class LaporanController extends Controller
     //         'tanggal_akhir'
     //     ));
     // }
+
+    public function laporanRekapTransaksi(Request $request)
+    {
+        $title = 'Laporan Rekap Transaksi';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Laporan Rekap Transaksi', 'url' => null],
+        ];
+
+        $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
+        $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
+        $kategori_filter = $request->input('kategori', 'all');
+
+        $query = Transaksi::with('kategoriKeuangan')
+            ->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir])
+            ->where('status', 1);
+
+        if ($kategori_filter !== 'all') {
+            $query->where('id_kategori_keuangan', $kategori_filter);
+        }
+
+        $transaksi = $query->orderBy('tanggal', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $categories = KategoriKeuangan::all();
+
+        $totalPemasukan = $transaksi->filter(function ($t) {
+            return $t->kategoriKeuangan && $t->kategoriKeuangan->jenis === 'pemasukan';
+        })->sum('jumlah');
+
+        $totalPengeluaran = $transaksi->filter(function ($t) {
+            return $t->kategoriKeuangan && $t->kategoriKeuangan->jenis === 'pengeluaran';
+        })->sum('jumlah');
+
+        $saldoAkhir = $totalPemasukan - $totalPengeluaran;
+
+        return view('laporan.rekap-transaksi', compact(
+            'title',
+            'breadcrumbs',
+            'transaksi',
+            'tanggal_awal',
+            'tanggal_akhir',
+            'kategori_filter',
+            'categories',
+            'totalPemasukan',
+            'totalPengeluaran',
+            'saldoAkhir'
+        ));
+    }
+
+    public function exportRekapTransaksi(Request $request)
+    {
+        $tanggal_awal = $request->input('tanggal_awal', now()->startOfMonth()->toDateString());
+        $tanggal_akhir = $request->input('tanggal_akhir', now()->endOfMonth()->toDateString());
+        $kategori = $request->input('kategori', 'all');
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\RekapTransaksiExport($tanggal_awal, $tanggal_akhir, $kategori),
+            'Rekap-Transaksi-' . $tanggal_awal . '-to-' . $tanggal_akhir . '.xlsx'
+        );
+    }
 
     public function laporanBukuBesar(Request $request)
     {
