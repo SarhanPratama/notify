@@ -25,7 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'id_role',
+        // 'id_role',
     ];
 
     /**
@@ -51,9 +51,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function role()
-    {
-        return $this->belongsTo(Role::class, 'id_role');
-    }
+    // public function role()
+    // {
+    //     return $this->belongsTo(Role::class, 'id_role');
+    // }
 
 }

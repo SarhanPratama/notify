@@ -56,7 +56,7 @@
                                     <div class="mb-3 font-weight-bold">
                                         <label for="email">Email</label>
                                         <input type="email" class="form-control form-control-sm" name="email"
-                                            id="email" placeholder="Email" aria-label="email" autocomplete="email"
+                                            id="email" placeholder="Email" aria-label="email" autocomplete="off"
                                             required>
                                     </div>
 
@@ -64,7 +64,7 @@
                                         <label for="password">Password</label>
                                         <input type="password" class="form-control form-control-sm" name="password"
                                             id="password" placeholder="Password" aria-label="password"
-                                            autocomplete="current-password" required>
+                                            autocomplete="off" required>
                                     </div>
 
                                     <!-- Submit Button -->
@@ -72,7 +72,7 @@
                                         <strong class="">
                                             Login
                                         </strong>
-                                        
+
                                     </button>
 
                                     <div class="card-footer d-flex justify-content-between">

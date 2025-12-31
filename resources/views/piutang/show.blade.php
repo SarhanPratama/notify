@@ -91,7 +91,7 @@
             <div class="card-header bg-maron py-3 text-dark">
                 <h6 class="mb-0 fw-bold d-flex align-items-center text-light">
                     <i class="fas fa-boxes me-2"></i>
-                    Rincian Produk Penjualan
+                    Rincian Produk
                 </h6>
             </div>
             <div class="table-responsive">
@@ -133,28 +133,28 @@
                             $totalDibayar = $piutang->pembayaran->sum('jumlah');
                             $sisa = $piutang->jumlah_piutang - $totalDibayar;
                         @endphp
-                        <tr class="table-primary">
-                            <th colspan="3" class="text-end pe-4 py-2">
+                        <tr>
+                            <th colspan="3" class="text-end pe-4">
                                 Total Penjualan
                             </th>
-                            <th class="text-nowrap text-primary py-2">
+                            <th class="text-nowrap text-primary">
                                 <strong>Rp {{ number_format($piutang->penjualan->total, 0, ',', '.') }}</strong>
                             </th>
                         </tr>
-                        <tr class="table-success">
-                            <th colspan="3" class="text-end pe-4 py-2">
+                        <tr>
+                            <th colspan="3" class="text-end pe-4">
                                 Sudah Dibayar
                             </th>
-                            <th class="text-nowrap text-success py-2">
+                            <th class="text-nowrap text-success">
                                 <strong>Rp {{ number_format($totalDibayar, 0, ',', '.') }}</strong>
                             </th>
                         </tr>
-                        <tr class="table-danger">
-                            <th colspan="3" class="text-end pe-4 py-2">
+                        <tr>
+                            <th colspan="3" class="text-end pe-4">
                                 Sisa Piutang
                             </th>
-                            <th class="text-nowrap text-danger py-2">
-                                <strong class="fs-5">Rp {{ number_format($sisa, 0, ',', '.') }}</strong>
+                            <th class="text-nowrap text-danger">
+                                <strong>Rp {{ number_format($sisa, 0, ',', '.') }}</strong>
                             </th>
                         </tr>
                     </tfoot>
@@ -202,7 +202,7 @@
                                     <tr>
                                         <td>{{ $pembayaran->tanggal->translatedFormat('l, d M Y') }}</td>
                                         {{-- <td>{{ $pembayaran->sumberDana->nama }}</td> --}}
-                                        <td class="text-end fw-bold">Rp
+                                        <td class="text-end fw-bold text-success">Rp
                                             {{ number_format($pembayaran->jumlah, 0, ',', '.') }}</td>
                                     </tr>
                                 @endforeach

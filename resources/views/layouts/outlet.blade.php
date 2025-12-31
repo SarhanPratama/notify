@@ -74,10 +74,11 @@
                 <div class="col-md-2 text-center text-md-left mb-3 mb-md-0">
                     <img src="{{ asset('assets/img/logo/brand.png') }}" width="100" alt="Seroo Logo" class="img-fluid mx-auto d-block d-md-inline">
                 </div>
-                <div class="col-md-8 text-center">
-                    <div class="h4 font-weight-bold mb-0">{{ strtoupper($outlet->nama) }}</div>
+                <div class="col-md-8 text-center mb-3">
+                    <div class="h3 font-weight-bold mb-0">Wherehouse Teh Tarik Sero</div>
                 </div>
                 <div class="col-md-2 text-center text-md-right">
+                     <h5 class="mb-0 fw-bold">{{ strtoupper($outlet->nama) }}</h5>
                      <h5 class="mb-0">{{ strtoupper($outlet->penanggung_jawab) }}</h5>
                 </div>
             </div>

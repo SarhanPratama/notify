@@ -33,7 +33,7 @@
                                         <td class="align-middle">{{ $loop->iteration }}</td>
                                         <td class="align-middle">{{ ucwords($item->name) }}</td>
                                         <td class="align-middle">{{ $item->email }}</td>
-                                        <td class="align-middle">{{ Ucwords($item->role->name ?? '-') }}</td>
+                                        <td class="align-middle">{{ ucwords($item->roles->pluck('name')->first() ?? '-') }}</td>
                                         <td class="text-center align-middle">
                                             <div class="btn-group btn-group-sm" role="group">
                                                 <a href="{{ route('users.edit', $item->id) }}"

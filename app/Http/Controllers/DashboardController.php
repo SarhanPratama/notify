@@ -167,7 +167,7 @@ class DashboardController extends Controller
             ->get();
 
         // Top Pengeluaran
-        $topPengeluaran = Transaksi::with('SumberDana')
+        $topPengeluaran = Transaksi::with('kategoriKeuangan')
             ->whereHas('kategoriKeuangan', function($q) {
                 $q->where('jenis', 'pengeluaran');
             })
@@ -207,8 +207,7 @@ class DashboardController extends Controller
             ->get();
 
         // Transaksi Terbaru
-        $transaksiTerbaru = Transaksi::with(['SumberDana'])
-            ->orderBy('created_at', 'desc')
+        $transaksiTerbaru = Transaksi::orderBy('created_at', 'desc')
             ->take(10)
             ->get();
 

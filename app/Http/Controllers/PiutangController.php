@@ -7,6 +7,7 @@ use App\Models\Pemasukan;
 use App\Models\Transaksi;
 use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
+use App\Models\KategoriKeuangan;
 use Illuminate\Support\Facades\DB;
 use Mike42\Escpos\PrintConnectors\UsbPrintConnector;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
@@ -30,7 +31,7 @@ class PiutangController extends Controller
 
     public function show($nobukti)
     {
-        $piutang = Piutang::with('penjualan.outlet', 'penjualan.mutasi.bahanBaku.satuan', 'pembayaran.sumberDana')
+        $piutang = Piutang::with(['penjualan.outlet', 'penjualan.mutasi.bahanBaku.satuan', 'pembayaran'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
 
@@ -63,13 +64,13 @@ class PiutangController extends Controller
             }
 
             // Get or create kategori penjualan
-            $kategoriPenjualan = \App\Models\KategoriKeuangan::firstOrCreate(
+           $kategoriKeuangan = KategoriKeuangan::firstOrCreate(
                 ['nama' => 'Penjualan BB'],
                 ['jenis' => 'pemasukan']
             );
 
             // Simpan histori pembayaran piutang
-            $piutang->pembayaran()->create([
+            $pembayaran = $piutang->pembayaran()->create([
                 'nobukti' => $piutang->nobukti,
                 'id_piutang' => $piutang->id,
                 'tanggal' => now(),
@@ -82,24 +83,14 @@ class PiutangController extends Controller
                 'sisa_piutang' => $piutang->sisa_piutang - $request->jumlah
             ]);
 
-            // Catat Pemasukan
-            Pemasukan::create([
+            // Catat Transaksi polymorphic via pembayaran
+            $pembayaran->transaksi()->create([
                 'nobukti' => $piutang->nobukti,
                 'tanggal' => now(),
                 'jumlah' => $request->jumlah,
-                'deskripsi' => 'outlet ' . ($piutang->penjualan->outlet->nama ?? '') . ' - ' . ($piutang->penjualan->outlet->penanggung_jawab ?? ''),
-                'id_kategori_keuangan' => $kategoriPenjualan->id,
+                'id_kategori_keuangan' => $kategoriKeuangan->id,
                 'posisi_kas' => $request->posisi_kas,
-            ]);
-
-            // Catat Transaksi
-            Transaksi::create([
-                'nobukti' => $piutang->nobukti . '-' . now()->format('YmdHis'),
-                'tanggal' => now(),
-                'jumlah' => $request->jumlah,
-                'deskripsi' => 'outlet ' . ($piutang->penjualan->outlet->nama ?? '') . ' - ' . ($piutang->penjualan->outlet->penanggung_jawab ?? ''),
-                'id_kategori_keuangan' => $kategoriPenjualan->id,
-                'posisi_kas' => $request->posisi_kas,
+                'deskripsi' => 'Pembayaran piutang outlet ' . ($piutang->penjualan->outlet->nama ?? '') . ' - ' . ($piutang->penjualan->outlet->penanggung_jawab ?? ''),
                 'status' => 1,
             ]);
 

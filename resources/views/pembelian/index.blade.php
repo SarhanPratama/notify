@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col-lg-12">
                 <!-- Filter Form -->
@@ -117,7 +117,7 @@
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <div class="btn-group btn-group-sm" role="group">
 
-                                                        @if ($item->status === 'pending')
+                                                        @if ($item->status === 'pending' || $item->status === 'rejected')
                                                             <a href="{{ route('pembelian.edit', $item->nobukti) }}"
                                                                 class="btn btn-outline-warning rounded-left" title="edit">
                                                                 <i class="fa fa-pencil"></i>

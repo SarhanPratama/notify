@@ -389,7 +389,7 @@ class OutletOrderController extends Controller
 
             $title = 'Detail Pesanan - ' . $order->nobukti;
 
-            return view('outlet.detail-pesanan', compact('outlet', 'order', 'token', 'title'));
+            return view('outlet.pesanan-detail', compact('outlet', 'order', 'token', 'title'));
         } catch (\Exception $e) {
             return view('outlet.error', [
                 'type' => 'system_error',
@@ -425,7 +425,8 @@ class OutletOrderController extends Controller
 
             // Ambil semua piutang untuk outlet ini (tanpa filter/search), urutkan by jatuh tempo
             $piutangs = Piutang::with([
-                'penjualan.mutasi'
+                'penjualan.mutasi',
+                'pembayaran'
             ])->whereHas('penjualan', function ($q) use ($outlet) {
                 $q->where('id_outlet', $outlet->id);
             })

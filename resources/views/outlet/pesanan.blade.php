@@ -107,7 +107,7 @@
 
         <!-- Orders Table -->
         @if ($orders->count() > 0)
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <p class="fs-5 fw-bold text-center text-maron">Daftar Pesanan</p>
                     <div class="table-responsive">
@@ -135,19 +135,35 @@
                                             @endif
                                         </td>
                                         <td>
-                                            {{ $order->created_at->translatedFormat('l, d/m/Y') }}
+                                            <p class="text-nowrap">
+                                                {{ $order->created_at->translatedFormat('l, d/m/Y') }}
+                                            </p>
                                             <div class="small text-muted">{{ $order->created_at->format('H:i') }} WIB</div>
                                         </td>
                                         <td>
-                                            @if ($order->status == 'pending')
-                                                <span class="badge bg-warning">Menunggu</span>
-                                            @elseif($order->status == 'approved' || $order->status == 'approved_by_gudang')
-                                                <span class="badge bg-success">Disetujui</span>
-                                            @elseif($order->status == 'completed')
-                                                <span class="badge bg-info">Selesai</span>
+                                            @if ($order->status_gudang === 'approved' && $order->status_keuangan === 'pending')
+                                                <span class="badge bg-success">Gudang: Approved</span>
+                                            @elseif($order->status_gudang === 'rejected')
+                                                <span class="badge bg-danger">Gudang: Rejected</span>
+                                            @elseif($order->status_gudang === 'pending')
+                                                <span class="badge bg-warning">Gudang: Pending</span>
+                                            @elseif (
+                                                $order->status_keuangan === 'approved' &&
+                                                    $order->status_gudang === 'approved' &&
+                                                    $order->status_pembayaran !== 'lunas')
+                                                <span class="badge bg-success">Keuangan: Approved</span>
+                                            @elseif($order->status_keuangan === 'rejected')
+                                                <span class="badge bg-danger">Keuangan: Rejected</span>
+                                            @elseif($order->status_keuangan === 'pending')
+                                                <span class="badge bg-warning">Keuangan: Pending</span>
+                                            @elseif(
+                                                $order->status_pembayaran === 'lunas' &&
+                                                    $order->status_keuangan === 'approved' &&
+                                                    $order->status_gudang === 'approved')
+                                                <span class="badge bg-success">Pembayaran: Lunas</span>
                                             @endif
                                         </td>
-                                        <td class="text-end">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                        <td class="text-end text-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('outlet.pesanan.detail', [$token, $order->id]) }}"
                                                 class="btn btn-outline-primary btn-sm" title="Lihat Detail">

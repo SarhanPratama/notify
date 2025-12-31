@@ -5,9 +5,9 @@
 @endsection
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <!-- Back Button -->

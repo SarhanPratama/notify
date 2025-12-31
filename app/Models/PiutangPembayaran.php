@@ -22,8 +22,9 @@ class PiutangPembayaran extends Model
         return $this->belongsTo(Piutang::class, 'nobukti', 'nobukti');
     }
 
-    public function sumberDana()
+        public function transaksi()
     {
-        return $this->belongsTo(SumberDana::class, 'id_sumber_dana');
+        return $this->morphMany(Transaksi::class, 'transaksiable');
     }
+
 }

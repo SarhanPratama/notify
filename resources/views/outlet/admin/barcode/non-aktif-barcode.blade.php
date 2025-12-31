@@ -48,7 +48,7 @@
                     @endif
 
                     {{-- Input hidden untuk status --}}
-                    <input type="hidden" name="status"
+                    <input type="hidden" name="status" id="status"
                         value="{{ $outlet->barcode_active ? 'deactivate' : 'activate' }}">
                 </div>
 

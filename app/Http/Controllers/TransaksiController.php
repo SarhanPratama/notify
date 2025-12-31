@@ -12,10 +12,10 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $title = 'Arus Kas';
+        $title = 'Transaksi';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Arus Kas', 'url' => route('transaksi.index')],
+            ['label' => 'Transaksi', 'url' => route('transaksi.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 

@@ -2,9 +2,9 @@
 
 @section('content')
 
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="d-flex justify-content-between align-items-center mb-4">
             <a href="{{ url()->previous() }}" class="btn btn-outline-secondary fw-bold d-flex align-items-center gap-1">
                 <i class="fas fa-arrow-left me-1"></i>Kembali

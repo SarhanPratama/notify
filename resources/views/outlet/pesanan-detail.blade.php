@@ -10,27 +10,24 @@
         </div>
         <div class="flex-grow-1 text-center">
             <h4 class="fw-bold text-maron fs-4 mb-0">Detail Pesanan</h4>
-            <small class="text-muted"><strong>{{ $order->nobukti }}</strong></small>
+            <p class="text-muted"><strong>{{ $order->nobukti }}</strong></p>
         </div>
     </div>
 
     <div class="row g-3">
         <div class="col-lg-12">
-            <div class="card border-0 shadow-sm mb-3">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
+                        <div class="col-12 col-sm-12 col-lg-6 text-center mb-3">
                             <small class="text-muted d-block">Tanggal Pesan</small>
                             <span class="fw-semibold">{{ $order->created_at->format('d F Y') }}</span>
                             <div class="small text-muted">{{ $order->created_at->format('H:i') }} WIB</div>
                         </div>
-                        {{-- <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
-                            <small class="text-muted d-block">Tanggal Kirim</small>
-                            <span
-                                class="fw-semibold">{{ $order->tanggal ? \Carbon\Carbon::parse($order->tanggal)->format('d F Y') : '-' }}</span>
-                        </div> --}}
-                        <div class="col-6 col-sm-12 col-lg-6 text-center mb-3">
-                                <small class="text-muted d-block">Status Gudang</small>
+                        <div class="col-12 col-sm-12 col-lg-6 text-center mb-3">
+                            <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                                <div>
+                                <small class="text-muted d-block ">Status Gudang</small>
                                 @if ($order->status_gudang == 'pending')
                                     <span class="badge bg-warning">Menunggu</span>
                                 @elseif($order->status_gudang == 'approved')
@@ -38,25 +35,30 @@
                                 @elseif($order->status_gudang == 'rejected')
                                     <span class="badge bg-danger">Ditolak</span>
                                 @endif
-                                <br>
-                                <small class="text-muted d-block mt-2">Status Keuangan</small>
-                                @if ($order->status_keuangan == 'pending')
-                                    <span class="badge bg-warning">Menunggu</span>
-                                @elseif($order->status_keuangan == 'approved')
-                                    <span class="badge bg-success">Disetujui</span>
-                                @elseif($order->status_keuangan == 'rejected')
-                                    <span class="badge bg-danger">Ditolak</span>
-                                @endif
-                                <br>
-                                <small class="text-muted d-block mt-2">Status Pembayaran</small>
-                                @if ($order->status_pembayaran == 'lunas')
-                                    <span class="badge bg-success">Lunas</span>
-                                @elseif($order->status_pembayaran == 'piutang')
-                                    <span class="badge bg-warning">Belum Lunas</span>
-                                @endif
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block ">Status Keuangan</small>
+                                    @if ($order->status_keuangan == 'pending')
+                                        <span class="badge bg-warning">Menunggu</span>
+                                    @elseif($order->status_keuangan == 'approved')
+                                        <span class="badge bg-success">Disetujui</span>
+                                    @elseif($order->status_keuangan == 'rejected')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @endif
+                                </div>
+
+                                <div>
+                                    <small class="text-muted d-block ">Status Pembayaran</small>
+                                    @if ($order->status_pembayaran == 'lunas')
+                                        <span class="badge bg-success">Lunas</span>
+                                    @elseif($order->status_pembayaran == 'piutang')
+                                        <span class="badge bg-warning">Belum Lunas</span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                         @if ($order->catatan)
-                            <div class="col-md-12 mb-2">
+                            <div class="col-md-12 mb-2 text-center">
                                 <small class="text-muted d-block">Catatan</small>
                                 <div class="bg-light rounded p-2"><small class="fst-italic">"{{ $order->catatan }}"</small>
                                 </div>

@@ -87,7 +87,7 @@
 
     <!-- Tagihan List as Table -->
     @if ($piutangs->count() > 0)
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <p class="fs-5 fw-bold text-center text-maron">Daftar Kasbon</p>
                 <div class="table-responsive">
@@ -106,21 +106,21 @@
                                 @php
                                     $totalBayar = $piutang->pembayaran->sum('jumlah');
                                     // $sisaPiutang = $piutang->jumlah_piutang - $totalBayar;
-                                    $isJatuhTempo = $piutang->jatuh_tempo < now() && $piutang->status != 'lunas';
+                                    $isJatuhTempo = $piutang->jatuh_tempo && $piutang->jatuh_tempo < now() && $piutang->status != 'lunas';
                                 @endphp
                                 <tr class="{{ $isJatuhTempo && $piutang->status != 'lunas' ? 'table-danger' : '' }}">
                                     <td class="fw-semibold text-nowrap">
                                         {{ $piutang->nobukti }}
-                                        @if ($piutang->penjualan->mutasi->count() > 0)
+                                        @if ($piutang->penjualan && $piutang->penjualan->mutasi && $piutang->penjualan->mutasi->count() > 0)
                                             <div class="small text-muted">Item: {{ $piutang->penjualan->mutasi->count() }}
                                             </div>
                                         @endif
                                     </td>
                                     <td>
-                                        {{ \Carbon\Carbon::parse($piutang->created_at)->format('d/m/Y') }}
+                                        {{ $piutang->created_at->translatedFormat('l, d/m/Y') }}
                                     </td>
                                     <td class="{{ $isJatuhTempo ? 'text-danger fw-semibold' : '' }}">
-                                        {{ \Carbon\Carbon::parse($piutang->jatuh_tempo)->format('d/m/Y') }}
+                                        {{ $piutang->jatuh_tempo ? $piutang->jatuh_tempo->translatedFormat('l, d/m/Y') : '-' }}
                                         @if ($isJatuhTempo)
                                             <span class="badge bg-danger ms-1">Terlambat</span>
                                         @endif
@@ -158,9 +158,9 @@
                 <p class="text-muted mb-4">
                     Belum ada tagihan untuk outlet Anda saat ini.
                 </p>
-                <a href="{{ route('outlet.belanja', ['token' => $token]) }}" class="btn btn-outline-danger">
+                {{-- <a href="{{ route('outlet.belanja', ['token' => $token]) }}" class="btn btn-outline-danger">
                     Mulai Belanja
-                </a>
+                </a> --}}
             </div>
         </div>
     @endif

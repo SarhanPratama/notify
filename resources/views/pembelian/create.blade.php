@@ -1,14 +1,14 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a href="{{ route('pembelian.index') }}" class="btn btn-outline-secondary fw-bold">
                 <i class="fa fa-arrow-left me-2"></i>Kembali
             </a>
-            @if (count($cartItems) > 0)
+            {{-- @if (count($cartItems) > 0)
                 <form action="{{ route('pembelian.cart.create.clear') }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
@@ -17,7 +17,7 @@
                         Reset Keranjang
                     </button>
                 </form>
-            @endif
+            @endif --}}
         </div>
 
         <div class="row">

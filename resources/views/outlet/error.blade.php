@@ -182,14 +182,14 @@
                             <p class="mb-0">{{ $error_message ?? 'Internal server error occurred' }}</p>
                         </div>
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <button onclick="window.location.reload()" class="btn btn-primary-custom">
+                            <button onclick="window.location.reload()" class="btn btn-primary">
                                 <i class="fas fa-sync-alt me-1"></i>
                                 Muat Ulang
                             </button>
-                            <button onclick="reportError()" class="btn btn-outline-danger">
+                            {{-- <button onclick="reportError()" class="btn btn-outline-danger">
                                 <i class="fas fa-bug me-1"></i>
                                 Laporkan Error
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
                 </div>

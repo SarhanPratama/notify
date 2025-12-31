@@ -93,7 +93,15 @@
                                                 {{ $item->tanggal->translatedFormat('l, d M Y') }}
                                             </span>
                                         </td>
-                                        <td class="align-middle text-nowrap font-weight-bold">{{ $item->nobukti }}</td>
+
+                                        <td class="align-middle text-nowrap">
+                                            @if($item->kategoriKeuangan->nama == 'Penjualan BB')
+                                                <a href="{{ route('piutang.show', $item->nobukti) }}">{{ $item->nobukti }}</a>
+                                            @else
+                                                {{ $item->nobukti }}
+                                            @endif
+                                        </td>
+
                                         <td class="align-middle font-weight-bold">
                                             {{ $item->kategoriKeuangan->nama ?? '-' }}</td>
 

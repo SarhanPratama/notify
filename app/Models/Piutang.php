@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Piutang extends Model
+
 {
-        use HasFactory;
+    use HasFactory;
 
     protected $table = 'piutang';
 
@@ -18,15 +19,20 @@ class Piutang extends Model
         'jatuh_tempo' => 'date',
     ];
 
+    public function transaksi()
+    {
+        return $this->morphMany(Transaksi::class, 'transaksiable');
+    }
+
     public function penjualan()
     {
         return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
     }
 
     public function pembayaran()
-{
-    return $this->hasMany(PiutangPembayaran::class, 'nobukti', 'nobukti');
-}
+    {
+        return $this->hasMany(PiutangPembayaran::class, 'nobukti', 'nobukti');
+    }
 
     // Accessor untuk menghitung sisa piutang
     // public function getSisaPiutangAttribute()

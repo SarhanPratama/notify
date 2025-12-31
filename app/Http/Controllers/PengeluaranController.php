@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengeluaran;
 use App\Models\Transaksi;
-use App\Models\SumberDana;
 use App\Models\Pembelian;
 use App\Models\KategoriKeuangan;
 use Illuminate\Http\Request;
@@ -21,7 +19,10 @@ class PengeluaranController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $pengeluaran = Pengeluaran::with('kategoriKeuangan')
+        $pengeluaran = Transaksi::with('kategoriKeuangan')
+            ->whereHas('kategoriKeuangan', function ($q) {
+                $q->where('jenis', 'pengeluaran');
+            })
             ->orderBy('tanggal', 'desc')
             ->get();
 
@@ -47,53 +48,45 @@ class PengeluaranController extends Controller
         DB::beginTransaction();
 
         try {
-            $pembelian = Pembelian::findOrFail($id);
+            $pembelian = Pembelian::with('mutasi.bahanBaku')->findOrFail($id);
 
             // Update status pembelian
             $pembelian->update([
                 'status' => 'approved',
             ]);
 
-            // Update status mutasi
+            // Update status mutasi (aktifkan sehingga ikut hitung stok)
             $pembelian->mutasi()->update([
                 'status' => 1,
             ]);
 
+            // Prepare deskripsi dari nama bahan
+            $namaBahan = [];
+            foreach ($pembelian->mutasi as $mutasi) {
+                $namaBahan[] = $mutasi->bahanBaku->nama ?? null;
+            }
+            $deskripsi = trim(implode(', ', array_filter($namaBahan)));
+
+            // Pastikan kategori keuangan 'Pembelian BB' ada
             $kategoriPembelian = KategoriKeuangan::firstOrCreate(
                 ['nama' => 'Pembelian BB'],
                 ['jenis' => 'pengeluaran']
             );
 
-            foreach ($pembelian->mutasi as $mutasi) {
-                $namaBahan[] = $mutasi->bahanBaku->nama;
-            }
-
-            $deskripsi = implode(', ', $namaBahan);
-
-            // Catat sebagai Pengeluaran
-            Pengeluaran::create([
+            // Catat transaksi polymorphic pada pembelian (pengeluaran)
+            $pembelian->transaksi()->create([
                 'nobukti' => $pembelian->nobukti,
                 'tanggal' => now(),
                 'jumlah' => $pembelian->total,
-                'status' => 1,
-                'deskripsi' => $deskripsi,
-                'posisi_kas' => $request->posisi_kas,
+                'tipe' => 'debit',
                 'id_kategori_keuangan' => $kategoriPembelian->id,
-            ]);
-
-            // Catat di Transaksi
-            Transaksi::create([
-                'nobukti' => $pembelian->nobukti,
-                'tanggal' => now(),
-                'jumlah' => $pembelian->total,
-                'deskripsi' => $deskripsi,
                 'posisi_kas' => $request->posisi_kas,
-                'id_kategori_keuangan' => $kategoriPembelian->id,
+                'deskripsi' => $deskripsi ?: 'Pembelian bahan baku #' . $pembelian->nobukti,
                 'status' => 1,
             ]);
 
             DB::commit();
-            notify()->success('Pembelian berhasil disetujui dan dicatat sebagai pengeluaran.');
+            notify()->success('Pembelian berhasil disetujui dan dicatat ke transaksi.');
             return redirect()->route('pengeluaran.index');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -141,22 +134,16 @@ class PengeluaranController extends Controller
         try {
             $nobukti = 'OUT-' . date('Ymd-His');
 
-            $pengeluaran = Pengeluaran::create([
+            Transaksi::create([
                 'nobukti' => $nobukti,
                 'tanggal' => $request->tanggal,
                 'jumlah' => $request->jumlah,
+                'tipe' => 'debit',
+                'posisi_kas' => $request->posisi_kas,
+                'transaksiable_id' => null,
+                'transaksiable_type' => null,
                 'deskripsi' => strip_tags($request->deskripsi),
                 'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                'posisi_kas' => $request->posisi_kas,
-            ]);
-
-            Transaksi::create([
-                'nobukti' => $pengeluaran->nobukti,
-                'tanggal' => $request->tanggal,
-                'jumlah' => $request->jumlah,
-                'deskripsi' => strip_tags($request->deskripsi),
-                'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                'posisi_kas' => $request->posisi_kas,
                 'status' => 1,
             ]);
 
@@ -176,34 +163,22 @@ class PengeluaranController extends Controller
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric|min:0',
             'deskripsi' => 'required|string|max:255',
-            'id_kategori_keuangan' => 'nullable|exists:kategori_keuangans,id',
+            'id_kategori_keuangan' => 'nullable|exists:kategori_keuangan,id',
             'posisi_kas' => 'required|in:Tunai,Bank BSI',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $pengeluaran = Pengeluaran::findOrFail($id);
-            $nobukti = $pengeluaran->nobukti;
+            $transaksi = Transaksi::findOrFail($id);
 
-            $pengeluaran->update([
+            $transaksi->update([
                 'tanggal' => $request->tanggal,
                 'jumlah' => $request->jumlah,
-                'deskripsi' => strip_tags($request->deskripsi),
+                'deskripsi' => $request->deskripsi,
                 'id_kategori_keuangan' => $request->id_kategori_keuangan,
                 'posisi_kas' => $request->posisi_kas,
             ]);
-
-            $transaksi = Transaksi::where('nobukti', $nobukti)->first();
-            if ($transaksi) {
-                $transaksi->update([
-                    'tanggal' => $request->tanggal,
-                    'jumlah' => $request->jumlah,
-                    'deskripsi' => strip_tags($request->deskripsi),
-                    'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                    'posisi_kas' => $request->posisi_kas,
-                ]);
-            }
 
             DB::commit();
             notify()->success('Pengeluaran berhasil diperbarui.');
@@ -219,17 +194,18 @@ class PengeluaranController extends Controller
     {
         DB::beginTransaction();
         try {
-            $pengeluaran = Pengeluaran::findOrFail($id);
-            $nobukti = $pengeluaran->nobukti;
+            $transaksi = Transaksi::findOrFail($id);
 
-            $pembelian = Pembelian::where('nobukti', $nobukti)->first();
-            if ($pembelian) {
-                $pembelian->update(['status' => 'cancelled']);
-                $pembelian->mutasi()->update(['status' => 0]);
+            // Jika transaksi terkait dengan pembelian, cancel pembelian
+            if ($transaksi->transaksiable_type === Pembelian::class) {
+                $pembelian = $transaksi->transaksiable;
+                if ($pembelian) {
+                    $pembelian->update(['status' => 'cancelled']);
+                    $pembelian->mutasi()->update(['status' => 0]);
+                }
             }
 
-            $pengeluaran->delete();
-            Transaksi::where('nobukti', $nobukti)->delete();
+            $transaksi->delete();
 
             DB::commit();
             notify()->success('Pengeluaran berhasil dihapus.');

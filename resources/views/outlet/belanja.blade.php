@@ -100,7 +100,7 @@
                                                 @csrf
                                                 <input type="hidden" name="id_bahan_baku" value="{{ $item->id }}">
                                                 <div class="input-group input-group-sm mb-2">
-                                                    <input type="number" class="form-control" name="quantity"
+                                                    <input type="number" class="form-control" id="quantity-{{ $item->id }}" name="quantity"
                                                         value="1" min="1"
                                                         max="{{ $item->viewStok->stok_akhir ?? 0 }}">
                                                     <span class="input-group-text">{{ $item->satuan->nama }}</span>
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Kolom Keranjang -->
-            <div class="col-lg-4">
+            <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm sticky-top" style="top: 60px;">
                     <div class="card-header bg-maron text-white d-flex justify-content-between align-items-center py-3">
                         <h6 class="mb-0 fw-bold">Keranjang</h6>

@@ -65,7 +65,7 @@ class Penjualan extends Model
 
     public function transaksi()
     {
-        return $this->belongsTo(Transaksi::class, 'nobukti', 'nobukti');
+        return $this->morphMany(Transaksi::class, 'transaksiable');
     }
 
     public function outlet()

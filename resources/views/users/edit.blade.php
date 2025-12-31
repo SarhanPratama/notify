@@ -61,7 +61,7 @@
                                                 <option></option>
                                                 @foreach ($roles as $id => $name)
                                                     <option value="{{ $id }}"
-                                                        {{ old('id_roles', $user->id_role == $id ? 'selected' : '' )}}>
+                                                        {{ old('id_roles', $userRoleId) == $id ? 'selected' : '' }}>
                                                         {{ ucwords($name) }}
                                                     </option>
                                                 @endforeach

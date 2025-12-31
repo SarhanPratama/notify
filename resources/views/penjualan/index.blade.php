@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @include('layouts.breadcrumbs')
 
-    <div class="container-fluid">
+<div class="container-fluid">
+        @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col-lg-12">
                 {{--
@@ -93,7 +93,6 @@
                                                         <i class="fas fa-store"></i>
                                                     </span>
                                                     <strong>
-
                                                         {{ $item->outlet->nama }}
                                                     </strong>
                                                 </div>

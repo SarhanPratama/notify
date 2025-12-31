@@ -43,9 +43,9 @@ class PenjualanController extends Controller
         ];
         $cabang = Outlet::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
-        $sumberDana = SumberDana::pluck('nama', 'id');
 
-        return view('penjualan.create', compact('title', 'breadcrumbs', 'cabang', 'produk', 'sumberDana'));
+
+        return view('penjualan.create', compact('title', 'breadcrumbs', 'cabang', 'produk'));
     }
 
     public function store(PenjualanRequest $request, PenjualanService $penjualanService)

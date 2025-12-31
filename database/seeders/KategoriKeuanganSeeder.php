@@ -15,7 +15,7 @@ class KategoriKeuanganSeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['nama' => 'Penjualan', 'jenis' => 'pemasukan'],
+            // ['nama' => 'Penjualan', 'jenis' => 'pemasukan'],
             ['nama' => 'Operasional', 'jenis' => 'pengeluaran'],
             ['nama' => 'Gaji Karyawan', 'jenis' => 'pengeluaran'],
             ['nama' => 'Aset', 'jenis' => 'pengeluaran'],

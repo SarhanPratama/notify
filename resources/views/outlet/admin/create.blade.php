@@ -20,7 +20,7 @@
                                 <div class="col-md-6">
                                     <label for="cabang" class="form-label fw-bold">Kode <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="kode" class="form-control form-control-sm"
+                                    <input type="text" name="kode" id="kode" class="form-control form-control-sm"
                                         placeholder="Masukkan kode" required>
                                     @error('nama')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -30,7 +30,7 @@
                                 <div class="col-md-6">
                                     <label for="nama" class="form-label fw-bold">Nama Outlet <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="nama" class="form-control form-control-sm"
+                                    <input type="text" name="nama" id="nama" class="form-control form-control-sm"
                                         placeholder="Masukkan nama outlet" required>
                                     @error('nama')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -40,7 +40,7 @@
                                 <div class="col-md-6">
                                     <label for="penanggung_jawab" class="form-label fw-bold">Penanggung Jawab <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="penanggung_jawab" class="form-control form-control-sm"
+                                    <input type="text" name="penanggung_jawab" id="penanggung_jawab" class="form-control form-control-sm"
                                         placeholder="Masukkan penanggung jawab" required>
                                     @error('penanggung_jawab')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -51,7 +51,7 @@
                                 <div class="col-md-6">
                                     <label for="telepon" class="form-label fw-bold">Telepon <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" name="telepon" class="form-control form-control-sm"
+                                    <input type="text" name="telepon" id="telepon" class="form-control form-control-sm"
                                         placeholder="Masukkan telepon" required>
                                 </div>
 

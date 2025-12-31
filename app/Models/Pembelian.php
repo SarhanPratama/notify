@@ -26,21 +26,20 @@ class Pembelian extends Model
         'tanggal' => 'date',
     ];
 
-      protected function catatan(): Attribute
+    protected function catatan(): Attribute
     {
         return Attribute::make(
             get: fn ($value) => $value ?? 'Tidak ada catatan',
         );
     }
+    public function transaksi()
+    {
+        return $this->morphMany(Transaksi::class, 'transaksiable');
+    }
 
     public function mutasi()
     {
         return $this->hasMany(mutasi::class, 'nobukti', 'nobukti');
-    }
-
-    public function transaksi()
-    {
-        return $this->hasMany(Transaksi::class, 'nobukti', 'nobukti');
     }
 
     public function supplier()

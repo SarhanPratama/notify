@@ -55,7 +55,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     // route data master
     Route::resource('kategori', KategoriController::class)->except(['show', 'edit', 'create'])->middleware('permission:kategori');
-    Route::resource('kategori-keuangan', KategoriKeuanganController::class)->except(['show', 'edit', 'create'])->middleware('permission:kas');
+    Route::resource('kategori-keuangan', KategoriKeuanganController::class)->except(['show', 'edit', 'create'])->middleware('permission:kategori-keuangan');
     Route::resource('bahan-baku', BahanBakuController::class)->except(['show', 'create', 'edit'])->middleware('permission:bahan-baku');
     Route::resource('supplier', SupplierController::class)->except(['show', 'create', 'edit'])->middleware('permission:supplier');
     Route::resource('outlet', OutletController::class)->except(['create', 'edit'])->middleware('permission:outlet');
@@ -72,7 +72,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route session untuk create pembelian
     Route::post('pembelian/cart/add', [PembelianController::class, 'addToCartCreate'])->name('pembelian.cart.create.add')->middleware('permission:pembelian');
     Route::delete('pembelian/cart/{index}', [PembelianController::class, 'removeFromCartCreate'])->name('pembelian.cart.create.remove')->middleware('permission:pembelian');
-    Route::delete('pembelian/cart/clear', [PembelianController::class, 'clearCartCreate'])->name('pembelian.cart.create.clear')->middleware('permission:pembelian');
+    // Route::delete('pembelian/cart/clear', [PembelianController::class, 'clearCartCreate'])->name('pembelian.cart.create.clear')->middleware('permission:pembelian');
 
     // Route session untuk edit pembelian
     Route::post('pembelian/{nobukti}/cart/add', [PembelianController::class, 'addToCart'])->name('pembelian.cart.add')->middleware('permission:pembelian');
@@ -85,7 +85,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route session untuk edit penjualan
     Route::post('penjualan/{nobukti}/cart/add', [PenjualanController::class, 'addToCart'])->name('penjualan.cart.add')->middleware('permission:penjualan');
     Route::delete('penjualan/{nobukti}/cart/{index}', [PenjualanController::class, 'removeFromCart'])->name('penjualan.cart.remove')->middleware('permission:penjualan');
-    Route::delete('penjualan/{nobukti}/cart', [PenjualanController::class, 'clearCart'])->name('penjualan.cart.clear')->middleware('permission:penjualan');
+    // Route::delete('penjualan/{nobukti}/cart', [PenjualanController::class, 'clearCart'])->name('penjualan.cart.clear')->middleware('permission:penjualan');
 
     // Route::delete('/penjualan/{id}/force', [PenjualanController::class, 'forceDelete'])->name('penjualan.forceDelete')->middleware('permission:penjualan');
     Route::get('pesanan-admin', [AdminOrderController::class, 'index'])->name('admin.pesanan.index')->middleware('role:gudang|keuangan|owner');
@@ -112,7 +112,7 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
 
     // Route::get('laporan-penjualan', [PenjualanController::class, 'laporanPenjualan'])->name('laporan-penjualan');
     // Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
-    
+
     //Route laporan
     Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok')->middleware('permission:laporan');
     Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel')->middleware('permission:laporan');

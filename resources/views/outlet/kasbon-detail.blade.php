@@ -4,7 +4,7 @@
 <div class="container-fluid mt-3">
     <div class="mb-4 d-flex align-items-center">
         <div class="ms-1">
-            <a href="{{ route('outlet.kasbon', ['token' => $token]) }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ route('outlet.kasbon', ['token' => $token]) }}" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -23,12 +23,12 @@
                         <div class="col-md-4 mb-3">
                             <small class="text-muted d-block">Tanggal Pesanan</small>
                             <span
-                                class="fw-semibold">{{ \Carbon\Carbon::parse($piutang->penjualan->tanggal)->format('d F Y') }}</span>
+                                class="fw-semibold">{{ $piutang->penjualan->tanggal->translatedFormat('l, d F Y') }}</span>
                         </div>
                         <div class="col-md-4 mb-3">
                             <small class="text-muted d-block">Jatuh Tempo</small>
                             <span
-                                class="fw-semibold {{ $isJatuhTempo ? 'text-danger' : '' }}">{{ \Carbon\Carbon::parse($piutang->jatuh_tempo)->format('d F Y') }}</span>
+                                class="fw-semibold {{ $isJatuhTempo ? 'text-danger' : '' }}">{{ $piutang->jatuh_tempo->translatedFormat('l, d F Y') }}</span>
                             @if ($isJatuhTempo)
                                 <span class="badge bg-danger ms-1">Terlambat</span>
                             @endif
@@ -48,7 +48,7 @@
                         <table class="table table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Nama Barang</th>
+                                    <th class="text-nowrap">Nama Barang</th>
                                     <th class="text-center">Qty</th>
                                     <th class="text-end">Harga</th>
                                     <th class="text-end">Subtotal</th>
@@ -60,15 +60,15 @@
                                         <td>{{ $item->bahanBaku->nama }}</td>
                                         <td class="text-center">{{ $item->quantity }}
                                             {{ $item->bahanBaku->satuan->nama ?? 'pcs' }}</td>
-                                        <td class="text-end">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                                        <td class="text-end">Rp {{ number_format($item->sub_total, 0, ',', '.') }}</td>
+                                        <td class="text-end text-nowrap">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
+                                        <td class="text-end text-nowrap">Rp {{ number_format($item->sub_total, 0, ',', '.') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                             <tfoot class="table-light">
                                 <tr>
                                     <th colspan="3" class="text-end">Total</th>
-                                    <th class="text-end">Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</th>
+                                    <th class="text-end text-nowrap">Rp {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -91,7 +91,7 @@
                                 <tbody>
                                     @foreach ($piutang->pembayaran as $pembayaran)
                                         <tr class="text-nowrap">
-                                            <td>{{ $pembayaran->tanggal->translatedFormat('l, d M Y') }}</td>
+                                            <td>{{ $pembayaran->tanggal->translatedFormat('l, d/m/Y') }}</td>
                                             <td class="text-end text-success fw-semibold">Rp
                                                 {{ number_format($pembayaran->jumlah, 0, ',', '.') }}</td>
                                         </tr>
@@ -114,7 +114,7 @@
                             </table>
                         </div>
                     @else
-                        <div class="alert alert-warning mb-0"><i class="fas fa-info-circle me-2"></i>Belum ada pembayaran
+                        <div class="alert alert-info mb-0 text-info text-center"><i class="fas fa-info-circle me-2"></i>Belum ada pembayaran
                             untuk tagihan ini.</div>
                     @endif
                 </div>

@@ -42,10 +42,10 @@ class UsersController extends Controller
 
     public function create()
     {
-        $title = 'Karyawan';
+        $title = 'Users Baru';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Karyawan', 'url' => route('users.index')],
+            ['label' => 'Users', 'url' => route('users.index')],
             ['label' => 'Form Tambah', 'url' => null],
         ];
         // $user = User::all();
@@ -72,7 +72,6 @@ class UsersController extends Controller
             'name'              => $request->name,
             'email'             => $request->email,
             'password'          => Hash::make($request->password),
-            'id_role'              => $request->id_roles,
             'created_at'        => now(),
             'updated_at'        => now(),
         ]);
@@ -88,11 +87,11 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        $title = 'Detail Karyawan';
+        $title = 'Detail User';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Tabel', 'url' => route('users.index')],
-            ['label' => 'Detail Karyawan', 'url' => null],
+            ['label' => 'Detail User', 'url' => null],
         ];
 
         $user = User::findOrFail($id);
@@ -103,10 +102,10 @@ class UsersController extends Controller
     public function edit($id)
     {
 
-        $title = 'Karyawan';
+        $title = 'Edit User';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Karyawan', 'url' => route('users.index')],
+            ['label' => 'Users', 'url' => route('users.index')],
             ['label' => 'Form Edit', 'url' => null],
         ];
 
@@ -116,8 +115,9 @@ class UsersController extends Controller
         $roles = Role::pluck('name', 'id');
 
         $userRole = $user->getRoleNames();
+        $userRoleId = $user->roles->first()->id ?? null;
 
-        return view('users.edit', compact('title', 'breadcrumbs', 'user', 'roles', 'userRole'));
+        return view('users.edit', compact('title', 'breadcrumbs', 'user', 'roles', 'userRole', 'userRoleId'));
     }
 
     public function update(Request $request, $id)
@@ -133,7 +133,6 @@ class UsersController extends Controller
 
         $data = [
             'name' => $request->name,
-            'id_role' => $request->id_roles,
             'updated_at' => now(),
         ];
 

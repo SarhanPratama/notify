@@ -14,43 +14,27 @@ class Transaksi extends Model
 
     protected $fillable = [
         'nobukti',
-        // 'id_bahan_baku',
-        // 'id_sumber_dana',
         'tanggal',
-        'tipe',
         'jumlah',
-        'deskripsi',
-        'id_kategori_keuangan',
-        'status',
         'posisi_kas',
+        'transaksiable_id',
+        'transaksiable_type',
+        'deskripsi',
+        'status',
+        'id_kategori_keuangan',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
     ];
 
+    public function transaksiable()
+    {
+        return $this->morphTo();
+    }
+
     public function kategoriKeuangan()
     {
         return $this->belongsTo(KategoriKeuangan::class, 'id_kategori_keuangan');
-    }
-
-        public function SumberDana()
-    {
-        return $this->belongsTo(SumberDana::class, 'id_sumber_dana');
-    }
-
-    public function pembelian()
-    {
-        return $this->belongsTo(Pembelian::class, 'nobukti', 'nobukti');
-    }
-
-    public function penjualan()
-    {
-        return $this->belongsTo(Penjualan::class, 'nobukti', 'nobukti');
-    }
-
-    public function piutang()
-    {
-        return $this->belongsTo(Piutang::class, 'nobukti', 'nobukti');
     }
 }

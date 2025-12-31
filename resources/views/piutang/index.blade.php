@@ -89,7 +89,7 @@
                                             <td class="align-middle">
                                                 <span class="badge badge-light p-2 text-dark">
                                                     <i class="far fa-calendar-alt text-maron mr-1"></i>
-                                                    {{ $item->jatuh_tempo->translatedFormat('l, d M Y') }}
+                                                    {{ $item->jatuh_tempo ? $item->jatuh_tempo->translatedFormat('l, d M Y') : '-' }}
                                                 </span>
                                             </td>
                                             <td class="align-middle font-weight-bold">{{ $item->nobukti }}</td>
@@ -104,10 +104,10 @@
                                                 </div>
                                             </td>
                                             <td class="align-middle">
-                                                @if ($item->status === 'belum_lunas')
-                                                    <span class="badge bg-warning">Belum Lunas</span>
-                                                @else
+                                                @if ($item->status === 'lunas')
                                                     <span class="badge bg-success">Lunas</span>
+                                                @else
+                                                    <span class="badge bg-warning">Belum Lunas</span>
                                                 @endif
                                             </td>
                                             {{-- <td class="align-middle text-success font-weight-bold text-nowrap">

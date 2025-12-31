@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_kategori_keuangan')->nullable()->constrained('kategori_keuangan')->onDelete('set null');
-            $table->string('nobukti');
+             $table->string('nobukti');
             $table->date('tanggal');
-            // $table->enum('tipe', ['debit', 'kredit']);
             $table->decimal('jumlah', 15, 0);
-            $table->text('deskripsi');
+            $table->foreignId('id_kategori_keuangan')->constrained('kategori_keuangan')->onDelete('cascade')->onUpdate('cascade');
+            $table->enum('posisi_kas', ['Tunai', 'Bank BSI'])->nullable();
+            $table->unsignedBigInteger('transaksiable_id')->nullable();
+            $table->string('transaksiable_type')->nullable();
+            $table->text('deskripsi')->nullable();
             $table->tinyInteger('status')->default(0);
-             $table->enum('posisi_kas', ['Tunai', 'Bank BSI'])->nullable();
             $table->softDeletes();
-            $table->timestamps();
+            $table->timestamps();index
         });
     }
 

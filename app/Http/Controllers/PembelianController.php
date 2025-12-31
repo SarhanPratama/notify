@@ -10,7 +10,6 @@ use App\Models\Pembelian;
 use App\Models\SumberDana;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Services\PembelianService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StorePembelianRequest;
 
@@ -38,10 +37,10 @@ class PembelianController extends Controller
 
     public function index(Request $request)
     {
-        $title = 'Pembelian';
+        $title = 'Pembelian Stok';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Pembelian', 'url' => route('pembelian.index')],
+            ['label' => 'Pembelian Stok', 'url' => route('pembelian.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
@@ -63,14 +62,13 @@ class PembelianController extends Controller
 
     public function create()
     {
-        $title = 'Tambah Pembelian';
+        $title = 'Tambah Pembelian Stok';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Pembelian', 'url' => route('pembelian.index')],
+            ['label' => 'Pembelian Stok', 'url' => route('pembelian.index')],
             ['label' => 'Form Tambah', 'url' => null],
         ];
         $suppliers = Supplier::pluck('nama', 'id');
-        $sumberDana = SumberDana::pluck('nama', 'id');
         $bahanBaku = BahanBaku::with('satuan')->get();
 
         // Clear cart jika bukan dari operasi cart (fresh page load/reload)
@@ -83,7 +81,7 @@ class PembelianController extends Controller
         // Ambil cart dari session
         $cartItems = session('cart_pembelian_create', []);
 
-        return view('pembelian.create', compact('title', 'breadcrumbs', 'suppliers', 'sumberDana', 'bahanBaku', 'cartItems'));
+        return view('pembelian.create', compact('title', 'breadcrumbs', 'suppliers', 'bahanBaku', 'cartItems'));
     }
 
     // Tambah item ke cart create
@@ -154,7 +152,7 @@ class PembelianController extends Controller
             notify()->error('Keranjang masih kosong, tambahkan item terlebih dahulu');
             return redirect()->back();
         }
-        
+
         DB::beginTransaction();
 
         try {
@@ -201,10 +199,10 @@ class PembelianController extends Controller
     public function show($nobukti)
     {
 
-        $title = 'Detail Pembelian';
+        $title = 'Detail Pembelian Stok';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Pembelian', 'url' => route('pembelian.index')],
+            ['label' => 'Pembelian Stok', 'url' => route('pembelian.index')],
             ['label' => 'Detail', 'url' => null],
         ];
 
@@ -216,16 +214,18 @@ class PembelianController extends Controller
         return view('pembelian.show', compact('title', 'breadcrumbs', 'detailPembelian'));
     }
 
-    public function edit(Request $request, $nobukti, PembelianService $pembelianService)
+    public function edit(Request $request, $nobukti)
     {
-        $title = 'Pembelian';
+        $title = 'Edit Pembelian Stok';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Pembelian', 'url' => route('pembelian.index')],
+            ['label' => 'Pembelian Stok', 'url' => route('pembelian.index')],
             ['label' => 'Form Edit', 'url' => null],
         ];
 
-        $detailPembelian = $pembelianService->getPembelianDetails($nobukti);
+        $detailPembelian = Pembelian::with(['mutasi.bahanBaku.satuan', 'supplier', 'Transaksi'])
+            ->where('nobukti', $nobukti)
+            ->firstOrFail();
 
         // Session key unik per nobukti
         $sessionKey = 'cart_pembelian_' . $nobukti;
@@ -255,11 +255,10 @@ class PembelianController extends Controller
 
         $cartItems = session($sessionKey, []);
 
-        $sumberDana = SumberDana::pluck('nama', 'id');
         $suppliers = Supplier::pluck('nama', 'id');
         $produk = BahanBaku::with('satuan')->get();
 
-        return view('pembelian.edit', compact('title', 'breadcrumbs', 'detailPembelian', 'suppliers', 'sumberDana', 'produk', 'cartItems'));
+        return view('pembelian.edit', compact('title', 'breadcrumbs', 'detailPembelian', 'suppliers', 'produk', 'cartItems'));
     }
 
     // Tambah item ke cart session
@@ -316,7 +315,7 @@ class PembelianController extends Controller
         return redirect()->route('pembelian.edit', $nobukti);
     }
 
-    public function update(StorePembelianRequest $request, $nobukti, PembelianService $pembelianService)
+    public function update(StorePembelianRequest $request, $nobukti)
     {
         $sessionKey = 'cart_pembelian_' . $nobukti;
         $cartItems = session($sessionKey, []);
@@ -326,11 +325,75 @@ class PembelianController extends Controller
             return redirect()->back();
         }
 
+        DB::beginTransaction();
         try {
             $validated = $request->validated();
             $validated['cartItems'] = $cartItems;
 
-            $pembelianService->updatePembelian($nobukti, $validated);
+            $pembelian = Pembelian::with('mutasi', 'transaksi')->where('nobukti', $nobukti)->firstOrFail();
+
+            if (isset($validated['cartItems']) && !empty($validated['cartItems'])) {
+                $cartItems = $validated['cartItems'];
+
+                $total = collect($cartItems)->sum('sub_total');
+
+                // Sync mutasi: reuse unchanged, update changed, delete removed, create new
+                $existing = $pembelian->mutasi->keyBy('id_bahan_baku');
+
+                $incomingByBahan = collect($cartItems)->keyBy('id_bahan_baku');
+
+                // Update existing and delete removed
+                foreach ($existing as $idBahan => $mutasi) {
+                    if ($incomingByBahan->has($idBahan)) {
+                        $incoming = $incomingByBahan->get($idBahan);
+                        $incomingQty = (int) $incoming['quantity'];
+                        $incomingHarga = (float) $incoming['harga'];
+
+                        if ((int) $mutasi->quantity === $incomingQty && (float) $mutasi->harga === $incomingHarga) {
+                            // unchanged, keep existing
+                            // ensure sub_total is correct
+                            $mutasi->sub_total = $mutasi->quantity * $mutasi->harga;
+                            $mutasi->save();
+                        } else {
+                            $mutasi->update([
+                                'quantity' => $incomingQty,
+                                'harga' => $incomingHarga,
+                                'sub_total' => $incomingQty * $incomingHarga,
+                                'jenis_transaksi' => 'M',
+                                'nobukti' => $nobukti,
+                            ]);
+                        }
+
+                        // remove from incoming map so remaining are new items
+                        $incomingByBahan->forget($idBahan);
+                    } else {
+                        // removed in incoming -> delete
+                        $mutasi->delete();
+                    }
+                }
+
+                // Create remaining new incoming items
+                foreach ($incomingByBahan->values() as $item) {
+                    $pembelian->mutasi()->create([
+                        'id_bahan_baku' => $item['id_bahan_baku'],
+                        'quantity' => $item['quantity'],
+                        'harga' => $item['harga'],
+                        'sub_total' => $item['sub_total'],
+                        'jenis_transaksi' => 'M',
+                        'nobukti' => $nobukti,
+                    ]);
+                }
+
+                // Finally update pembelian totals and metadata
+                $pembelian->update([
+                    'total' => $total,
+                    'catatan' => $validated['catatan'] ?? null,
+                    'id_supplier' => $validated['id_supplier'] ?? null,
+                    'status' => 'pending',
+                ]);
+            }
+
+            DB::commit();
 
             // Clear session setelah berhasil update
             session()->forget($sessionKey);
@@ -338,6 +401,7 @@ class PembelianController extends Controller
             notify()->success('Pembelian berhasil diperbarui');
             return redirect()->route('pembelian.index');
         } catch (\Exception $e) {
+            DB::rollBack();
             notify()->error('Gagal memperbarui pembelian: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }

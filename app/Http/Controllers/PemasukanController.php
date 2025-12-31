@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pemasukan;
 use App\Models\Transaksi;
-use App\Models\SumberDana;
 use App\Models\Penjualan;
 use App\Models\Piutang;
 use App\Models\PiutangPembayaran;
@@ -23,7 +21,11 @@ class PemasukanController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $pemasukan = Pemasukan::orderBy('tanggal', 'desc')
+        $pemasukan = Transaksi::with('kategoriKeuangan', 'transaksiable')
+        ->whereHas('kategoriKeuangan', function ($q) {
+                $q->where('jenis', 'pemasukan');
+            })
+        ->orderBy('tanggal', 'desc')
             ->get();
 
         $penjualanPending = Penjualan::with(['outlet', 'mutasi'])
@@ -104,23 +106,16 @@ class PemasukanController extends Controller
         try {
             $nobukti = 'IN-' . date('Ymd-His');
 
-            Pemasukan::create([
-                'nobukti' => $nobukti,
-                // 'id_sumber_dana' => $request->id_sumber_dana,
-                'tanggal' => $request->tanggal,
-                'jumlah' => $request->jumlah,
-                'deskripsi' => strip_tags($request->deskripsi),
-                'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                'posisi_kas' => $request->posisi_kas,
-            ]);
-
             Transaksi::create([
                 'nobukti' => $nobukti,
                 'tanggal' => $request->tanggal,
                 'jumlah' => $request->jumlah,
+                'tipe' => 'kredit',
+                'posisi_kas' => $request->posisi_kas,
+                'transaksiable_id' => null,
+                'transaksiable_type' => null,
                 'deskripsi' => strip_tags($request->deskripsi),
                 'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                'posisi_kas' => $request->posisi_kas,
                 'status' => 1,
             ]);
 
@@ -147,27 +142,15 @@ class PemasukanController extends Controller
         DB::beginTransaction();
 
         try {
-            $pemasukan = Pemasukan::findOrFail($id);
-            $nobukti = $pemasukan->nobukti;
+            $transaksi = Transaksi::findOrFail($id);
 
-            $pemasukan->update([
+            $transaksi->update([
                 'tanggal' => $request->tanggal,
                 'jumlah' => $request->jumlah,
-                'deskripsi' => strip_tags($request->deskripsi),
+                'deskripsi' => $request->deskripsi,
                 'id_kategori_keuangan' => $request->id_kategori_keuangan,
                 'posisi_kas' => $request->posisi_kas,
             ]);
-
-            $transaksi = Transaksi::where('nobukti', $nobukti)->first();
-            if ($transaksi) {
-                $transaksi->update([
-                    'tanggal' => $request->tanggal,
-                    'jumlah' => $request->jumlah,
-                    'deskripsi' => strip_tags($request->deskripsi),
-                    'id_kategori_keuangan' => $request->id_kategori_keuangan,
-                    'posisi_kas' => $request->posisi_kas,
-                ]);
-            }
 
             DB::commit();
             notify()->success('Pemasukan berhasil diperbarui.');
@@ -183,11 +166,23 @@ class PemasukanController extends Controller
     {
         DB::beginTransaction();
         try {
-            $pemasukan = Pemasukan::findOrFail($id);
-            $nobukti = $pemasukan->nobukti;
+            $transaksi = Transaksi::findOrFail($id);
 
-            $pemasukan->delete();
-            Transaksi::where('nobukti', $nobukti)->delete();
+            // Jika transaksi berasal dari pembayaran piutang (PiutangPembayaran), rollback pembayaran
+            if ($transaksi->transaksiable_type === 'App\Models\PiutangPembayaran') {
+                // Update sisa_piutang di piutang
+                $piutangPembayaran = $transaksi->transaksiable;
+                if ($piutangPembayaran) {
+                    $piutang = Piutang::where('nobukti', $piutangPembayaran->nobukti)->first();
+                    if ($piutang) {
+                        $piutang->update(['sisa_piutang' => $piutang->sisa_piutang + $transaksi->jumlah]);
+                    }
+                }
+                // Hapus pembayaran
+                $piutangPembayaran->delete();
+            }
+
+            $transaksi->delete();
 
             DB::commit();
             notify()->success('Pemasukan berhasil dihapus.');

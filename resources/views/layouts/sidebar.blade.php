@@ -23,7 +23,8 @@
     <hr class="sidebar-divider">
 
     <div class="sidebar-heading">Operasional</div>
-    @hasrole('gudang|owner|keuangan')
+    @hasrole('gudang|keuangan')
+
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse" data-target="#collapseDataMaster"
                 aria-expanded="true" aria-controls="collapseDataMaster">
@@ -60,7 +61,7 @@
     @endhasrole
 
     <!-- Transaksi -->
-    @hasrole('gudang|owner')
+    @hasrole('gudang')
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse"
                 data-target="#collapseTransaksiGudang" aria-expanded="true" aria-controls="collapseTransaksiGudang">
@@ -88,7 +89,7 @@
         </li>
     @endhasrole
 
-    @hasrole('keuangan|owner')
+    @hasrole('keuangan')
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse" data-target="#collapseKeuangan"
                 aria-expanded="true" aria-controls="collapseKeuangan">
@@ -112,7 +113,7 @@
                     @endcan
                     @can('transaksi')
                         <a class="collapse-item {{ request()->routeIs('transaksi.*') ? 'active font-weight-bold' : '' }}"
-                            href="{{ route('transaksi.index') }}">Transaksi Kas</a>
+                            href="{{ route('transaksi.index') }}">Transaksi</a>
                     @endcan
                 </div>
             </div>

@@ -57,7 +57,7 @@ class RolePermissionSeeder extends Seeder
         $gudang = Role::firstOrCreate(['name' => 'gudang']);
 
         // Owner - Full Access
-        $owner->givePermissionTo(Permission::all());
+        $owner->givePermissionTo(['users', 'akses-role', 'laporan']);
 
         // Gudang/Inventory - Akses modul gudang
         $gudang->givePermissionTo([

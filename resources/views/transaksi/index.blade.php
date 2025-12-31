@@ -46,7 +46,7 @@
                                             @endif
                                         </td>
                                         <td class="align-middle text-nowrap"> {{ $item->kategoriKeuangan->nama }}</td>
-                                        <td class="align-middle text-nowrap">Rp.
+                                        <td class="align-middle text-nowrap text-success fw-bold">Rp.
                                             {{ number_format($item->jumlah, 0, ',', '.') }}</td>
                                         <td class="align-middle text-nowrap">{{ $item->deskripsi }}</td>
                                         <td class="align-middle text-nowrap">{{ $item->posisi_kas }}</td>

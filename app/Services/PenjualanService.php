@@ -136,15 +136,14 @@ class PenjualanService
     private function tambahTransaksi(Penjualan $penjualan, array $data, float $jumlah): void
     {
         if ($data['status_pembayaran'] === 'lunas') {
-            $sumberDana = SumberDana::findOrFail($data['id_sumber_dana']);
             $penjualan->transaksi()->create([
-                'id_sumber_dana' => $sumberDana->id,
                 'tanggal' => $penjualan->tanggal,
-                'tipe' => 'debit',
                 'jumlah' => $jumlah,
+                'tipe' => 'kredit', // pemasukan
+                'posisi_kas' => $data['posisi_kas'] ?? null,
                 'deskripsi' => 'Penjualan bahan baku #' . $penjualan->nobukti,
+                'status' => 1,
             ]);
-            $sumberDana->increment('saldo_current', $jumlah);
         } else {
             $penjualan->piutang()->create([
                 'nobukti' => $penjualan->nobukti,
@@ -170,45 +169,31 @@ class PenjualanService
         $piutang = $penjualan->piutang;
 
         if ($statusPembayaran === 'lunas') {
-            if (!$newSumberDana) {
-                throw new \Exception("Sumber dana diperlukan untuk metode pembayaran tunai.");
-            }
-
             if ($piutang) {
                 $piutang->delete();
             }
-
-            if ($oldSumberDana && $transaksi) {
-                $oldSumberDana->decrement('saldo_current', $oldTotal);
-            }
-
             if ($transaksi) {
                 $transaksi->update([
-                    'id_sumber_dana' => $newSumberDana->id,
                     'tanggal' => $penjualan->tanggal,
                     'jumlah' => $newTotal,
+                    'tipe' => 'kredit',
+                    'posisi_kas' => $data['posisi_kas'] ?? null,
                     'deskripsi' => 'Update penjualan bahan baku #' . $penjualan->nobukti,
                 ]);
             } else {
                 $penjualan->transaksi()->create([
-                    'id_sumber_dana' => $newSumberDana->id,
                     'tanggal' => $penjualan->tanggal,
-                    'tipe' => 'debit',
                     'jumlah' => $newTotal,
+                    'tipe' => 'kredit',
+                    'posisi_kas' => $data['posisi_kas'] ?? null,
                     'deskripsi' => 'Penjualan bahan baku #' . $penjualan->nobukti,
+                    'status' => 1,
                 ]);
             }
-
-            $newSumberDana->increment('saldo_current', $newTotal);
-
         } elseif ($statusPembayaran === 'kasbon') {
             if ($transaksi) {
-                if ($oldSumberDana) {
-                    $oldSumberDana->decrement('saldo_current', $oldTotal);
-                }
                 $transaksi->delete();
             }
-
             if ($piutang) {
                 $piutang->update([
                     'tanggal' => $penjualan->tanggal,
