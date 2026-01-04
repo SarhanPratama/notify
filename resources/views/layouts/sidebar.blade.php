@@ -121,7 +121,7 @@
     @endhasrole
 
     <!-- Laporan -->
-    @can('laporan')
+    @canany(['laporan-stok', 'laporan-kartu-stok', 'laporan-rekap-transaksi'])
         <li class="nav-item">
             <a class="nav-link collapsed fw-bold" href="#" data-toggle="collapse" data-target="#collapselaporan"
                 aria-expanded="true" aria-controls="#collapselaporan">
@@ -132,18 +132,24 @@
                 class="collapse {{ request()->routeIs(['laporan-stok', 'laporan-pembelian', 'laporan-penjualan', 'laporan.kartu-stok', 'laporan.rekap-transaksi', 'laporan.buku-besar', 'laporan.saldo-kas']) ? 'show' : '' }}"
                 aria-labelledby="headingLaporan" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item {{ request()->routeIs('laporan-stok') ? 'active font-weight-bold' : '' }}"
-                        href="{{ route('laporan-stok') }}">Stok</a>
-                    <a class="collapse-item {{ request()->routeIs('laporan.kartu-stok') ? 'active font-weight-bold' : '' }}"
-                        href="{{ route('laporan.kartu-stok') }}">Kartu Stok</a>
-                    <a class="collapse-item {{ request()->routeIs('laporan.rekap-transaksi') ? 'active font-weight-bold' : '' }}"
-                        href="{{ route('laporan.rekap-transaksi') }}">Rekap Transaksi</a>
+                    @can('laporan-stok')
+                        <a class="collapse-item {{ request()->routeIs('laporan-stok') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('laporan-stok') }}">Stok</a>
+                    @endcan
+                    @can('laporan-kartu-stok')
+                        <a class="collapse-item {{ request()->routeIs('laporan.kartu-stok') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('laporan.kartu-stok') }}">Kartu Stok</a>
+                    @endcan
+                    @can('laporan-rekap-transaksi')
+                        <a class="collapse-item {{ request()->routeIs('laporan.rekap-transaksi') ? 'active font-weight-bold' : '' }}"
+                            href="{{ route('laporan.rekap-transaksi') }}">Rekap Transaksi</a>
+                    @endcan
                     {{-- <a class="collapse-item {{ request()->routeIs('laporan.buku-besar') ? 'active font-weight-bold' : '' }}"
                         href="{{ route('laporan.buku-besar') }}">Buku Besar</a> --}}
                 </div>
             </div>
         </li>
-    @endcan
+    @endcanany
 
     <hr class="sidebar-divider">
 

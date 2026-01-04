@@ -128,13 +128,10 @@ class DashboardController extends Controller
         ));
     }
 
-    public function stafKeuangan()
+    public function stafKeuangan(ArusKasChart $ArusKasChart)
     {
         $title = 'Dashboard Manajer Keuangan';
-        $breadcrumbs = [
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Dashboard Keuangan', 'url' => null],
-        ];
+
 
         // Total Saldo Kas Saat Ini (All Time)
         $totalSaldoSaatIni = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
@@ -147,6 +144,7 @@ class DashboardController extends Controller
             })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
+            ->where('status', 1)
             ->sum('jumlah');
 
         $totalPengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
@@ -154,17 +152,8 @@ class DashboardController extends Controller
             })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
+            ->where('status', 1)
             ->sum('jumlah');
-
-        // Cash Flow 30 Hari Terakhir
-        $cashFlow30Hari = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
-            ->selectRaw('DATE(transaksi.tanggal) as date,
-                         SUM(CASE WHEN kategori_keuangan.jenis = "pemasukan" THEN transaksi.jumlah ELSE 0 END) as debit,
-                         SUM(CASE WHEN kategori_keuangan.jenis = "pengeluaran" THEN transaksi.jumlah ELSE 0 END) as kredit')
-            ->where('transaksi.tanggal', '>=', Carbon::now()->subDays(30))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
 
         // Top Pengeluaran
         $topPengeluaran = Transaksi::with('kategoriKeuangan')
@@ -186,18 +175,6 @@ class DashboardController extends Controller
             ->get()
             ->sum('sisa_piutang');
 
-        // Laporan Laba/Rugi Bulanan (12 bulan terakhir)
-        $laporanBulanan = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
-            ->selectRaw('MONTH(transaksi.tanggal) as bulan,
-                         YEAR(transaksi.tanggal) as tahun,
-                         SUM(CASE WHEN kategori_keuangan.jenis = "pemasukan" THEN transaksi.jumlah ELSE 0 END) as pendapatan,
-                         SUM(CASE WHEN kategori_keuangan.jenis = "pengeluaran" THEN transaksi.jumlah ELSE 0 END) as pengeluaran')
-            ->where('transaksi.tanggal', '>=', Carbon::now()->subMonths(11)->startOfMonth())
-            ->groupBy('bulan', 'tahun')
-            ->orderBy('tahun')
-            ->orderBy('bulan')
-            ->get();
-
         // Piutang Jatuh Tempo
         $piutangJatuhTempo = Piutang::with(['penjualan.outlet'])
             ->where('status', '!=', 'lunas')
@@ -211,21 +188,23 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        $ArusKasChart = $ArusKasChart->build();
+
         return view('dashboard.keuangan', compact(
             'title',
-            'breadcrumbs',
             'totalSaldoSaatIni',
             'totalPendapatanBulanIni',
             'totalPengeluaranBulanIni',
-            'cashFlow30Hari',
             'topPengeluaran',
             'totalPiutangBeredar',
             'totalHutang',
-            'laporanBulanan',
+            'ArusKasChart',
+            // 'laporanBulanan',
             'piutangJatuhTempo',
             'transaksiTerbaru'
         ));
     }
+
     public function owner(ArusKasChart $ArusKasChart)
     {
         $title = 'Dashboard';

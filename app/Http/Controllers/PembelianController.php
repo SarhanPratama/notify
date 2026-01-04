@@ -601,9 +601,9 @@ class PembelianController extends Controller
         if (!empty($tanggalMulai) && !empty($tanggalSampai)) {
             $laporan_pembelian->whereBetween('created_at', [$tanggalMulai, $tanggalSampai]);
             $periode = 'Periode: ' .
-                \Carbon\Carbon::parse($tanggalMulai)->translatedFormat('d M Y') .
+                $tanggalMulai->translatedFormat('d M Y') .
                 ' - ' .
-                \Carbon\Carbon::parse($tanggalSampai)->translatedFormat('d M Y');
+                $tanggalSampai->translatedFormat('d M Y');
         } else {
             $periode = 'Semua Periode';
         }

@@ -11,7 +11,7 @@
     <script src="{{ url('vendor/clock-picker/clockpicker.js') }}"></script>
     <script src="{{ url('assets/js/ruang-admin.min.js') }}"></script>
     <!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- <script src="{{ url('vendor/chart.js/Chart.min.js')}}"></script> --}}
     {{-- <script src="{{ url('assets/js/demo/chart-area-demo.js')}}"></script> --}}
@@ -24,7 +24,11 @@
             $('#dataTableHover').DataTable();
             $('#dataTableHover2').DataTable();
 
-            $('.select2-single').select2();
+            $('.select2-single').select2({
+                width: '100%',
+                placeholder: 'Pilih data',
+                allowClear: true
+            });
 
             $('.select-single').select2();
 

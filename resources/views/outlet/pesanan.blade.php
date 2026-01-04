@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <!-- Summary Cards (match kasbon style) -->
+        <!-- Summary Cards (diperbaiki sesuai schema) -->
         <div class="row g-3 mb-4">
             <div class="col-md-3 col-6">
                 <div class="card border-0 shadow-sm h-100">
@@ -25,9 +25,9 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-2">
-                                <h6 class="text-muted mb-1 small">Menunggu</h6>
+                                <h6 class="text-muted mb-1 small">Menunggu Approval Gudang</h6>
                                 <h5 class="mb-0 fw-bold text-center text-warning">
-                                    {{ $orders->where('status', 'pending')->count() }}</h5>
+                                    {{ $orders->where('status_gudang', 'pending')->count() }}</h5>
                             </div>
                         </div>
                     </div>
@@ -43,9 +43,9 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-2">
-                                <h6 class="text-muted mb-1 small">Disetujui</h6>
+                                <h6 class="text-muted mb-1 small">Disetujui Gudang</h6>
                                 <h5 class="mb-0 fw-bold text-center text-success">
-                                    {{ $orders->whereIn('status', ['approved', 'approved_by_gudang'])->count() }}</h5>
+                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'pending')->count() }}</h5>
                             </div>
                         </div>
                     </div>
@@ -61,9 +61,9 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-2">
-                                <h6 class="text-muted mb-1 small">Selesai</h6>
+                                <h6 class="text-muted mb-1 small">Disetujui Keuangan</h6>
                                 <h5 class="mb-0 fw-bold text-center text-info">
-                                    {{ $orders->where('status', 'completed')->count() }}</h5>
+                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'approved')->where('status_pembayaran', 'piutang')->count() }}</h5>
                             </div>
                         </div>
                     </div>
@@ -79,8 +79,9 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1 ms-2">
-                                <h6 class="text-muted mb-1 small">Total Pesanan</h6>
-                                <h5 class="mb-0 fw-bold text-center text-primary">{{ $orders->total() }}</h5>
+                                <h6 class="text-muted mb-1 small">Lunas</h6>
+                                <h5 class="mb-0 fw-bold text-center text-primary">
+                                    {{ $orders->where('status_pembayaran', 'lunas')->count() }}</h5>
                             </div>
                         </div>
                     </div>
@@ -125,7 +126,7 @@
                             <tbody>
                                 @foreach ($orders as $order)
                                     <tr>
-                                        <td>
+                                        <td class="align-middle">
                                             {{ $loop->iteration }}
                                         </td>
                                         <td class="fw-semibold text-nowrap">
@@ -140,7 +141,7 @@
                                             </p>
                                             <div class="small text-muted">{{ $order->created_at->format('H:i') }} WIB</div>
                                         </td>
-                                        <td>
+                                        <td class="align-middle">
                                             @if ($order->status_gudang === 'approved' && $order->status_keuangan === 'pending')
                                                 <span class="badge bg-success">Gudang: Approved</span>
                                             @elseif($order->status_gudang === 'rejected')
@@ -161,14 +162,25 @@
                                                     $order->status_keuangan === 'approved' &&
                                                     $order->status_gudang === 'approved')
                                                 <span class="badge bg-success">Pembayaran: Lunas</span>
+                                            @else
+                                                <span class="badge bg-secondary">Cancelled</span>
                                             @endif
                                         </td>
-                                        <td class="text-end text-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
-                                        <td class="text-center">
+                                        <td class="text-end text-nowrap align-middle">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                        <td class="text-center text-nowrap align-middle">
                                             <a href="{{ route('outlet.pesanan.detail', [$token, $order->id]) }}"
                                                 class="btn btn-outline-primary btn-sm" title="Lihat Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            @if ($order->status_gudang === 'pending' && $order->status_keuangan === 'pending')
+                                                <form action="{{ route('outlet.pesanan.cancel', [$token, $order->id]) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm ms-1" title="Cancel Pesanan" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

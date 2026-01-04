@@ -20,21 +20,46 @@ use Maatwebsite\Excel\Facades\Excel;
 class LaporanController extends Controller
 {
 
-    public function laporanStok()
+    public function laporanStok(Request $request)
     {
+        // $tes = request()->routeIs('laporan-stok');
+        // dd($tes);
         $title = 'Laporan Stok Bahan Baku';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             // ['label' => 'Bahan Baku', 'url' => route('bahan-baku.index')],
             ['label' => 'Stok Bahan Baku', 'url' => null],
         ];
-        $laporan_stok = ViewStok::all();
 
-        return view('laporan.stok', compact('title', 'breadcrumbs', 'laporan_stok'));
+        $bulan = $request->input('bulan', now()->month);
+        $tahun = $request->input('tahun', now()->year);
+
+        $laporan_stok = DB::table('bahan_baku')
+            ->leftJoin('mutasi', function($join) use ($bulan, $tahun) {
+                $join->on('bahan_baku.id', '=', 'mutasi.id_bahan_baku')
+                     ->whereYear('mutasi.created_at', $tahun)
+                     ->whereMonth('mutasi.created_at', $bulan);
+            })
+            ->leftJoin('satuan', 'bahan_baku.id_satuan', '=', 'satuan.id')
+            ->select(
+                'bahan_baku.id as id_bahan_baku',
+                'bahan_baku.nama',
+                'bahan_baku.stok_awal',
+                DB::raw('COALESCE(SUM(CASE WHEN mutasi.jenis_transaksi = "M" THEN mutasi.quantity ELSE 0 END), 0) as total_masuk'),
+                DB::raw('COALESCE(SUM(CASE WHEN mutasi.jenis_transaksi = "K" THEN mutasi.quantity ELSE 0 END), 0) as total_keluar'),
+                DB::raw('bahan_baku.stok_awal + COALESCE(SUM(CASE WHEN mutasi.jenis_transaksi = "M" THEN mutasi.quantity ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN mutasi.jenis_transaksi = "K" THEN mutasi.quantity ELSE 0 END), 0) as stok_akhir'),
+                'satuan.nama as nama_satuan'
+            )
+            ->groupBy('bahan_baku.id', 'bahan_baku.nama', 'bahan_baku.stok_awal', 'satuan.nama')
+            ->get();
+
+        return view('laporan.stok', compact('title', 'breadcrumbs', 'laporan_stok', 'bulan', 'tahun'));
     }
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        return Excel::download(new StokExport, 'Laporan-Stok.xlsx');
+        $bulan = $request->input('bulan', now()->month);
+        $tahun = $request->input('tahun', now()->year);
+        return Excel::download(new StokExport($bulan, $tahun), 'Laporan-Stok-' . $bulan . '-' . $tahun . '.xlsx');
     }
 
     public function laporanKartuStok(Request $request)

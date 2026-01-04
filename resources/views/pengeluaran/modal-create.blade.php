@@ -14,8 +14,9 @@
                         <input type="date" class="form-control" name="tanggal" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label fw-bold">Kategori</label>
-                        <select class="form-control" name="id_kategori_keuangan">
+                        <label class="form-label fw-bold">Kategori <span
+                                class="text-danger">*</span></label>
+                        <select class="form-control" name="id_kategori_keuangan" required>
                             <option value="">-- Pilih Kategori --</option>
                             @foreach ($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->nama }}</option>

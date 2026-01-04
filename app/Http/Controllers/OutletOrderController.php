@@ -161,13 +161,22 @@ class OutletOrderController extends Controller
                 ->firstOrFail();
 
             $request->validate([
-                'quantity' => 'required|integer|min:1',
+                'quantity' => 'required|integer|min:0',
             ]);
 
             $sessionKey = 'outlet_cart_' . $token;
             $cartItems = session($sessionKey, []);
 
             if (isset($cartItems[$index])) {
+                // Jika quantity 0, hapus item dari cart
+                if ($request->quantity <= 0) {
+                    unset($cartItems[$index]);
+                    $cartItems = array_values($cartItems); 
+                    session([$sessionKey => $cartItems]);
+                    return redirect()->route('outlet.belanja', $token)
+                        ->with('success', 'Item berhasil dihapus dari keranjang');
+                }
+
                 $bahanBaku = BahanBaku::with('viewStok')->find($cartItems[$index]['id_bahan_baku']);
                 $stokTersedia = $bahanBaku->viewStok->stok_akhir ?? 0;
 
@@ -564,4 +573,33 @@ class OutletOrderController extends Controller
             notify()->error('Gagal mengunduh invoice: ' . $e->getMessage());
             return redirect()->back();
         }
-    }}
+    }
+
+    public function cancelPesanan($token, $orderId)
+    {
+        try {
+            $outlet = Outlet::where('barcode_token', $token)
+                ->where('barcode_active', true)
+                ->firstOrFail();
+
+            $order = Penjualan::where('id', $orderId)
+                ->where('id_outlet', $outlet->id)
+                ->firstOrFail();
+
+            // Check if order can be cancelled
+            if ($order->status_gudang !== 'pending' && $order->status_keuangan !== 'pending') {
+                return redirect()->route('outlet.pesanan', $token)->with('error', 'Pesanan tidak dapat dibatalkan karena sudah diproses.');
+            }
+
+            // Update status to cancelled or delete
+            $order->update([
+                'status_gudang' => 'cancelled',
+                'status_keuangan' => 'cancelled'
+            ]);
+
+            return redirect()->route('outlet.pesanan', $token)->with('success', 'Pesanan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('outlet.pesanan', $token)->with('error', 'Gagal membatalkan pesanan: ' . $e->getMessage());
+        }
+    }
+}

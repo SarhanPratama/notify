@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->softDeletes();
-            $table->timestamps();index
+            $table->timestamps();
         });
     }
 

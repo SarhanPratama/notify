@@ -2,7 +2,6 @@
 
 @section('content')
 
-<div class="container-fluid">
         @include('layouts.breadcrumbs')
         <!-- Header Section -->
         <div class="row mb-4">
@@ -13,7 +12,7 @@
                             <div>
                                 <h4 class="mb-1 font-weight-bold">
                                     <i class="fas fa-clipboard-list mr-2"></i>
-                                    Laporan Kartu Stok Bahan Baku
+                                    Laporan Kartu Stok
                                 </h4>
                                 <p class="mb-0 text-white-60">Pantau pergerakan stok bahan baku secara detail</p>
                             </div>
@@ -33,29 +32,26 @@
                     <div class="card-body">
                         <form action="{{ route('laporan.kartu-stok') }}" method="GET">
                             <div class="row align-items-end">
-                                <div class="col-md-9">
+                                <div class="col-md-12">
                                     <label class="font-weight-semibold mb-2">
                                         <i class="fas fa-box text-primary mr-2"></i>
                                         Pilih Bahan Baku
                                     </label>
-                                    <select name="id_bahan_baku" id="id_bahan_baku"
-                                        class="form-control form-control-lg select2-single" required>
-                                        <option value="" disabled {{ !$selected_item ? 'selected' : '' }}>
-                                            -- Pilih Bahan Baku --
-                                        </option>
+                                    <select name="id_bahan_baku" id="id_bahan_baku" onchange="this.form.submit()"
+                                        class="form-control select2-single" required>
                                         @foreach ($bahan_baku_list as $item)
                                             <option value="{{ $item->id }}"
-                                                {{ ($selected_item && $selected_item->id == $item->id) ? 'selected' : '' }}>
+                                                {{ (optional($selected_item)->id == $item->id) ? 'selected' : '' }}>
                                                 {{ ucwords($item->nama) }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                {{-- <div class="col-md-3">
                                     <button type="submit" class="btn btn-outline-primary btn-block">
                                         Tampilkan
                                     </button>
-                                </div>
+                                </div> --}}
                             </div>
                         </form>
                     </div>
@@ -274,7 +270,6 @@
                 </div>
             </div>
         @endif
-    </div>
 @endsection
 
 @push('scripts')

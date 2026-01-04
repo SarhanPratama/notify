@@ -114,16 +114,16 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     // Route::get('/laporan-penjualan/pdf', [PenjualanController::class, 'exportPDF'])->name('laporan-penjualan.pdf');
 
     //Route laporan
-    Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok')->middleware('permission:laporan');
-    Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel')->middleware('permission:laporan');
+    Route::get('laporan/stok', [LaporanController::class, 'laporanStok'])->name('laporan-stok')->middleware('permission:laporan-stok');
+    Route::get('/laporan-stok/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan-stok.exportExcel')->middleware('permission:laporan-stok');
 
-    Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok')->middleware('permission:laporan');
-    Route::get('/laporan/kartu-stok/export', [LaporanController::class, 'exportKartuStok'])->name('laporan.kartu-stok.export')->middleware('permission:laporan');
+    Route::get('/laporan/kartu-stok', [LaporanController::class, 'laporanKartuStok'])->name('laporan.kartu-stok')->middleware('permission:laporan-kartu-stok');
+    Route::get('/laporan/kartu-stok/export', [LaporanController::class, 'exportKartuStok'])->name('laporan.kartu-stok.export')->middleware('permission:laporan-kartu-stok');
 
     Route::get('/laporan/rekap-transaksi', [LaporanController::class, 'laporanRekapTransaksi'])
-        ->name('laporan.rekap-transaksi')->middleware('permission:laporan');
+        ->name('laporan.rekap-transaksi')->middleware('permission:laporan-rekap-transaksi');
     Route::get('/laporan/rekap-transaksi/export', [LaporanController::class, 'exportRekapTransaksi'])
-        ->name('laporan.rekap-transaksi.export')->middleware('permission:laporan');
+        ->name('laporan.rekap-transaksi.export')->middleware('permission:laporan-rekap-transaksi');
 
 
     // Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
@@ -145,4 +145,5 @@ Route::group(['prefix' => 'outlet'], function () {
     Route::get('/{token}/kasbon/{piutang}', [OutletOrderController::class, 'kasbonDetail'])->name('outlet.kasbon.detail');
     Route::get('/{token}/kasbon/{id}/download', [OutletOrderController::class, 'downloadInvoice'])->name('outlet.kasbon.download');
     Route::get('/{token}/pesanan/{orderId}', [OutletOrderController::class, 'detailPesanan'])->name('outlet.pesanan.detail');
+    Route::delete('/{token}/pesanan/{orderId}/cancel', [OutletOrderController::class, 'cancelPesanan'])->name('outlet.pesanan.cancel');
 });

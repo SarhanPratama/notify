@@ -40,7 +40,9 @@ class RolePermissionSeeder extends Seeder
             'kategori-keuangan',
 
             // Laporan
-            'laporan',
+            'laporan-stok',
+            'laporan-kartu-stok',
+            'laporan-rekap-transaksi',
 
             // Pengguna & Akses
             'users',
@@ -57,7 +59,7 @@ class RolePermissionSeeder extends Seeder
         $gudang = Role::firstOrCreate(['name' => 'gudang']);
 
         // Owner - Full Access
-        $owner->givePermissionTo(['users', 'akses-role', 'laporan']);
+        $owner->givePermissionTo(['users', 'akses-role', 'laporan-stok', 'laporan-kartu-stok', 'laporan-rekap-transaksi']);
 
         // Gudang/Inventory - Akses modul gudang
         $gudang->givePermissionTo([
@@ -69,7 +71,8 @@ class RolePermissionSeeder extends Seeder
             'pembelian',
             'penjualan',
             'pesanan',
-            'laporan'
+            'laporan-stok',
+            'laporan-kartu-stok'
         ]);
 
         // Keuangan - Akses modul keuangan
@@ -80,7 +83,8 @@ class RolePermissionSeeder extends Seeder
             'pengeluaran',
             'piutang',
             'transaksi',
-            'laporan'
+            'laporan-stok',
+            'laporan-rekap-transaksi'
         ]);
     }
 }

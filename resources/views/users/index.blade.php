@@ -2,7 +2,6 @@
 
 @section('content')
 
-<div class="container-fluid">
     @include('layouts.breadcrumbs')
     <div class="row">
             <div class="col-lg-12 mb-4">
@@ -56,5 +55,4 @@
                 </div>
             </div>
         </div>
-    </div>
 @endsection

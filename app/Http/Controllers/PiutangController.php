@@ -16,17 +16,28 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 class PiutangController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $title = 'Kasbon';
+        $title = 'Piutang';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'kasbon', 'url' => route('piutang.index')],
+            ['label' => 'Piutang', 'url' => route('piutang.index')],
             ['label' => 'Tabel Data', 'url' => null],
         ];
-        $piutang = Piutang::with('penjualan', 'pembayaran')->orderBy('created_at', 'desc')->get();
 
-        return view('piutang.index', compact('title', 'breadcrumbs', 'piutang'));
+        $piutangQuery = Piutang::with('penjualan.outlet', 'pembayaran');
+
+        if ($request->has('outlet') && $request->outlet) {
+            $piutangQuery->whereHas('penjualan', function($q) use ($request) {
+                $q->where('id_outlet', $request->outlet);
+            });
+        }
+
+        $piutang = $piutangQuery->orderBy('created_at', 'desc')->get();
+
+        $outlets = \App\Models\Outlet::all();
+
+        return view('piutang.index', compact('title', 'breadcrumbs', 'piutang', 'outlets'));
     }
 
     public function show($nobukti)

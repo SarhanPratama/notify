@@ -47,6 +47,7 @@ class AksesRoleController extends Controller
 
         $akses_role->syncPermissions($request->permissions);
 
+        notify()->success('Permissions updated successfully.');
         return redirect()->route('akses-role.index');
     }
 }

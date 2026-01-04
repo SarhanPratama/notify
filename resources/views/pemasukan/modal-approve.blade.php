@@ -21,7 +21,7 @@
                         <p class="text-muted small mb-0">Nama: <strong>{{ $item->outlet->penanggung_jawab }}</strong></p>
 
                     </div>
-                    <div class="alert alert-info mb-0 text-info" role="alert">
+                    <div class="alert alert-info mb-0 text-info text-center" role="alert">
                         <small>
                             <strong>Catatan:</strong> Transaksi akan otomatis masuk ke <strong>Piutang</strong>
                             {{-- karena outlet akan membayar setelah barang diterima. --}}

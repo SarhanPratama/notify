@@ -1,10 +1,9 @@
-@php
-    use App\Models\User;
-    $id = auth()->user();
-    // $notifications = DB::table('notifications')->orderBy('created_at', 'desc')->limit(5)->get();
-    // $unreadCount = DB::table('notifications')->where('is_read', false)->count();
-    $foto = User::find($id->id);
-@endphp
+{{-- @auth
+    @php
+        $user = auth()->user();
+    @endphp
+
+@endauth --}}
 
 <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top bg-maron">
     <button id="sidebarToggleTop" class="btn rounded-circle mr-3">
@@ -51,12 +50,13 @@
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 <img class="img-profile rounded-circle"
-                    src="{{ $foto->foto ?  asset('storage/' . $foto->foto) : asset('assets/img/boy.png') }}">
+                    src="{{  asset('assets/img/boy.png') }}">
                 <div class="d-flex flex-column">
-                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ $id->name }}</span>
-
+                    @auth
+                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name }}</span>
                     <span class="ml-2 d-none d-lg-inline text-white"
-                        style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()->name) }}</span>
+                    style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()->name) }}</span>
+                    @endauth
                 </div>
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

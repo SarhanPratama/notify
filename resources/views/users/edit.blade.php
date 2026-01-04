@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid py-4">
         @include('layouts.breadcrumbs')
         <div class="row">
             <div class="col-lg-12">
@@ -76,7 +75,7 @@
                                     <button type="reset" class="btn btn-outline-secondary mr-2">
                                         Reset
                                     </button>
-                                    <button type="submit" class="btn btn-warning custom-update-btn"> {{-- Changed to btn-warning --}}
+                                    <button type="submit" class="btn btn-warning custom-update-btn">
                                         Update
                                     </button>
                                 </div>
@@ -86,5 +85,4 @@
                 </div>
             </div>
         </div>
-    </div>
 @endsection

@@ -75,10 +75,10 @@
                                         <div class="position-relative">
                                             @if ($item->foto && Storage::disk('public')->exists($item->foto))
                                                 <img src="{{ Storage::url($item->foto) }}" alt="{{ $item->nama }}"
-                                                    class="card-img-top" style="height: 120px; object-fit: cover;">
+                                                    class="card-img-top" style="height: 200px; object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center"
-                                                    style="height: 120px;">
+                                                    style="height: 200px;">
                                                     <i class="fas fa-box fa-2x text-muted"></i>
                                                 </div>
                                             @endif
@@ -99,13 +99,9 @@
                                             <form action="{{ route('outlet.cart.add', $token) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="id_bahan_baku" value="{{ $item->id }}">
-                                                <div class="input-group input-group-sm mb-2">
-                                                    <input type="number" class="form-control" id="quantity-{{ $item->id }}" name="quantity"
-                                                        value="1" min="1"
-                                                        max="{{ $item->viewStok->stok_akhir ?? 0 }}">
-                                                    <span class="input-group-text">{{ $item->satuan->nama }}</span>
-                                                </div>
-                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100"
+                                                    id="btn-add-{{ $item->id }}" name="btn_add">
                                                     <i class="fas fa-cart-plus"></i> Tambah
                                                 </button>
                                             </form>
@@ -137,8 +133,7 @@
                                         @foreach ($cartItems as $index => $item)
                                             <tr>
                                                 <td class="ps-2">
-                                                    <strong
-                                                       >{{ $item['nama_bahan_baku'] }}</strong><br>
+                                                    <strong>{{ $item['nama_bahan_baku'] }}</strong><br>
                                                     <small class="text-muted">
                                                         {{ $item['quantity'] }} {{ $item['satuan'] }} x Rp
                                                         {{ number_format($item['harga'], 0, ',', '.') }}
@@ -148,28 +143,47 @@
                                                     <strong>Rp
                                                         {{ number_format($item['sub_total'], 0, ',', '.') }}</strong>
                                                 </td>
+                                                <td class="text-center" style="width: 80px;">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <form action="{{ route('outlet.cart.update', [$token, $index]) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
+                                                            <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                                                {{ $item['quantity'] <= 1 ? 'disabled' : '' }}>
+                                                                <i class="fas fa-minus"></i>
+                                                            </button>
+                                                        </form>
+                                                        <span class="btn btn-light btn-sm disabled">{{ $item['quantity'] }}</span>
+                                                        <form action="{{ route('outlet.cart.update', [$token, $index]) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
+                                                            <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                                                {{ $item['quantity'] >= $item['stok_tersedia'] ? 'disabled' : '' }}>
+                                                                <i class="fas fa-plus"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
                                                 <td class="text-center" style="width: 40px;">
-                                                    <form action="{{ route('outlet.cart.remove', [$token, $index]) }}"
-                                                        method="POST" class="d-inline">
+                                                    <form action="{{ route('outlet.cart.remove', [$token, $index]) }}" method="POST"
+                                                        class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit"
-                                                            class="btn btn-link text-danger btn-sm p-0">
+                                                        <button type="submit" class="btn btn-link text-danger btn-sm p-0" id="btn-remove-{{ $index }}" name="btn_remove">
                                                             <i class="fas fa-times"></i>
                                                         </button>
                                                     </form>
                                                 </td>
-
                                             </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot class="table-secondary">
                                         <tr>
                                             <td class="ps-2 fw-bold">Total</td>
-                                            <td class="text-end pe-1 fw-bold" colspan="1">
+                                            <td class="text-end pe-1 fw-bold">
                                                 Rp {{ number_format(collect($cartItems)->sum('sub_total'), 0, ',', '.') }}
                                             </td>
-                                            <td></td>
+                                            <td colspan="2"></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -179,17 +193,16 @@
                             <div class="p-3 border-top">
                                 <form action="{{ route('outlet.order.store', $token) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-success w-100"
+                                    <button type="submit" class="btn btn-outline-success w-100" id="btn-checkout" name="btn_checkout"
                                         onclick="return confirm('Yakin ingin membuat pesanan ini?')">
                                         Buat Pesanan
                                     </button>
                                 </form>
                                 @if (count($cartItems) > 0)
-                                    <form action="{{ route('outlet.cart.clear', $token) }}" method="POST"
-                                        class="d-inline">
+                                    <form action="{{ route('outlet.cart.clear', $token) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger w-100 mt-2"
+                                        <button type="submit" class="btn btn-outline-danger w-100 mt-2" id="btn-clear-cart" name="btn_clear_cart"
                                             onclick="return confirm('Kosongkan keranjang?')">
                                             Kosongkan Keranjang
                                         </button>

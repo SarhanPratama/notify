@@ -2,7 +2,6 @@
 
 @section('content')
 
-<div class="container-fluid">
         @include('layouts.breadcrumbs')
         <!-- Filter Card -->
         <div class="row">
@@ -15,30 +14,30 @@
                     </div>
                     <div class="card-body">
                         <form action="{{ route('laporan.rekap-transaksi') }}" method="GET" class="row align-items-end">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="tanggal_awal" class="form-label">Tanggal Awal</label>
                                 <input type="date" class="form-control" id="tanggal_awal" name="tanggal_awal"
-                                    value="{{ $tanggal_awal }}">
+                                    value="{{ $tanggal_awal }}" onchange="this.form.submit()">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
                                 <input type="date" class="form-control" id="tanggal_akhir" name="tanggal_akhir"
-                                    value="{{ $tanggal_akhir }}">
+                                    value="{{ $tanggal_akhir }}" onchange="this.form.submit()">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label for="kategori" class="form-label">Kategori</label>
-                                <select class="form-control" id="kategori" name="kategori">
+                                <select class="form-control" id="kategori" name="kategori" onchange="this.form.submit()">
                                     <option value="all" {{ $kategori_filter == 'all' ? 'selected' : '' }}>Semua Kategori</option>
                                     @foreach($categories as $cat)
                                         <option value="{{ $cat->id }}" {{ $kategori_filter == $cat->id ? 'selected' : '' }}>{{ $cat->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            {{-- <div class="col-md-3">
                                 <button type="submit" class="btn btn-outline-primary w-100">
                                     <i class="fas fa-search"></i> Filter
                                 </button>
-                            </div>
+                            </div> --}}
                         </form>
                     </div>
                 </div>
@@ -123,18 +122,19 @@
                             <tbody>
                                 @forelse ($transaksi as $trx)
                                     <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td>{{ $trx->tanggal->format('d/m/Y') }}</td>
-                                        <td>{{ $trx->tanggal->translatedFormat('l') }}</td>
-                                        <td>{{ $trx->kategoriKeuangan->jenis ?? '-' }}</td>
-                                        <td>{{ $trx->kategoriKeuangan->nama ?? '-' }}</td>
-                                        <td>{{ $trx->deskripsi }}</td>
-                                        <td class="text-right">
+                                        <td class="align-middle">{{ $loop->iteration }}</td>
+                                        <td class="align-middle">{{ $trx->tanggal->format('d/m/Y') }}</td>
+                                        <td class="align-middle">{{ $trx->tanggal->translatedFormat('l') }}</td>
+                                        <td class="align-middle">
+                                            <div class="badge {{ $trx->kategoriKeuangan->jenis == 'pemasukan' ? 'bg-success' : 'bg-danger' }}">{{ $trx->kategoriKeuangan->jenis ?? '-' }}</div>
+                                        <td class="align-middle">{{ $trx->kategoriKeuangan->nama ?? '-' }}</td>
+                                        <td class="align-middle">{{ $trx->deskripsi }}</td>
+                                        <td class="align-middle text-right">
                                             <span class="{{ $trx->tipe == 'debit' ? 'text-success' : 'text-danger' }}">
                                                 Rp {{ number_format($trx->jumlah, 0, ',', '.') }}
                                             </span>
                                         </td>
-                                        <td>{{ $trx->posisi_kas }}</td>
+                                        <td class="align-middle">{{ $trx->posisi_kas }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -154,7 +154,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 @endsection
 
 @push('scripts')

@@ -81,7 +81,7 @@ class PengeluaranController extends Controller
                 'tipe' => 'debit',
                 'id_kategori_keuangan' => $kategoriPembelian->id,
                 'posisi_kas' => $request->posisi_kas,
-                'deskripsi' => $deskripsi ?: 'Pembelian bahan baku #' . $pembelian->nobukti,
+                'deskripsi' => 'Pembelian bahan baku ' . $deskripsi,
                 'status' => 1,
             ]);
 
@@ -205,7 +205,7 @@ class PengeluaranController extends Controller
                 }
             }
 
-            $transaksi->delete();
+            $transaksi->update(['status' => 0]);
 
             DB::commit();
             notify()->success('Pengeluaran berhasil dihapus.');

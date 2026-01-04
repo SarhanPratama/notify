@@ -1,13 +1,16 @@
 <!-- Modal Konfirmasi Pembatalan Permintaan -->
-<div class="modal fade" id="cancelModal{{ $item->id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ $item->id }}" aria-hidden="true">
+<div class="modal fade" id="cancelModal{{ $item->id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ $item->id }}"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-maron">
-                <h5 class="modal-title text-light" id="cancelModalLabel{{ $item->id }}">Konfirmasi Pembatalan Permintaan</h5>
+                <h5 class="modal-title text-light" id="cancelModalLabel{{ $item->id }}">Konfirmasi Pembatalan Permintaan
+                </h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Apakah Anda yakin ingin <strong>membatalkan permintaan pembelian bahan baku</strong> dengan kode <strong>{{ $item->nobukti}}</strong>?
+                Apakah Anda yakin ingin <strong>membatalkan permintaan pembelian bahan baku</strong> dengan kode
+                <strong>{{ $item->nobukti}}</strong>?
             </div>
             <div class="modal-footer">
                 <!-- Tombol Batal -->
