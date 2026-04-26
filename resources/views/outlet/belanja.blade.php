@@ -143,8 +143,8 @@
                                                     <strong>Rp
                                                         {{ number_format($item['sub_total'], 0, ',', '.') }}</strong>
                                                 </td>
-                                                <td class="text-center" style="width: 80px;">
-                                                    <div class="btn-group btn-group-sm" role="group">
+                                                <td class="text-center" style="width: 170px;">
+                                                    <div class="d-flex align-items-center justify-content-center gap-1">
                                                         <form action="{{ route('outlet.cart.update', [$token, $index]) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
@@ -153,7 +153,18 @@
                                                                 <i class="fas fa-minus"></i>
                                                             </button>
                                                         </form>
-                                                        <span class="btn btn-light btn-sm disabled">{{ $item['quantity'] }}</span>
+
+                                                        <form action="{{ route('outlet.cart.update', [$token, $index]) }}" method="POST" class="d-inline-flex align-items-center">
+                                                            @csrf
+                                                            <input type="number" name="quantity" value="{{ $item['quantity'] }}"
+                                                                min="1" max="{{ $item['stok_tersedia'] }}"
+                                                                class="form-control form-control-sm text-center" onchange="this.form.submit()">
+                                                                
+                                                            {{-- <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                                                <i class="fas fa-check"></i>
+                                                            </button> --}}
+                                                        </form>
+
                                                         <form action="{{ route('outlet.cart.update', [$token, $index]) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">

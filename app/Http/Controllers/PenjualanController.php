@@ -361,7 +361,7 @@ class PenjualanController extends Controller
         DB::beginTransaction();
 
         try {
-            $penjualan = Penjualan::with(['mutasi', 'transaksi', 'piutang'])->findOrFail($id);
+            $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'transaksi', 'piutang'])->findOrFail($id);
 
             // Soft delete mutasi (view stok akan otomatis menyesuaikan)
             foreach ($penjualan->mutasi as $mutasi) {

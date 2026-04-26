@@ -45,7 +45,8 @@
                             <div class="flex-grow-1 ms-2">
                                 <h6 class="text-muted mb-1 small">Disetujui Gudang</h6>
                                 <h5 class="mb-0 fw-bold text-center text-success">
-                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'pending')->count() }}</h5>
+                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'pending')->count() }}
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -63,7 +64,8 @@
                             <div class="flex-grow-1 ms-2">
                                 <h6 class="text-muted mb-1 small">Disetujui Keuangan</h6>
                                 <h5 class="mb-0 fw-bold text-center text-info">
-                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'approved')->where('status_pembayaran', 'piutang')->count() }}</h5>
+                                    {{ $orders->where('status_gudang', 'approved')->where('status_keuangan', 'approved')->where('status_pembayaran', 'piutang')->count() }}
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -166,17 +168,20 @@
                                                 <span class="badge bg-secondary">Cancelled</span>
                                             @endif
                                         </td>
-                                        <td class="text-end text-nowrap align-middle">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+                                        <td class="text-end text-nowrap align-middle">Rp
+                                            {{ number_format($order->total, 0, ',', '.') }}</td>
                                         <td class="text-center text-nowrap align-middle">
                                             <a href="{{ route('outlet.pesanan.detail', [$token, $order->id]) }}"
                                                 class="btn btn-outline-primary btn-sm" title="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i> </a>
                                             @if ($order->status_gudang === 'pending' && $order->status_keuangan === 'pending')
-                                                <form action="{{ route('outlet.pesanan.cancel', [$token, $order->id]) }}" method="POST" style="display: inline;">
+                                                <form action="{{ route('outlet.pesanan.cancel', [$token, $order->id]) }}"
+                                                    method="POST" style="display: inline;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm ms-1" title="Cancel Pesanan" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm ms-1"
+                                                        title="Cancel Pesanan"
+                                                        onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </form>

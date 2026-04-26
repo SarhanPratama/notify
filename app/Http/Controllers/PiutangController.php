@@ -35,9 +35,13 @@ class PiutangController extends Controller
 
         $piutang = $piutangQuery->orderBy('created_at', 'desc')->get();
 
+        $totalPiutang = $piutang->sum('jumlah_piutang');
+        $totalSisa = $piutang->sum('sisa_piutang');
+        $totalTerbayar = $totalPiutang - $totalSisa;
+
         $outlets = \App\Models\Outlet::all();
 
-        return view('piutang.index', compact('title', 'breadcrumbs', 'piutang', 'outlets'));
+        return view('piutang.index', compact('title', 'breadcrumbs', 'piutang', 'outlets', 'totalPiutang', 'totalSisa', 'totalTerbayar'));
     }
 
     public function show($nobukti)

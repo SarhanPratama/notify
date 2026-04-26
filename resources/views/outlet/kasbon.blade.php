@@ -137,7 +137,7 @@
                                             <a class="btn btn-outline-primary"
                                                 href="{{ route('outlet.kasbon.detail', ['token' => $token, 'piutang' => $piutang->id]) }}"
                                                 title="Detail">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i>
                                             </a>
                                         </div>
                                     </td>

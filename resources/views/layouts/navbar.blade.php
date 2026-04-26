@@ -1,7 +1,7 @@
 {{-- @auth
-    @php
-        $user = auth()->user();
-    @endphp
+@php
+$user = auth()->user();
+@endphp
 
 @endauth --}}
 
@@ -15,7 +15,7 @@
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 @if ($unreadCount > 0)
-                    <span class="badge badge-primary badge-counter mb-2">{{ $unreadCount }}</span>
+                <span class="badge badge-primary badge-counter mb-2">{{ $unreadCount }}</span>
                 @endif
             </a>
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -24,18 +24,18 @@
                     Alerts Center
                 </h6>
                 @foreach ($notifications as $notif)
-                    <a class="dropdown-item d-flex align-items-center" href="#">
-                        <div class="mr-3">
-                            <div class="icon-circle bg-primary">
-                                <i class="fas fa-user-plus text-white"></i>
-                            </div>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-primary">
+                            <i class="fas fa-user-plus text-white"></i>
                         </div>
-                        <div>
-                            <div class="small text-gray-500">{{ $notif->created_at }}</div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">{{ $notif->created_at }}</div>
 
-                            <span class="font-weight-bold">{{ $notif->message }}</span>
-                        </div>
-                    </a>
+                        <span class="font-weight-bold">{{ $notif->message }}</span>
+                    </div>
+                </a>
                 @endforeach
                 <a class="dropdown-item text-center small text-gray-500" href="">
                     Tandai Semua Dibaca
@@ -49,13 +49,12 @@
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <img class="img-profile rounded-circle"
-                    src="{{  asset('assets/img/boy.png') }}">
+                <img class="img-profile rounded-circle" src="{{  asset('assets/img/boy.png') }}">
                 <div class="d-flex flex-column">
                     @auth
-                    <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name }}</span>
-                    <span class="ml-2 d-none d-lg-inline text-white"
-                    style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()->name) }}</span>
+                        <span class="ml-2 d-none d-lg-inline text-white small fw-bold">{{ auth()->user()->name }}</span>
+                        <span class="ml-2 d-none d-lg-inline text-white"
+                            style="font-size: 12px;">{{ ucwords(auth()->user()->roles->first()?->name ?? 'Guest') }}</span>
                     @endauth
                 </div>
             </a>

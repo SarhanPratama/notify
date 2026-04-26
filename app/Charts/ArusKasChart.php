@@ -17,8 +17,9 @@ class ArusKasChart
     public function build()
     {
         // Ambil 7 hari terakhir (hari ini + 6 hari ke belakang)
-        $startDate = now()->subDays(6)->startOfDay();
-        $endDate = now()->endOfDay();
+        $startDate = now()->startOfMonth();
+        $endDate = now()->endOfMonth();
+
 
         // Ambil semua transaksi dalam 7 hari terakhir (1 query saja)
         $transaksi = Transaksi::with('kategoriKeuangan')
@@ -39,7 +40,7 @@ class ArusKasChart
         $currentDate = $startDate->copy();
         while ($currentDate->lte($endDate)) {
             $dateString = $currentDate->format('Y-m-d');
-            $labels[] = $currentDate->format('d/m');
+            $labels[] = $currentDate->format('d');
 
             // Ambil transaksi di tanggal tersebut (kalau ada)
             $transaksiHarian = $grouped->get($dateString, collect());
@@ -61,8 +62,7 @@ class ArusKasChart
 
         // Return chart
         return $this->chart->barChart()
-            ->setTitle('Pemasukan vs Pengeluaran Harian')
-            ->setSubtitle('Perbandingan pemasukan dan pengeluaran per hari dalam 7 hari terakhir')
+            ->setTitle('Pemasukan vs Pengeluaran Bulan Ini')
             ->setDataset([
                 [
                     'name' => 'Pemasukan',
@@ -76,5 +76,6 @@ class ArusKasChart
             ->setXAxis($labels)
             ->setColors(['#1cc88a', '#e74a3b'])
             ->setHeight(400);
+            
     }
 }

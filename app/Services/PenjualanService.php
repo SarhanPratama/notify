@@ -11,7 +11,7 @@ class PenjualanService
 {
     public function getPenjualanDetails($nobukti)
     {
-        return Penjualan::with(['mutasi.bahanBaku.satuan', 'outlet', 'transaksi.sumberDana', 'piutang.pembayaran'])
+        return Penjualan::with(['mutasi.bahanBaku.satuan', 'outlet', 'piutang.pembayaran'])
             ->where('nobukti', $nobukti)
             ->firstOrFail();
     }
@@ -48,7 +48,7 @@ class PenjualanService
     {
         DB::beginTransaction();
         try {
-            $penjualan = Penjualan::with('mutasi', 'transaksi', 'piutang')->where('nobukti', $nobukti)->firstOrFail();
+            $penjualan = Penjualan::with(['mutasi.bahanBaku.satuan', 'transaksi', 'piutang'])->where('nobukti', $nobukti)->firstOrFail();
             $oldTotal = $penjualan->total;
             $oldSumberDanaId = optional($penjualan->transaksi->first())->id_sumber_dana;
 

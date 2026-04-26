@@ -125,7 +125,7 @@
                                             </a> --}}
                                             <a href="{{ route('penjualan.show', $item->nobukti) }}"
                                                 class="btn btn-outline-success" title="Detail">
-                                                <i class="far fa-eye"></i>
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i>
                                             </a>
                                             @if ($item->status !== 'approved' && $item->status !== 'completed')
                                                 <button class="btn btn-outline-danger rounded-right"

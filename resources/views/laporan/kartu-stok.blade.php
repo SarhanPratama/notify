@@ -4,7 +4,7 @@
 
         @include('layouts.breadcrumbs')
         <!-- Header Section -->
-        <div class="row mb-4">
+        <!-- <div class="row mb-4">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-body bg-maron text-white rounded">
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Filter Section -->
         <div class="row mb-4">

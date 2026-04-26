@@ -41,6 +41,9 @@ class PembelianService
                 'id_supplier' => $data['id_supplier'] ?? null,
             ]);
 
+            // Eager load relations for returned model elsewhere if needed
+            $pembelian->load('mutasi.bahanBaku.satuan');
+
             foreach ($data['bahanBaku'] as $index => $idBahanBaku) {
                 $pembelian->mutasi()->create([
                     'id_bahan_baku' => $idBahanBaku,
@@ -64,7 +67,7 @@ public function updatePembelian($nobukti, array $data)
     DB::beginTransaction();
 
     try {
-        $pembelian = Pembelian::with('mutasi', 'transaksi')->where('nobukti', $nobukti)->firstOrFail();
+        $pembelian = Pembelian::with(['mutasi.bahanBaku.satuan', 'transaksi'])->where('nobukti', $nobukti)->firstOrFail();
 
         // Cek apakah menggunakan cartItems (dari session) atau format lama
         if (isset($data['cartItems']) && !empty($data['cartItems'])) {

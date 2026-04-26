@@ -3,6 +3,72 @@
 @section('content')
 
 @include('layouts.breadcrumbs')
+
+<div class="row">
+    <!-- Total Piutang Card -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center px-2">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Piutang
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            Rp {{ number_format($totalPiutang, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-invoice-dollar fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Terbayar Card -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center px-2">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Terbayar
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">
+                            Rp {{ number_format($totalTerbayar, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-hand-holding-usd fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sisa (Outstanding) Card -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center px-2">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Sisa Piutang
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            Rp {{ number_format($totalSisa, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-lg-12">
         <!-- Card with improved styling -->
@@ -66,7 +132,8 @@
                                     <td class="align-middle font-weight-bold">
                                         {{ $item->penjualan->outlet->nama }}
                                         <div class="small text-muted">
-                                            {{ $item->penjualan->outlet->penanggung_jawab }}</div>
+                                            {{ $item->penjualan->outlet->penanggung_jawab }}
+                                        </div>
                                     </td>
                                     <td class="align-middle">
                                         <div class="d-flex align-items-center">
@@ -92,7 +159,7 @@
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('piutang.show', $item->nobukti) }}"
                                                 class="btn btn-outline-success" title="Detail">
-                                                <i class="far fa-eye"></i>
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i>
                                             </a>
                                         </div>
                                     </td>

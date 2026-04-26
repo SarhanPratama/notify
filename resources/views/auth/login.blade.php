@@ -55,7 +55,7 @@
                                     @csrf
                                     <div class="mb-3 font-weight-bold">
                                         <label for="email">Email</label>
-                                        <input type="email" class="form-control form-control-sm" name="email"
+                                        <input type="email" class="form-control form-control-sm" name="email" value="{{ old('email') }}"
                                             id="email" placeholder="Email" aria-label="email" autocomplete="off"
                                             required>
                                     </div>

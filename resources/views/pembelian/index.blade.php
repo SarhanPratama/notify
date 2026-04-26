@@ -52,7 +52,7 @@
         <!-- Card with improved styling -->
         <div>
             <a href="{{ route('pembelian.create') }}" class="btn btn-outline-primary fw-bold mb-3">
-                Tambah
+                Tambah Pembelian
             </a>
         </div>
         <div class="card shadow-sm border-0">
@@ -124,7 +124,7 @@
                                                 @endif
                                                 <a href="{{ route('pembelian.show', $item->nobukti) }}"
                                                     class="btn btn-outline-success" title="Detail">
-                                                    <i class="far fa-eye"></i>
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
                                                 </a>
                                                 @if ($item->status === 'pending')
                                                     <button class="btn btn-outline-danger rounded-right"

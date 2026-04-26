@@ -19,7 +19,7 @@ class TransaksiController extends Controller
             ['label' => 'Tabel Data', 'url' => null],
         ];
 
-        $kas = Transaksi::orderBy('tanggal', 'desc')->get();
+        $kas = Transaksi::with('kategoriKeuangan')->orderBy('tanggal', 'desc')->get();
 
 
         return view('transaksi.index', compact('title', 'breadcrumbs', 'kas'));

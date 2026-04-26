@@ -125,6 +125,9 @@ Route::prefix('admin/')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan/rekap-transaksi/export', [LaporanController::class, 'exportRekapTransaksi'])
         ->name('laporan.rekap-transaksi.export')->middleware('permission:laporan-rekap-transaksi');
 
+    // Laporan Piutang
+    Route::get('/laporan/piutang', [LaporanController::class, 'laporanPiutang'])->name('laporan.piutang');
+    Route::get('/laporan/piutang/pdf', [LaporanController::class, 'cetakLaporanPiutangPdf'])->name('laporan.piutang.pdf');
 
     // Route::get('/laporan/barang-masuk/cetak', [LaporanController::class, 'cetakPDF'])->name('laporan.barang-masuk.pdf');
 });

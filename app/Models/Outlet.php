@@ -30,18 +30,15 @@ class Outlet extends Model
         'barcode_generated_at'
     ];
 
-        public function Penjualan()
+    public function Penjualan()
     {
         return $this->hasMany(Penjualan::class);
     }
 
-    public function users()
-    {
-        return $this->hasMany(User::class, 'id_cabang', 'id');
-    }
+
     protected $casts = [
-    'barcode_generated_at' => 'datetime',
-];
+        'barcode_generated_at' => 'datetime',
+    ];
 
     /**
      * Generate unique barcode token for this outlet
@@ -74,13 +71,6 @@ class Outlet extends Model
         return $this->generateBarcodeToken();
     }
 
-    /**
-     * Deactivate barcode
-     */
-    public function deactivateBarcode()
-    {
-        $this->barcode_active = false;
-        $this->save();
-    }
+
 
 }

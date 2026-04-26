@@ -113,7 +113,7 @@
                     @endcan
                     @can('transaksi')
                         <a class="collapse-item {{ request()->routeIs('transaksi.*') ? 'active font-weight-bold' : '' }}"
-                            href="{{ route('transaksi.index') }}">Transaksi</a>
+                            href="{{ route('transaksi.index') }}">Riwayat Transaksi</a>
                     @endcan
                 </div>
             </div>
@@ -129,7 +129,7 @@
                 <span>Laporan</span>
             </a>
             <div id="collapselaporan"
-                class="collapse {{ request()->routeIs(['laporan-stok', 'laporan-pembelian', 'laporan-penjualan', 'laporan.kartu-stok', 'laporan.rekap-transaksi', 'laporan.buku-besar', 'laporan.saldo-kas']) ? 'show' : '' }}"
+                class="collapse {{ request()->routeIs(['laporan-stok', 'laporan-pembelian', 'laporan-penjualan', 'laporan.kartu-stok', 'laporan.rekap-transaksi', 'laporan.buku-besar', 'laporan.saldo-kas', 'laporan.piutang']) ? 'show' : '' }}"
                 aria-labelledby="headingLaporan" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     @can('laporan-stok')
@@ -144,6 +144,8 @@
                         <a class="collapse-item {{ request()->routeIs('laporan.rekap-transaksi') ? 'active font-weight-bold' : '' }}"
                             href="{{ route('laporan.rekap-transaksi') }}">Rekap Transaksi</a>
                     @endcan
+                    <a class="collapse-item {{ request()->routeIs('laporan.piutang') ? 'active font-weight-bold' : '' }}"
+                        href="{{ route('laporan.piutang') }}">Piutang Outlet</a>
                     {{-- <a class="collapse-item {{ request()->routeIs('laporan.buku-besar') ? 'active font-weight-bold' : '' }}"
                         href="{{ route('laporan.buku-besar') }}">Buku Besar</a> --}}
                 </div>

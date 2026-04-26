@@ -11,7 +11,7 @@ use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\Transaksi;
-use App\Models\SumberDana;
+use App\Models\ViewSaldo;
 use App\Charts\ArusKasChart;
 
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-        public function index()
+    public function index()
     {
         $user = auth()->user();
 
@@ -67,12 +67,13 @@ class DashboardController extends Controller
 
         $totalPengeluaranBulanIni = Pembelian::whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
-            ->where('status', '=', 'completed')
+            ->where('status', '=', 'approved')
             ->sum('total');
 
         // Opsi 3: Total penjualan - piutang beredar (menggunakan sisa_piutang accessor)
         $totalPenjualanBulanIni = Penjualan::whereMonth('tanggal', Carbon::now()->month)
-        ->where('status_gudang', '=', 'completed')
+            ->where('status_gudang', '=', 'approved')
+            ->where('status_keuangan', '=', 'approved')
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('total');
 
@@ -132,24 +133,25 @@ class DashboardController extends Controller
     {
         $title = 'Dashboard Manajer Keuangan';
 
+        // Menggunakan ViewSaldo untuk performa yang lebih baik (Pre-calculated in DB View)
+        $viewSaldo = ViewSaldo::first();
 
-        // Total Saldo Kas Saat Ini (All Time)
-        $totalSaldoSaatIni = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
-            ->where('transaksi.status', 1)
-            ->sum(DB::raw("CASE WHEN kategori_keuangan.jenis = 'pemasukan' THEN transaksi.jumlah ELSE -transaksi.jumlah END"));
+        $totalSaldoSaatIni = $viewSaldo->saldo_current ?? 0;
+        $totalPendapatanAllTime = $viewSaldo->total_pemasukan ?? 0;
+        $totalPengeluaranAllTime = $viewSaldo->total_pengeluaran ?? 0;
 
         // Total Pendapatan & Pengeluaran Bulan Ini
-        $totalPendapatanBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pemasukan');
-            })
+        $totalPendapatanBulanIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pemasukan');
+        })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->where('status', 1)
             ->sum('jumlah');
 
-        $totalPengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pengeluaran');
-            })
+        $totalPengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pengeluaran');
+        })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->where('status', 1)
@@ -157,7 +159,7 @@ class DashboardController extends Controller
 
         // Top Pengeluaran
         $topPengeluaran = Transaksi::with('kategoriKeuangan')
-            ->whereHas('kategoriKeuangan', function($q) {
+            ->whereHas('kategoriKeuangan', function ($q) {
                 $q->where('jenis', 'pengeluaran');
             })
             ->orderBy('jumlah', 'desc')
@@ -184,15 +186,33 @@ class DashboardController extends Controller
             ->get();
 
         // Transaksi Terbaru
-        $transaksiTerbaru = Transaksi::orderBy('created_at', 'desc')
+        $transaksiTerbaru = Transaksi::with('kategoriKeuangan')->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
+
+        // Pemasukan Hari Ini
+        $pemasukanHariIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pemasukan');
+        })
+            ->whereDate('tanggal', Carbon::today())
+            ->where('status', 1)
+            ->sum('jumlah');
+
+        // Pengeluaran Hari Ini
+        $pengeluaranHariIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pengeluaran');
+        })
+            ->whereDate('tanggal', Carbon::today())
+            ->where('status', 1)
+            ->sum('jumlah');
 
         $ArusKasChart = $ArusKasChart->build();
 
         return view('dashboard.keuangan', compact(
             'title',
             'totalSaldoSaatIni',
+            'totalPendapatanAllTime',
+            'totalPengeluaranAllTime',
             'totalPendapatanBulanIni',
             'totalPengeluaranBulanIni',
             'topPengeluaran',
@@ -201,7 +221,9 @@ class DashboardController extends Controller
             'ArusKasChart',
             // 'laporanBulanan',
             'piutangJatuhTempo',
-            'transaksiTerbaru'
+            'transaksiTerbaru',
+            'pemasukanHariIni',
+            'pengeluaranHariIni'
         ));
     }
 
@@ -213,23 +235,31 @@ class DashboardController extends Controller
             ['label' => 'Dashboard', 'url' => null],
         ];
 
+
+        // Menggunakan ViewSaldo untuk performa yang lebih baik
+        $viewSaldo = ViewSaldo::first();
+
         // Total Saldo Kas Saat Ini (All Time)
-        $totalSaldoSaatIni = Transaksi::join('kategori_keuangan', 'transaksi.id_kategori_keuangan', '=', 'kategori_keuangan.id')
-            ->where('transaksi.status', 1)
-            ->sum(DB::raw("CASE WHEN kategori_keuangan.jenis = 'pemasukan' THEN transaksi.jumlah ELSE -transaksi.jumlah END"));
+        $totalSaldoSaatIni = $viewSaldo->saldo_current ?? 0;
+
+        // Total Pendapatan All Time
+        $totalPendapatanAllTime = $viewSaldo->total_pemasukan ?? 0;
+
+        // Total Pengeluaran All Time
+        $totalPengeluaranAllTime = $viewSaldo->total_pengeluaran ?? 0;
 
         // Pemasukan Bulan Ini: SUM(jumlah) dari transaksi tipe='pemasukan' bulan berjalan
-        $pemasukanBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pemasukan');
-            })
+        $pemasukanBulanIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pemasukan');
+        })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
 
         // Pengeluaran Bulan Ini: SUM(jumlah) dari transaksi tipe='pengeluaran' bulan berjalan
-        $pengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pengeluaran');
-            })
+        $pengeluaranBulanIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pengeluaran');
+        })
             ->whereMonth('tanggal', Carbon::now()->month)
             ->whereYear('tanggal', Carbon::now()->year)
             ->sum('jumlah');
@@ -270,16 +300,16 @@ class DashboardController extends Controller
             ->get();
 
         // Query: SUM(jumlah) dari transaksi WHERE tipe = 'debit' AND tanggal = HARI_INI
-        $pemasukanHariIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pemasukan');
-            })
+        $pemasukanHariIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pemasukan');
+        })
             ->whereDate('tanggal', Carbon::today())
             ->sum('jumlah');
 
         // Query: SUM(jumlah) dari transaksi WHERE tipe = 'kredit' AND tanggal = HARI_INI
-        $pengeluaranHariIni = Transaksi::whereHas('kategoriKeuangan', function($q) {
-                $q->where('jenis', 'pengeluaran');
-            })
+        $pengeluaranHariIni = Transaksi::whereHas('kategoriKeuangan', function ($q) {
+            $q->where('jenis', 'pengeluaran');
+        })
             ->whereDate('tanggal', Carbon::today())
             ->sum('jumlah');
 
@@ -298,6 +328,8 @@ class DashboardController extends Controller
             'title',
             'breadcrumbs',
             'totalSaldoSaatIni',
+            'totalPendapatanAllTime',
+            'totalPengeluaranAllTime',
             'pemasukanBulanIni',
             'pengeluaranBulanIni',
             'totalPiutangBeredar',

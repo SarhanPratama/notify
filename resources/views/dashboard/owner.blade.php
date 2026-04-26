@@ -1,30 +1,72 @@
 @extends('layouts.master')
 
 @section('content')
-    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+    <h1 class="h3 mb-4 text-gray-800">Dashboard Owner</h1>
 
     <div class="row mb-4">
 
-        {{-- <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 p-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Saldo Kas
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Saldo Kas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
+                            </div>
+                            <!-- <small class="text-muted">Saldo saat ini</small> -->
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-primary"></i>
                         </div>
-                        <small class="text-muted">Saldo saat ini</small>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-wallet fa-2x text-primary"></i>
                     </div>
                 </div>
             </div>
         </div>
-    </div> --}}
+
+        <!-- Total Pendapatan All Time -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Pendapatan (All Time)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalPendapatanAllTime ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-up fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Pengeluaran All Time -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Pengeluaran (All Time)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalPengeluaranAllTime ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-down fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Pemasukan Bulan Ini -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -207,11 +249,13 @@
                                             {{ $barang->nama_satuan }})
                                         </small>
                                     </div>
-                                    <div>
-                                        <a href="{{ route('pembelian.create') }}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-shopping-cart"></i> Order
-                                        </a>
-                                    </div>
+                                    @hasrole('gudang')
+                                        <div>
+                                            <a href="{{ route('pembelian.create') }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-shopping-cart"></i> Order
+                                            </a>
+                                        </div>
+                                    @endhasrole
                                 </div>
                             @empty
                                 <div class="alert alert-success text-center text-black" role="alert">
@@ -245,12 +289,13 @@
                                             {{ number_format($piutang->jumlah_piutang, 0, ',', '.') }}</span><br>
                                         <span class="badge badge-danger">Telat {{ $piutang->hari_telat }} Hari</span>
                                     </small>
-                                    {{-- </div> --}}
+                                    {{--
+                                    </div> --}}
                                     {{-- <div>
-                    <a href="#" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-phone"></i> Tagih
-                    </a>
-                </div> --}}
+                                        <a href="#" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-phone"></i> Tagih
+                                        </a>
+                                    </div> --}}
                                 </div>
                             @empty
                                 <div class="alert alert-success text-center text-black" role="alert">
@@ -269,6 +314,6 @@
         @push('scripts')
             <script src="{{ $ArusKasChart->cdn() }}"></script>
             {{--
-{{ $SaldoKasChart->script() }} --}}
+            {{ $SaldoKasChart->script() }} --}}
             {{ $ArusKasChart->script() }}
         @endpush

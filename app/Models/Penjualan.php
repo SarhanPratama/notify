@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Penjualan extends Model
 {
     use HasFactory
-    // SoftDeletes
+        // SoftDeletes
     ;
 
     protected $table = 'penjualan';
@@ -35,20 +35,22 @@ class Penjualan extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            $prefix = 'PO-' . date('Ymd');
+            if (empty($model->nobukti)) {
+                $prefix = 'PO-' . date('Ymd');
 
-            $last = Penjualan::where('nobukti', 'like', $prefix . '%')
-                ->orderByDesc('nobukti')
-                ->first();
+                $last = Penjualan::where('nobukti', 'like', $prefix . '%')
+                    ->orderByDesc('nobukti')
+                    ->first();
 
-            $nextNumber = 1;
+                $nextNumber = 1;
 
-            if ($last) {
-                $lastNumber = (int)substr($last->nobukti, -4);
-                $nextNumber = $lastNumber + 1;
+                if ($last) {
+                    $lastNumber = (int) substr($last->nobukti, -4);
+                    $nextNumber = $lastNumber + 1;
+                }
+
+                $model->nobukti = $prefix . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
             }
-
-            $model->nobukti = $prefix . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
         });
     }
 

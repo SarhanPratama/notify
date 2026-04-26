@@ -8,6 +8,8 @@ use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\Transaksi;
+use App\Models\Piutang;
+use App\Models\Outlet;
 use App\Models\KategoriKeuangan;
 use App\Exports\StokExport;
 use Illuminate\Http\Request;
@@ -64,7 +66,7 @@ class LaporanController extends Controller
 
     public function laporanKartuStok(Request $request)
     {
-        $title = 'Laporan Kartu Stok Bahan Baku';
+        $title = 'Laporan Kartu Stok';
         $breadcrumbs = [
             ['label' => 'Home', 'url' => route('admin.dashboard')],
             ['label' => 'Laporan Kartu Stok', 'url' => null],
@@ -77,8 +79,8 @@ class LaporanController extends Controller
         if ($request->filled('id_bahan_baku')) {
             $selected_item = BahanBaku::findOrFail($request->id_bahan_baku);
 
-            $riwayat_mutasi = Mutasi::where('id_bahan_baku', $request->id_bahan_baku)
-                ->orderBy('created_at')
+            $riwayat_mutasi = mutasi::where('id_bahan_baku', $request->id_bahan_baku)
+                ->latest()
                 ->get();
         }
 
@@ -158,5 +160,85 @@ class LaporanController extends Controller
             new \App\Exports\RekapTransaksiExport($tanggal_awal, $tanggal_akhir, $kategori),
             'Rekap-Transaksi-' . $tanggal_awal . '-to-' . $tanggal_akhir . '.xlsx'
         );
+    }
+
+    public function laporanPiutang(Request $request)
+    {
+        $title = 'Laporan Piutang Outlet';
+        $breadcrumbs = [
+            ['label' => 'Home', 'url' => route('admin.dashboard')],
+            ['label' => 'Laporan Piutang', 'url' => null],
+        ];
+
+        $outlets = Outlet::all();
+        $outlet_id = $request->input('outlet', 'all');
+        $status_filter = $request->input('status', 'belum_lunas'); // default belum lunas
+
+        $query = Piutang::with('penjualan.outlet', 'penjualan.mutasi', 'pembayaran');
+
+        // Filter Outlet
+        if ($outlet_id !== 'all') {
+            $query->whereHas('penjualan', function($q) use ($outlet_id) {
+                $q->where('id_outlet', $outlet_id);
+            });
+        }
+
+        // Filter Status Lunas / Belum Lunas
+        if ($status_filter !== 'all') {
+            $query->where('status', $status_filter);
+        }
+
+        $piutang = $query->orderBy('created_at', 'desc')->get();
+
+        $totalPiutang = $piutang->sum('jumlah_piutang');
+        $totalSisa = $piutang->sum('sisa_piutang');
+        $totalTerbayar = $totalPiutang - $totalSisa;
+
+        return view('laporan.piutang', compact(
+            'title',
+            'breadcrumbs',
+            'piutang',
+            'outlets',
+            'outlet_id',
+            'status_filter',
+            'totalPiutang',
+            'totalSisa',
+            'totalTerbayar'
+        ));
+    }
+
+    public function cetakLaporanPiutangPdf(Request $request)
+    {
+        $outlet_id = $request->input('outlet', 'all');
+        $status_filter = $request->input('status', 'belum_lunas');
+
+        $query = Piutang::with('penjualan.outlet', 'pembayaran');
+
+        $outlet_name = 'Semua Outlet';
+        if ($outlet_id !== 'all') {
+            $outlet = Outlet::find($outlet_id);
+            if ($outlet) {
+                $outlet_name = $outlet->nama;
+                $query->whereHas('penjualan', function($q) use ($outlet_id) {
+                    $q->where('id_outlet', $outlet_id);
+                });
+            }
+        }
+
+        if ($status_filter !== 'all') {
+            $query->where('status', $status_filter);
+        }
+
+        $piutang = $query->orderBy('created_at', 'desc')->get();
+
+        $totalPiutang = $piutang->sum('jumlah_piutang');
+        $totalSisa = $piutang->sum('sisa_piutang');
+        $totalTerbayar = $totalPiutang - $totalSisa;
+
+        $pdf = Pdf::loadView('laporan.piutang-pdf', compact(
+            'piutang', 'outlet_name', 'totalPiutang', 'totalSisa', 'totalTerbayar', 'status_filter'
+        ));
+
+        return $pdf->stream('Laporan-Piutang-' . $outlet_name . '.pdf');
     }
 }

@@ -50,7 +50,7 @@ class UsersController extends Controller
         ];
         // $user = User::all();
         // dd($user);
-        $roles = Role::pluck('name', 'id');
+        $roles = Role::where('name', '!=', 'owner')->pluck('name', 'id');
 
         // dd($cabang);
         return view('users.create', compact('breadcrumbs', 'title', 'roles'));

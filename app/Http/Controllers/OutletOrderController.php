@@ -52,6 +52,8 @@ class OutletOrderController extends Controller
 
             $bahanBaku = $bahanBakuQuery->get();
 
+            // dd($bahanBaku);
+
             // Ambil data kategori untuk filter (selalu tampilkan semua kategori)
             $kategoris = Kategori::orderBy('nama')->get();
 
@@ -171,7 +173,7 @@ class OutletOrderController extends Controller
                 // Jika quantity 0, hapus item dari cart
                 if ($request->quantity <= 0) {
                     unset($cartItems[$index]);
-                    $cartItems = array_values($cartItems); 
+                    $cartItems = array_values($cartItems);
                     session([$sessionKey => $cartItems]);
                     return redirect()->route('outlet.belanja', $token)
                         ->with('success', 'Item berhasil dihapus dari keranjang');

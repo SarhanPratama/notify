@@ -31,16 +31,16 @@ class AdminOrderController extends Controller
         return view('pesanan.index', compact('orders', 'title', 'breadcrumbs'));
     }
 
-    public function approve(Request $request, $id)
+    public function approve($id)
     {
         DB::beginTransaction();
         try {
-            $order = Penjualan::with('mutasi')->lockForUpdate()->findOrFail($id);
+            $order = Penjualan::with('mutasi.bahanBaku.satuan')->lockForUpdate()->findOrFail($id);
             $user = auth()->user();
 
             if ($user->hasRole('gudang')) {
                 if ($order->status_gudang !== 'pending') {
-                    notify()->error('Admin gudang hanya dapat memproses pesanan dengan status_gudang pending.');
+                    notify()->error('Admin gudang hanya dapat memproses pesanan dengan status gudang pending.');
                     return redirect()->back();
                 }
                 $order->status_gudang = 'approved';
@@ -64,7 +64,7 @@ class AdminOrderController extends Controller
     {
         DB::beginTransaction();
         try {
-            $order = Penjualan::with('mutasi')->findOrFail($id);
+            $order = Penjualan::with('mutasi.bahanBaku.satuan')->findOrFail($id);
             $user = auth()->user();
 
             if ($user->hasRole('gudang')) {

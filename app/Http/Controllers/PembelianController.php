@@ -330,7 +330,7 @@ class PembelianController extends Controller
             $validated = $request->validated();
             $validated['cartItems'] = $cartItems;
 
-            $pembelian = Pembelian::with('mutasi', 'transaksi')->where('nobukti', $nobukti)->firstOrFail();
+            $pembelian = Pembelian::with(['mutasi.bahanBaku.satuan', 'transaksi'])->where('nobukti', $nobukti)->firstOrFail();
 
             if (isset($validated['cartItems']) && !empty($validated['cartItems'])) {
                 $cartItems = $validated['cartItems'];
@@ -413,7 +413,7 @@ class PembelianController extends Controller
         DB::beginTransaction();
 
         try {
-            $pembelian = Pembelian::with('mutasi')->findOrFail($id);
+            $pembelian = Pembelian::with('mutasi.bahanBaku.satuan')->findOrFail($id);
             // $transaksi = $pembelian->transaksi->first();
 
             foreach ($pembelian->mutasi as $mutasi) {

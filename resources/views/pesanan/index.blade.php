@@ -98,7 +98,7 @@
                                     <td class="text-center align-middle">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('penjualan.show', $order->nobukti) }}" class="btn btn-outline-success" title="Lihat">
-                                                <i class="far fa-eye"></i>
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i>
                                             </a>
                                         </div>
                                     </td>

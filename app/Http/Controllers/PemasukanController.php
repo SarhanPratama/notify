@@ -28,7 +28,7 @@ class PemasukanController extends Controller
         ->orderBy('tanggal', 'desc')
             ->get();
 
-        $penjualanPending = Penjualan::with(['outlet', 'mutasi'])
+        $penjualanPending = Penjualan::with(['outlet', 'mutasi.bahanBaku.satuan'])
             ->where('status_gudang', 'approved')
             ->where('status_keuangan', 'pending')
             ->orderBy('created_at', 'desc')

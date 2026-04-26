@@ -1,30 +1,76 @@
 @extends('layouts.master')
 
 @section('content')
-    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+    <h1 class="h3 mb-4 text-gray-800">Dashboard Keuangan</h1>
 
-    <div class="row mb-4">
-        <!-- Total Saldo Kas Saat Ini -->
-        {{-- <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 p-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Saldo Kas
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Saldo saat ini
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
+                            </div>
+                            <!-- <small class="text-muted">Saldo saat ini</small> -->
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            Rp {{ number_format($totalSaldoSaatIni ?? 0, 0, ',', '.') }}
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-primary"></i>
                         </div>
-                        <small class="text-muted">Saldo saat ini</small>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-wallet fa-2x text-primary"></i>
                     </div>
                 </div>
             </div>
         </div>
-    </div> --}}
+
+        <!-- Total Pendapatan All Time -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Pendapatan (All Time)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalPendapatanAllTime ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-up fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Pengeluaran All Time -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Pengeluaran (All Time)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($totalPengeluaranAllTime ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-down fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <!-- Total Saldo Kas Saat Ini -->
 
         <!-- Total Pendapatan Bulan Ini -->
         <div class="col-xl-3 col-md-6 mb-4">
@@ -110,6 +156,50 @@
         </div>
     </div>
 
+    <div class="row">
+        <!-- Pemasukan Hari Ini -->
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Pemasukan Hari Ini
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($pemasukanHariIni ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cash-register fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pengeluaran Hari Ini -->
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 p-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Pengeluaran Hari Ini
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                Rp {{ number_format($pengeluaranHariIni ?? 0, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-2x text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-4">
         <!-- Cash Flow 30 Hari -->
         <div class="col-xl-12 col-lg-12">
@@ -125,7 +215,7 @@
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-warning"><i class="fas fa-credit-card text-warning"></i>
                         Piutang Jatuh Tempo</h6>
-                    <span class="badge badge-warning">{{ count($piutangJatuhTempo) }} Overdue</span>
+                    {{-- <span class="badge badge-warning">{{ count($piutangJatuhTempo) }} Overdue</span> --}}
                 </div>
                 <div class="card-body">
                     @forelse($piutangJatuhTempo as $piutang)
@@ -184,19 +274,25 @@
                                         {{-- <td>{{ $transaksi->SumberDana->nama ?? 'N/A' }}</td> --}}
                                         <td>{{ Str::limit($transaksi->deskripsi, 50) }}</td>
                                         <td>
-                                            <span
-                                                class="badge badge-{{ $transaksi->kategoriKeuangan->jenis === 'pemasukan' ? 'success' : 'danger' }}">
-                                                {{ ucfirst($transaksi->kategoriKeuangan->jenis ?? '') }}
-                                            </span>
+                                            @if ($transaksi->kategoriKeuangan->jenis === 'pemasukan')
+                                                <span class="badge badge-success">Pemasukan</span>
+                                            @else
+                                                <span class="badge badge-danger">Pengeluaran</span>
+                                            @endif
                                         </td>
                                         <td
                                             class="font-weight-bold {{ $transaksi->kategoriKeuangan->jenis === 'pemasukan' ? 'text-success' : 'text-danger' }}">
                                             Rp {{ number_format($transaksi->jumlah, 0, ',', '.') }}
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $transaksi->status == 1 ? 'success' : 'danger' }}">
+                                            @if ($transaksi->status === 1)
+                                                <span class="badge badge-success">Success</span>
+                                            @else
+                                                <span class="badge badge-danger">Dibatalkan</span>
+                                            @endif
+                                            {{-- <span class="badge badge-{{ $transaksi->status == 1 ? 'success' : 'danger' }}">
                                                 {{ $transaksi->status == 1 ? 'Success' : 'Dibatalkan' }}
-                                            </span>
+                                            </span> --}}
                                         </td>
                                     </tr>
                                 @empty

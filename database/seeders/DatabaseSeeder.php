@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
             KategoriKeuanganSeeder::class,
             SatuanSeeder::class,
             BahanBakuSeeder::class,
+            DemoDataSeeder::class,
         ]);
 
         // User::factory()->create([
